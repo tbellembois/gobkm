@@ -1,0 +1,129 @@
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <title>GoBkm</title>
+
+  <meta name="description" content="A minimalist folder-based bookmark manager">
+  <meta name="author" content="Thomas Bellembois">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+  <style type="text/css">
+    {{.CssData}}
+  </style>
+
+  <script>
+    var GoBkmProxyURL="{{.GoBkmProxyURL}}"
+
+    {{.JsData}}
+  </script>
+
+</head>
+
+<body>
+
+    <div id="action-box">
+
+    <div id="add-folder-box">
+
+        add folder: <input type="text" id="add-folder"></input>
+        <button id="add-folder-button" onclick="addFolder();">ok</button>
+
+    </div>
+
+    <div id="rename-box" title="drag and drop a folder/bookmark to rename here" class="fa fa-pencil-square-o"
+        ondragover="overRename(event)"
+        ondragleave="leaveRename(event)"
+        ondrop="dropRename(event)">
+    </div>
+
+    <div id="delete-box" title="drag and drop a folder/bookmark to delete here" class="fa fa-trash-o"
+        ondragover="overDelete(event)"
+        ondragleave="leaveDelete(event)"
+        ondrop="dropDelete(event)">
+    </div>
+
+    <div id="rename-input-box" style="visibility:hidden">
+
+        new name:
+        <input id="rename-input-box-form" type="text"></input>
+        <input id="rename-hidden-input-box-form" type="hidden" name="folderId">
+        
+        <button onclick="renameFolder();">ok</button>
+
+    </div>
+
+</div>
+
+<div id="folder-list">
+    <ul id="root">
+        <li>
+               <div id="folder-0"
+                     class="folder fa fa-folder-open-o"
+                     draggable="false"
+                     ondragover="overFolder(event)"
+                     ondragleave="leaveFolder(event)"
+                     ondrop="rootifyFolder(event)">
+                     /
+                </div>
+                <ul id="subfolders-0"></ul>
+        </li>
+
+        {{with .Flds}}
+            {{range .}}
+            <li><div id="folder-{{.Id}}"
+                     class="folder fa fa-folder-o"
+                     draggable="true"
+                     ondrop="dropFolder(event)"
+                     ondragover="overFolder(event)"
+                     ondragleave="leaveFolder(event)"
+                     ondragstart="dragFolder(event)"
+                     onclick="getChildrenFolders(event, {{.Id}})">
+
+                     {{.Title}}
+                </div>
+                <ul id="subfolders-{{.Id}}"></ul>
+            </li>
+            {{end}}
+        {{end}}
+    </ul>
+
+    {{with .Bkms}}
+    
+        {{range .}}
+   
+        <div id="bookmark-{{.Id}}" class="bookmark" draggable="true" ondragstart="dragBookmark(event)">
+       
+            <img class="favicon" src="data:image/jpg;base64,{{.Favicon}}">
+
+            <div id="bookmark-link-{{.Id}}" 
+                 title="{{.URL}}" 
+                 onclick="openInParent('{{.URL}}');">
+                {{.Title}}
+            </div>
+    
+        </div>
+
+        {{end}}
+        
+    {{end}}
+
+
+</div>
+
+<div id="bookmarklet">
+    Drag and drop the bookmarklet below in your bookmark bar:
+    <a href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm</a>
+</div>
+
+<div id="copyright">
+    GoBkm - Copyright (C) 2006-2016 Thomas Bellembois.<br/>
+    Licensed under the GNU GPL, Version 3.0.
+</div>
+
+</body>
+
+</html>

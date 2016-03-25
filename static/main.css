@@ -1,0 +1,75 @@
+li {
+    list-style-type: none;
+}
+ul {
+    padding-left: 20px;
+}
+ul#root {
+    padding: 0px;
+    margin: 20px 2px 2px 2px;
+}
+
+div.folder {
+    cursor: pointer;
+    width: 200px;
+    height: 20px;
+}
+
+div.folder-over, div.addBookmark-over {
+    border-bottom: 1px dotted grey;
+    background-color: #FFFAAE;
+}
+
+div#action-box {
+    position: fixed;
+    width: 230px;
+    background-color: white;
+    border-bottom: 1px dotted grey;
+    border-top: 1px dotted grey;
+    border-left: 10px solid grey;
+    border-right: 10px solid grey;
+    padding: 5px;
+}
+
+div.bookmark > div {
+    font-size: 0.8em;
+    min-height: 22px;
+    cursor: pointer;
+    color: blue;
+}
+
+div#rename-box, div#delete-box {
+    padding: 15px;
+    margin: 2px;
+    font-size: 1.6em;
+}
+
+div#add-folder-box, div#rename-input-box {
+    font-style: italic;
+    font-size: 0.8em;
+}
+
+input#add-folder, input#rename-input-box-form {
+    width: 100px;
+}
+
+div#folder-list {
+    margin-bottom: 100px;
+    margin-top: 100px;
+    float: left;
+    width: 100%;
+}
+
+div#bookmarklet {
+    width: 150px;
+    font-size: 0.6em;
+}
+
+div#copyright {
+    margin-top: 50px;
+    width: 150px;
+    font-size: 0.6em;
+}
+img.favicon {
+    float: left;
+}
