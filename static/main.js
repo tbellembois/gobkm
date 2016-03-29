@@ -945,7 +945,7 @@ function dropFolder(ev) {
           } else {
 
             // We reached our target server, but it returned an error
-            alert("Oups, an error occured ! (moveFolder)");
+            alert("Oups, an error occured ! (dropFolder)");
 
           }
         };
@@ -1008,7 +1008,7 @@ function dropFolder(ev) {
           } else {
 
             // We reached our target server, but it returned an error
-            alert("Oups, an error occured ! (getChildrenFolders)");
+            alert("Oups, an error occured ! (dropFolder)");
 
           }
         };
@@ -1027,7 +1027,7 @@ function dropFolder(ev) {
         _droppedFolderIdNumber = droppedFolderId.split("-")[1];
 
         droppedFolderChildren = document.getElementById("subfolders-" + _droppedFolderIdNumber);
-
+ 
         url = ev.dataTransfer.getData('URL');
         console.log("dropFolder:url=" + url);
         console.log("dropFolder:_droppedFolderIdNumber=" + _droppedFolderIdNumber);
@@ -1038,8 +1038,10 @@ function dropFolder(ev) {
 
         requestAddBookmark.onreadystatechange = function() {
 
-          if (requestAddBookmark.status >= 200 && requestAddBookmark.status < 400) {
-              
+            if (requestAddBookmark.readyState == 4 && requestAddBookmark.status == 200) {
+
+               var data = JSON.parse(requestAddBookmark.responseText);
+
                console.log(data.BookmarkId);
                console.log(data.BookmarkTitle);
 
@@ -1050,7 +1052,7 @@ function dropFolder(ev) {
                removeClass(droppedFolder, CLASS_ITEM_FOLDER_CLOSED);
                addClass(droppedFolder, CLASS_ITEM_FOLDER_OPEN);
            
-          } else {
+            } else if (requestAddBookmark.status != 200) {
 
             // We reached our target server, but it returned an error
             alert("Oups, an error occured ! (addBookmark)");
