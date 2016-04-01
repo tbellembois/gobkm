@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -20,12 +21,12 @@ import (
 type Env struct {
 	DB            models.Datastore
 	GoBkmProxyURL string // the application URL
-	TplData       []byte // template data
+	TplMainData   []byte // main template data
 	CssData       []byte // css data
 	JsData        []byte // js data
 }
 
-type folderAndBookmark struct {
+type folderAndBookmarkStruct struct {
 	Flds          []*types.Folder
 	Bkms          []*types.Bookmark
 	CssData       string
@@ -42,6 +43,12 @@ type newBookmarkStruct struct {
 	BookmarkId      int64
 	BookmarkURL     string
 	BookmarkFavicon []byte
+}
+
+type exportBookmarksStruct struct {
+	Fld  *types.Folder
+	Bkms []*types.Bookmark
+	Sub  []*exportBookmarksStruct
 }
 
 func failHTTP(w http.ResponseWriter, functionName string, errorMessage string, httpStatus int) {
@@ -184,8 +191,11 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	// getting the root Folder
+	rootFolder := env.DB.GetFolder(1)
+
 	// creating a new Folder
-	newFolder := types.Folder{Title: folderName[0]}
+	newFolder := types.Folder{Title: folderName[0], Parent: rootFolder}
 	// saving the folder into the DB, getting its id
 	folderId := env.DB.SaveFolder(&newFolder)
 
@@ -660,7 +670,7 @@ func (env *Env) GetChildrenFoldersHandler(w http.ResponseWriter, r *http.Request
 
 func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
-	var folderAndBookmark = new(folderAndBookmark)
+	var folderAndBookmark = new(folderAndBookmarkStruct)
 
 	bkms := env.DB.GetRootBookmarks()
 	flds := env.DB.GetRootFolders()
@@ -676,7 +686,7 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 	folderAndBookmark.GoBkmProxyURL = env.GoBkmProxyURL
 
 	htmlTpl := template.New("main")
-	htmlTpl.Parse(string(env.TplData))
+	htmlTpl.Parse(string(env.TplMainData))
 
 	htmlTpl.Execute(w, folderAndBookmark)
 
@@ -692,4 +702,52 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 		}).Info("Handler:found folder")
 	}
 
+}
+
+func (env *Env) ExportHandler(w http.ResponseWriter, r *http.Request) {
+
+	rootFolder := env.DB.GetFolder(1)
+
+	header := `<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<!-- This is an automatically generated file.
+     It will be read and overwritten.
+     DO NOT EDIT! -->
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>GoBkm</TITLE>
+<H1>GoBkm</H1>
+<DL><p>`
+
+	footer := "</DL><p>"
+
+	w.Write([]byte(header))
+
+	env.ExportTree(w, &exportBookmarksStruct{Fld: rootFolder})
+
+	w.Write([]byte(footer))
+
+}
+
+func (env *Env) ExportTree(wr io.Writer, eb *exportBookmarksStruct) *exportBookmarksStruct {
+
+	log.WithFields(log.Fields{
+		"*eb": *eb,
+	}).Debug("ExportTree")
+
+	wr.Write([]byte("<DT><H3>" + eb.Fld.Title + "</H3>\n"))
+
+	wr.Write([]byte("<DL><p>\n"))
+
+	for _, child := range env.DB.GetChildrenFolders(eb.Fld.Id) {
+		eb.Sub = append(eb.Sub, env.ExportTree(wr, &exportBookmarksStruct{Fld: child}))
+	}
+
+	eb.Bkms = env.DB.GetFolderBookmarks(eb.Fld.Id)
+
+	for _, bkm := range eb.Bkms {
+		wr.Write([]byte("<DT><A HREF=\"" + bkm.URL + "\" ICON=\"" + "" + "\">" + bkm.Title + "</A>\n"))
+	}
+
+	wr.Write([]byte("</DL><p>"))
+
+	return eb
 }

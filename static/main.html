@@ -25,7 +25,7 @@
 
 <body>
 
-    <div id="action-box">
+<div id="action-box">
 
     <div id="add-folder-box">
 
@@ -56,61 +56,29 @@
 
     </div>
 
+    <div id="export-box" title="export in HTML">
+        <span onclick="openInParent('/export/');">export</span>
+    </div>
+
 </div>
 
 <div id="folder-list">
     <ul id="root">
         <li>
-               <div id="folder-0"
-                     class="folder fa fa-folder-open-o"
-                     draggable="false"
-                     ondragover="overFolder(event)"
-                     ondragleave="leaveFolder(event)"
-                     ondrop="rootifyFolder(event)">
-                     /
-                </div>
-                <ul id="subfolders-0"></ul>
-        </li>
-
-        {{with .Flds}}
-            {{range .}}
-            <li><div id="folder-{{.Id}}"
+               <div id="folder-1"
                      class="folder fa fa-folder-o"
-                     draggable="true"
-                     ondrop="dropFolder(event)"
+                     draggable="false"
+                     onclick="getChildrenFolders(event, 1)"
                      ondragover="overFolder(event)"
                      ondragleave="leaveFolder(event)"
                      ondragstart="dragFolder(event)"
-                     onclick="getChildrenFolders(event, {{.Id}})">
-
-                     {{.Title}}
+                     ondrop="dropFolder(event)">
+                     /
                 </div>
-                <ul id="subfolders-{{.Id}}"></ul>
-            </li>
-            {{end}}
-        {{end}}
+                <ul id="subfolders-1"></ul>
+        </li>
+
     </ul>
-
-    {{with .Bkms}}
-    
-        {{range .}}
-   
-        <div id="bookmark-{{.Id}}" class="bookmark" draggable="true" ondragstart="dragBookmark(event)">
-       
-            <img class="favicon" src="data:image/jpg;base64,{{.Favicon}}">
-
-            <div id="bookmark-link-{{.Id}}" 
-                 title="{{.URL}}" 
-                 onclick="openInParent('{{.URL}}');">
-                {{.Title}}
-            </div>
-    
-        </div>
-
-        {{end}}
-        
-    {{end}}
-
 
 </div>
 

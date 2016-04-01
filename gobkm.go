@@ -47,10 +47,17 @@ func main() {
 	env := handlers.Env{DB: datastore, GoBkmProxyURL: *goBkmProxyURL}
 
 	// initializing the static data
-	env.TplData, _ = Asset("static/main.html")
-	env.CssData, _ = Asset("static/main.css")
-	env.JsData, _ = Asset("static/main.js")
+	env.TplMainData, err = Asset("static/main.html")
+	if err != nil {
+		log.Panic(err)
+	}
 
+	env.CssData, err = Asset("static/main.css")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	env.JsData, err = Asset("static/main.js")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -81,6 +88,7 @@ func main() {
 	http.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
 	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
 	http.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
+	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/", env.MainHandler)
 
 	fs := http.FileServer(http.Dir("static"))

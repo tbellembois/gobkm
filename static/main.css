@@ -38,6 +38,11 @@ div.bookmark > div {
     color: blue;
 }
 
+div#export-box {
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
 div#rename-box, div#delete-box {
     padding: 15px;
     margin: 2px;
@@ -55,7 +60,7 @@ input#add-folder, input#rename-input-box-form {
 
 div#folder-list {
     margin-bottom: 100px;
-    margin-top: 100px;
+    margin-top: 140px;
     float: left;
     width: 100%;
 }

@@ -11,7 +11,6 @@ var CLASS_ITEM_FOLDER_CLOSED = "fa-folder-o";
 
 var CLASS_ITEM_BOOKMARK = "bookmark";
 
-
 /*-------------------------------
  *
  * Bind enter key to add a folder
@@ -142,6 +141,15 @@ function leaveItem(ev) {
 }
 
 /*
+ * hasClass returns true if element has the class clname
+ * */
+function hasClass(element, clname) {
+
+    return (' ' + element.className + ' ').indexOf(' ' + clname + ' ') > -1;
+
+}
+
+/*
  * addClass adds the class clname to the given element
  * */
 function addClass(element, clname) {
@@ -199,14 +207,18 @@ function hasChildrenFolders(folderIdNumber) {
 
     console.log("hasChildrenFolders:folderIdNumber=" + folderIdNumber);
 
-    // getting the folder children ul
-    subfolders = document.getElementById("subfolders-" + folderIdNumber);
-    
-    isEmpty = subfolders.childNodes.length > 0;
+    folder = document.getElementById("folder-" + folderIdNumber);
 
-    console.log("hasChildrenFolders:isEmpty=" + isEmpty);
+    return hasClass(folder, CLASS_ITEM_FOLDER_OPEN)
 
-    return isEmpty;
+//    // getting the folder children ul
+//    subfolders = document.getElementById("subfolders-" + folderIdNumber);
+//    
+//    isEmpty = subfolders.childNodes.length > 0;
+//
+//    console.log("hasChildrenFolders:isEmpty=" + isEmpty);
+//
+//    return isEmpty;
 
 }
 
@@ -401,8 +413,8 @@ function displayBookmark(parentFolderId, bkmId, bkmTitle, bkmURL, bkmFavicon) {
             newFolderStruct = createFolder(data.FolderId, data.FolderTitle) ;
 
             // appending the new folder to the root
-            document.getElementById("root").appendChild(newFolderStruct[0]);
-            document.getElementById("root").appendChild(newFolderStruct[1]);
+            document.getElementById("subfolders-1").appendChild(newFolderStruct[0]);
+            document.getElementById("subfolders-1").appendChild(newFolderStruct[1]);
             document.getElementById("add-folder").value = "";
       
       } else if (requestAddFolder.status != 200) {
@@ -815,65 +827,6 @@ function dropDelete(ev) {
     removeClass(deleteBox, CLASS_ITEM_OVER);
 }
 
-/*
- * rootifyFolder is called when a folder or bookmark is dropped on the root folder
- * */
-function rootifyFolder(ev) {
-
-    console.log('rootifyFolder');
-
-    ev.preventDefault();
-
-    // retrieving elements
-    droppedFolder = ev.target;
-    droppedFolderId = droppedFolder.getAttribute("id");
-    draggedFolderId = ev.dataTransfer.getData("dragItemId");
-    draggedFolder = document.getElementById(draggedFolderId);
-
-    // extracting the drag and drop folders id numbers
-    _draggedFolderIdNumber = draggedFolderId.split("-")[1];
-    _droppedFolderIdNumber = droppedFolderId.split("-")[1];
-
-    // can not rootify an already root folder
-    if (getClosest(draggedFolder, 'ul').getAttribute('id') == 'root') {
-        console.log("folder already root");
-        return;
-    }
-
-    // then getting the drag and drop folders children (ul elements)
-    draggedFolderChildren = document.getElementById("subfolders-" + _draggedFolderIdNumber);
-    droppedFolderChildren = document.getElementById("subfolders-" + _droppedFolderIdNumber);
-
-    var requestMoveFolder = new XMLHttpRequest();
-
-    requestMoveFolder.open('GET', encodeURI(GoBkmProxyURL + "/moveFolder/?sourceFolderId=" + _draggedFolderIdNumber + "&destinationFolderId=0&t=" + Math.random()), true);
-
-    requestMoveFolder.onreadystatechange = function() {
-
-      if (requestMoveFolder.status >= 200 && requestMoveFolder.status < 400) {
-
-           // moving the dragged folder and its children 
-           document.getElementById("root").appendChild(draggedFolder);
-           draggedFolder.appendChild(draggedFolderChildren);
-
-           removeClass(droppedFolder, CLASS_ITEM_OVER);
-
-      } else {
-
-        // We reached our target server, but it returned an error
-        alert("Oups, an error occured ! (rootifyFolder)");
-
-      }
-    };
-
-    requestMoveFolder.onerror = function() {
-      // There was a connection error of some sort
-    };
-
-    requestMoveFolder.send();
-   
-}
-
 // called when draggable is dropped on droppable
 function dropFolder(ev) {
 
@@ -905,7 +858,6 @@ function dropFolder(ev) {
         }
 
         // can not move a folder into its first parent
-        //draggedParentChildrenUlId = $(draggedFolder).parent('ul').attr('id');
         draggedParentChildrenUlId = getClosest(draggedFolder, 'ul').getAttribute('id');
         if (draggedParentChildrenUlId == "subfolders-" + _droppedFolderIdNumber) {
             console.log("can not move a folder into its first parent");
@@ -968,8 +920,8 @@ function dropFolder(ev) {
         _draggedBookmarkIdNumber = draggedBookmarkId.split("-")[1];
         _droppedFolderIdNumber = droppedFolderId.split("-")[1];
 
-        // can not move a folder into its first parent
-        draggedParentChildrenUlId = $(draggedBookmark).parent('ul').attr('id');
+        // can not move a bookmark into its first parent
+        draggedParentChildrenUlId = getClosest(draggedBookmark, 'ul').getAttribute('id');
         if (draggedParentChildrenUlId == "subfolders-" + _droppedFolderIdNumber) {
             console.log("can not move a bookmark into its first parent");
             return;
