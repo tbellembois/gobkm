@@ -90,13 +90,16 @@ func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
 
 			defer response.Body.Close()
 
+			contentType := response.Header.Get("Content-Type")
+
 			log.WithFields(log.Fields{
 				"response.ContentLength": response.ContentLength,
+				"contentType":            contentType,
 			}).Debug("UpdateBookmarkFavicon")
 
 			// converting the image into a base64 string
 			image, _ := ioutil.ReadAll(response.Body)
-			bkm.Favicon = base64.StdEncoding.EncodeToString(image)
+			bkm.Favicon = "data:" + contentType + ";base64," + base64.StdEncoding.EncodeToString(image)
 
 			log.WithFields(log.Fields{
 				"bkm": bkm,
@@ -753,14 +756,29 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 				if dtTag != nil && dtTag.Data == "a" {
 
 					var h3Value string
-					h3Href := dtTag.Attr[0].Val
+					var h3Href string
+					var h3Icon string
+
+					for _, attr := range dtTag.Attr {
+
+						key := attr.Key
+						val := attr.Val
+
+						if key == "href" {
+							h3Href = val
+						}
+						if key == "icon" {
+							h3Icon = val
+						}
+
+					}
 
 					if dtTag.FirstChild != nil {
 						h3Value = dtTag.FirstChild.Data
 					} else {
 						h3Value = h3Href
 					}
-					newBookmark := types.Bookmark{Title: h3Value, URL: h3Href, Folder: parentFolder}
+					newBookmark := types.Bookmark{Title: h3Value, URL: h3Href, Favicon: h3Icon, Folder: parentFolder}
 					log.WithFields(log.Fields{
 						"newBookmark": newBookmark,
 					}).Debug("ImportHandler:Saving bookmark")
@@ -827,7 +845,7 @@ func (env *Env) ExportTree(wr io.Writer, eb *exportBookmarksStruct, depth int) *
 
 	for _, bkm := range eb.Bkms {
 		insertIndent(wr, depth)
-		wr.Write([]byte("<DT><A HREF=\"" + bkm.URL + "\" ICON=\"" + "" + "\">" + bkm.Title + "</A>\n"))
+		wr.Write([]byte("<DT><A HREF=\"" + bkm.URL + "\" ICON=\"" + bkm.Favicon + "\">" + bkm.Title + "</A>\n"))
 	}
 
 	insertIndent(wr, depth)

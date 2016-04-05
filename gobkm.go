@@ -19,7 +19,7 @@ const (
 
 func main() {
 
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.ErrorLevel)
 
 	// getting the params
 	listenPort := flag.String("port", "8080", "the port to listen")

@@ -92,8 +92,8 @@ Thanks to [Sébastien Binet](https://github.com/sbinet) for the tutorial and hel
 ## Roadmap
 
 - provide a systemd startup script
-- import export feature (HTML?)
 - translate the Javascript into gopherjs <https://github.com/gopherjs/gopherjs>
+- ~~import export feature (HTML?)~~
 
 ## Known limitations
 

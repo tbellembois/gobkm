@@ -268,7 +268,7 @@ function createBookmark(bkmId, bkmTitle, bkmURL, bkmFavicon) {
     attAOnClick.value = "openInParent('" + bkmURL  + "');";
     attATitle.value = bkmURL;
     attAId.value = "bookmark-link-" + bkmId;
-    attImageSrc.value = "data:image/jpg;base64," + bkmFavicon;
+    attImageSrc.value = bkmFavicon;
     attImageClass.value = "favicon";
 
     // tags attributes linking
