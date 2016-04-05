@@ -1,9 +1,15 @@
+body.wait, body.wait *{
+     cursor: wait !important;   
+}
+
 li {
     list-style-type: none;
 }
+
 ul {
     padding-left: 20px;
 }
+
 ul#root {
     padding: 0px;
     margin: 20px 2px 2px 2px;
@@ -79,6 +85,7 @@ div#copyright {
     width: 150px;
     font-size: 0.6em;
 }
+
 img.favicon {
     float: left;
 }

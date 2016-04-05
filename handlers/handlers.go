@@ -716,7 +716,10 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 
 	doc, err := html.Parse(file)
 	if err != nil {
-		// ...
+
+		failHTTP(w, "ImportHandler", err.Error(), http.StatusBadRequest)
+		return
+
 	}
 
 	currentDate := time.Now().Local()
@@ -750,7 +753,8 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 					id := env.DB.SaveFolder(&newFolder)
 					newFolder.Id = int(id)
 					parentFolder = &newFolder
-					w.Write([]byte("folder " + newFolder.String() + "\n"))
+					//w.Write([]byte("folder " + newFolder.String() + "\n"))
+					//w.Write([]byte("created folder " + newFolder.Title + "\n"))
 				}
 				// <dt><a>
 				if dtTag != nil && dtTag.Data == "a" {
@@ -784,8 +788,8 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 					}).Debug("ImportHandler:Saving bookmark")
 
 					env.DB.SaveBookmark(&newBookmark)
-					w.Write([]byte("bookmark " + newBookmark.String() + "\n"))
-
+					//w.Write([]byte("bookmark " + newBookmark.String() + "\n"))
+					//w.Write([]byte("created bookmark " + newBookmark.Title + "\n"))
 				}
 			}
 
@@ -797,6 +801,15 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	f(doc, &importFolder)
+
+	if err = env.DB.FlushErrors(); err != nil {
+
+		failHTTP(w, "ImportHandler", err.Error(), http.StatusInternalServerError)
+		return
+
+	}
+
+	w.Write([]byte("ok"))
 
 }
 
@@ -814,6 +827,9 @@ func (env *Env) ExportHandler(w http.ResponseWriter, r *http.Request) {
 <DL><p>` + "\n"
 
 	footer := "</DL><p>\n"
+
+	w.Header().Set("Content-Disposition", "attachment; filename=gobkm.html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	w.Write([]byte(header))
 

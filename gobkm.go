@@ -19,11 +19,10 @@ const (
 
 func main() {
 
-	log.SetLevel(log.ErrorLevel)
-
 	// getting the params
 	listenPort := flag.String("port", "8080", "the port to listen")
 	goBkmProxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
+	debug := flag.Bool("debug", false, "debug (verbose log)")
 
 	flag.Parse()
 
@@ -31,6 +30,12 @@ func main() {
 		"listenPort": *listenPort,
 		"goBkmURL":   *goBkmProxyURL,
 	}).Debug("main:flags")
+
+	if *debug {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.ErrorLevel)
+	}
 
 	// database init
 	datastore, err := models.NewDBstore(dbURL)

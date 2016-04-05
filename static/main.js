@@ -84,7 +84,27 @@ var getClosest = function (elem, selector) {
 };
 
 /*
- * toogleDisplayImport shows/hiddes the import box form 
+ * setWait set the class "wait" to the body
+ */
+function setWait() {
+
+    console.log('setWait');
+    document.getElementsByTagName('body')[0].className = 'wait';
+
+}
+
+/*
+ * unsetWait unset the class "wait" from the body
+ */
+function unsetWait() {
+
+    console.log('unsetWait');
+    document.getElementsByTagName('body')[0].className = '';
+
+}
+
+/*
+ * toogleDisplayImport shows/hides the import box form 
  * */
 function toogleDisplayImport() {
 
@@ -98,6 +118,18 @@ function toogleDisplayImport() {
     }
 
 }
+
+/*
+ * hideImport hides the import box form 
+ * */
+function hideImport() {
+
+    visibility = document.getElementById('import-input-box').style.display
+
+    document.getElementById('import-input-box').style.display = 'none';
+
+}
+
 
 /*
  * showRenameBox shows the rename box form 
@@ -399,13 +431,73 @@ function displayBookmark(parentFolderId, bkmId, bkmTitle, bkmURL, bkmFavicon) {
  *
  * ------------------*/
 
+window.onload=function() {
+
+    console.log("onload called");
+
+    var formImport = document.getElementById("import-file-form");
+    var importButton = document.getElementById("import-button");
+    var fileSelect = document.getElementById("import-file");
+
+    // from http://blog.teamtreehouse.com/uploading-files-ajax
+    formImport.onsubmit = function(event) {
+
+        console.log("import");
+
+        setWait();
+
+        event.preventDefault();
+
+        // Update button text.
+        importButton.value = 'importing...';
+
+        // Get the selected files from the input.
+        var file = fileSelect.files[0];
+
+        // Create a new FormData object.
+        var formData = new FormData();
+
+        // Add the file to the request.
+        formData.append('importFile', file, file.name);
+
+        // Set up the request.
+        var xhr = new XMLHttpRequest();
+
+        // Open the connection.
+        xhr.open('POST', '/import/', true);
+
+        // Set up a handler for when the request finishes.
+        xhr.onreadystatechange = function () {
+
+          if (xhr.status == 200) {
+
+            // File imported.
+            unsetWait();
+            importButton.value = 'import';
+            hideImport();
+            document.getElementById("folder-1").click();
+          } else {
+
+            alert('An error occurred!');
+
+          }
+
+        };
+
+        // Send the Data.
+        xhr.send(formData);
+
+    };
+
+}
+
 /*
  * addFolder adds a root folder with the name of the input#addfolder value
  */
  function addFolder() {
 
     // getting the folder name from the form
-    var folderName = document.getElementById("add-folder").value
+    var folderName = document.getElementById("add-folder").value;
 
     console.log("addFolder:folderName=" + folderName);
 
@@ -956,7 +1048,7 @@ function dropFolder(ev) {
                // moving the dragged folder and its children 
                if (hasChildrenFolders(_droppedFolderIdNumber)) {           
 
-                console.log('folder open')
+                console.log('folder open');
 
                 droppedFolderChildren.appendChild(draggedBookmark);
                 removeClass(droppedFolder, CLASS_ITEM_FOLDER_CLOSED);
@@ -965,9 +1057,9 @@ function dropFolder(ev) {
                }
                else {
                
-                console.log('folder closed')
+                console.log('folder closed');
 
-                draggedBookmark.parentNode.removeChild(draggedBookmark)
+                draggedBookmark.parentNode.removeChild(draggedBookmark);
                 
                }
 

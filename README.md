@@ -24,6 +24,12 @@ Using an HTTP proxy (Apache/Nginx), specify its URL with:
 ```bash
     ./gobkm -port [port_number] -proxy [proxy_url]
 ```
+
+Debug mode:
+```bash
+    ./gobkm -debug
+```
+
 ## GUI
 
 Drag and drop an URL from your Web browser address bar into a folder to bookmark it. Rename/delete folders and bookmarks by dragging them on the icons on the top.
@@ -108,3 +114,5 @@ Thanks to [Sébastien Binet](https://github.com/sbinet) for the tutorial and hel
 - <http://gomakethings.com/climbing-up-and-down-the-dom-tree-with-vanilla-javascript/>
 - <https://golang.org>
 - <http://www.w3schools.com/>
+- <http://blog.teamtreehouse.com/uploading-files-ajax>
+

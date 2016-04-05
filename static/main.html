@@ -62,10 +62,11 @@
 
     <div id="import-box" title="import from HTML">
         <span onclick="toogleDisplayImport();">import</span>
+
         <div id="import-input-box" style="display:none">
-            <form action="/import/" method="post" enctype="multipart/form-data">
-                <input type="file" name="importFile" id="import-file">
-                <input type="submit" value="import" name="submit">
+            <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
+                <input type="file" name="importFile" id="import-file" accept=".html">
+                <input type="submit" value="import" name="submit" id="import-button">
             </form>
         </div>
 
