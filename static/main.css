@@ -1,3 +1,7 @@
+body {
+    font-family: sans-serif;
+}
+
 body.wait, body.wait *{
      cursor: wait !important;   
 }
@@ -13,6 +17,10 @@ ul {
 ul#root {
     padding: 0px;
     margin: 20px 2px 2px 2px;
+}
+
+ul#root ul {
+    border-left: 1px dotted grey;
 }
 
 div.folder {
@@ -35,6 +43,10 @@ div#action-box {
     border-left: 10px solid grey;
     border-right: 10px solid grey;
     padding: 5px;
+}
+
+div.bookmark {
+    word-break: break-all;
 }
 
 div.bookmark > div {
