@@ -10,6 +10,9 @@ import (
 	"net/url"
 	"strconv"
 	"text/template"
+	"time"
+
+	"golang.org/x/net/html"
 
 	"github.com/tbellembois/gobkm/models"
 	"github.com/tbellembois/gobkm/types"
@@ -56,6 +59,14 @@ func failHTTP(w http.ResponseWriter, functionName string, errorMessage string, h
 	log.Error("%s: %s", functionName, errorMessage)
 	w.WriteHeader(httpStatus)
 	fmt.Fprint(w, errorMessage)
+
+}
+
+func insertIndent(wr io.Writer, depth int) {
+
+	for i := 0; i < depth; i++ {
+		wr.Write([]byte("\t"))
+	}
 
 }
 
@@ -672,15 +683,15 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	var folderAndBookmark = new(folderAndBookmarkStruct)
 
-	bkms := env.DB.GetRootBookmarks()
-	flds := env.DB.GetRootFolders()
+	//bkms := env.DB.GetRootBookmarks()
+	//flds := env.DB.GetRootFolders()
 
-	if err := env.DB.FlushErrors(); err != nil {
-		log.Panic(err)
-	}
+	//if err := env.DB.FlushErrors(); err != nil {
+	//	log.Panic(err)
+	//}
 
-	folderAndBookmark.Bkms = bkms
-	folderAndBookmark.Flds = flds
+	//folderAndBookmark.Bkms = bkms
+	//folderAndBookmark.Flds = flds
 	folderAndBookmark.CssData = string(env.CssData)
 	folderAndBookmark.JsData = string(env.JsData)
 	folderAndBookmark.GoBkmProxyURL = env.GoBkmProxyURL
@@ -690,17 +701,84 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	htmlTpl.Execute(w, folderAndBookmark)
 
-	for _, bkm := range bkms {
-		log.WithFields(log.Fields{
-			"Title": bkm.Title,
-			"URL":   bkm.URL,
-		}).Info("Handler:found bookmark")
+}
+
+func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
+
+	file, _, err := r.FormFile("importFile")
+
+	if err != nil {
+		failHTTP(w, "ImportHandler", err.Error(), http.StatusInternalServerError)
 	}
-	for _, fld := range flds {
-		log.WithFields(log.Fields{
-			"Title": fld.Title,
-		}).Info("Handler:found folder")
+
+	doc, err := html.Parse(file)
+	if err != nil {
+		// ...
 	}
+
+	currentDate := time.Now().Local()
+	importFolderName := "import-" + currentDate.Format("2006-01-02")
+
+	importFolder := types.Folder{Title: importFolderName}
+	id := env.DB.SaveFolder(&importFolder)
+
+	importFolder.Id = int(id)
+
+	var f func(n *html.Node, parentFolder *types.Folder)
+
+	f = func(n *html.Node, parentFolder *types.Folder) {
+
+		var parentFolderBackup types.Folder
+		parentFolderBackup = *parentFolder
+
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+
+			// got a dt
+			if c.Type == html.ElementNode && c.Data == "dt" {
+
+				dtTag := c.FirstChild
+
+				// <dt><h3>
+				if dtTag != nil && dtTag.Data == "h3" {
+
+					h3Value := dtTag.FirstChild.Data
+					newFolder := types.Folder{Title: h3Value, Parent: parentFolder}
+
+					id := env.DB.SaveFolder(&newFolder)
+					newFolder.Id = int(id)
+					parentFolder = &newFolder
+					w.Write([]byte("folder " + newFolder.String() + "\n"))
+				}
+				// <dt><a>
+				if dtTag != nil && dtTag.Data == "a" {
+
+					var h3Value string
+					h3Href := dtTag.Attr[0].Val
+
+					if dtTag.FirstChild != nil {
+						h3Value = dtTag.FirstChild.Data
+					} else {
+						h3Value = h3Href
+					}
+					newBookmark := types.Bookmark{Title: h3Value, URL: h3Href, Folder: parentFolder}
+					log.WithFields(log.Fields{
+						"newBookmark": newBookmark,
+					}).Debug("ImportHandler:Saving bookmark")
+
+					env.DB.SaveBookmark(&newBookmark)
+					w.Write([]byte("bookmark " + newBookmark.String() + "\n"))
+
+				}
+			}
+
+			f(c, parentFolder)
+
+			parentFolder = &parentFolderBackup
+		}
+
+	}
+
+	f(doc, &importFolder)
 
 }
 
@@ -715,39 +793,45 @@ func (env *Env) ExportHandler(w http.ResponseWriter, r *http.Request) {
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
 <TITLE>GoBkm</TITLE>
 <H1>GoBkm</H1>
-<DL><p>`
+<DL><p>` + "\n"
 
-	footer := "</DL><p>"
+	footer := "</DL><p>\n"
 
 	w.Write([]byte(header))
 
-	env.ExportTree(w, &exportBookmarksStruct{Fld: rootFolder})
+	env.ExportTree(w, &exportBookmarksStruct{Fld: rootFolder}, 0)
 
 	w.Write([]byte(footer))
 
 }
 
-func (env *Env) ExportTree(wr io.Writer, eb *exportBookmarksStruct) *exportBookmarksStruct {
+func (env *Env) ExportTree(wr io.Writer, eb *exportBookmarksStruct, depth int) *exportBookmarksStruct {
+
+	depth++
 
 	log.WithFields(log.Fields{
 		"*eb": *eb,
 	}).Debug("ExportTree")
 
+	insertIndent(wr, depth)
 	wr.Write([]byte("<DT><H3>" + eb.Fld.Title + "</H3>\n"))
 
+	insertIndent(wr, depth)
 	wr.Write([]byte("<DL><p>\n"))
 
 	for _, child := range env.DB.GetChildrenFolders(eb.Fld.Id) {
-		eb.Sub = append(eb.Sub, env.ExportTree(wr, &exportBookmarksStruct{Fld: child}))
+		eb.Sub = append(eb.Sub, env.ExportTree(wr, &exportBookmarksStruct{Fld: child}, depth))
 	}
 
 	eb.Bkms = env.DB.GetFolderBookmarks(eb.Fld.Id)
 
 	for _, bkm := range eb.Bkms {
+		insertIndent(wr, depth)
 		wr.Write([]byte("<DT><A HREF=\"" + bkm.URL + "\" ICON=\"" + "" + "\">" + bkm.Title + "</A>\n"))
 	}
 
-	wr.Write([]byte("</DL><p>"))
+	insertIndent(wr, depth)
+	wr.Write([]byte("</DL><p>\n"))
 
 	return eb
 }

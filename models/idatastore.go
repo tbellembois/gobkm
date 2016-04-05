@@ -9,7 +9,6 @@ type Datastore interface {
 	FlushErrors() error
 
 	GetAllBookmarks() []*types.Bookmark
-	GetRootBookmarks() []*types.Bookmark
 	GetBookmark(int) *types.Bookmark
 	GetFolderBookmarks(int) []*types.Bookmark
 	GetNoIconBookmarks() []*types.Bookmark

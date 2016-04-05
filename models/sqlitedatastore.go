@@ -247,67 +247,6 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 	return fld
 }
 
-// GetRootBookmarks the root bookmarks (with no folder)
-func (db *SQLiteDataStore) GetRootBookmarks() []*types.Bookmark {
-
-	if db.err != nil {
-		return nil
-	}
-
-	var rows *sql.Rows
-
-	rows, db.err = db.Query("SELECT id, title, url, favicon FROM bookmark WHERE folderId is null ORDER BY title")
-
-	defer rows.Close()
-
-	switch {
-
-	case db.err == sql.ErrNoRows:
-		log.Debug("GetRootBookmarks:no root bookmarks")
-		return nil
-
-	case db.err != nil:
-		log.WithFields(log.Fields{
-			"err": db.err,
-		}).Error("GetRootBookmarks:SELECT query error")
-		return nil
-
-	default:
-
-		bkms := make([]*types.Bookmark, 0)
-
-		for rows.Next() {
-
-			bkm := new(types.Bookmark)
-
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon)
-
-			if db.err != nil {
-
-				log.WithFields(log.Fields{
-					"err": db.err,
-				}).Error("GetRootBookmarks:error scanning the query result row")
-				return nil
-
-			}
-
-			bkms = append(bkms, bkm)
-
-		}
-
-		if db.err = rows.Err(); db.err != nil {
-
-			log.WithFields(log.Fields{
-				"err": db.err,
-			}).Error("GetRootBookmarks:error looping rows")
-			return nil
-
-		}
-
-		return bkms
-	}
-}
-
 // GetNoIconBookmarks returns the bookmarks with no favicon
 func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 
@@ -317,7 +256,7 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 
 	var rows *sql.Rows
 
-	rows, db.err = db.Query("SELECT id, title, url, favicon FROM bookmark WHERE favicon='' ORDER BY title")
+	rows, db.err = db.Query("SELECT id, title, url, favicon, folderId FROM bookmark WHERE favicon='' ORDER BY title")
 
 	defer rows.Close()
 
@@ -340,8 +279,9 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 		for rows.Next() {
 
 			bkm := new(types.Bookmark)
+			var fldId sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.URL, &bkm.Title, &bkm.Favicon)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &fldId)
 
 			if db.err != nil {
 
@@ -351,6 +291,8 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 				return nil
 
 			}
+
+			bkm.Folder = db.GetFolder(int(fldId.Int64))
 
 			bkms = append(bkms, bkm)
 
@@ -634,32 +576,6 @@ func (db *SQLiteDataStore) GetRootFolders() []*types.Folder {
 
 }
 
-//// hasChildrenFolders returns true if the folder with the given id has children
-//func (db *SQLiteDataStore) hasChildrenFolders(id int) (bool, error) {
-//
-//	log.WithFields(log.Fields{
-//		"id": id,
-//	}).Debug("hasChildrenFolders:params")
-//
-//	stmt, err := db.Prepare("SELECT count(*) FROM folder WHERE parentId=?")
-//
-//	if err != nil {
-//		log.WithFields(log.Fields{
-//			"err": err,
-//		}).Error("hasChildrenFolders:SELECT request prepare error")
-//		return false, err
-//	}
-//
-//	defer stmt.Close()
-//
-//	var count int
-//
-//	// querying the DB
-//	err = stmt.QueryRow(id).Scan(&count)
-//
-//	return count > 0, nil
-//}
-
 // SaveFolder saves the given new Folder into the db and returns the folder id
 // called only on folder creation or rename
 // so only the Title has to be set
@@ -693,7 +609,7 @@ func (db *SQLiteDataStore) SaveFolder(f *types.Folder) int64 {
 	if f.Parent != nil {
 		res, db.err = stmt.Exec(f.Title, f.Parent.Id, f.NbChildrenFolders)
 	} else {
-		res, db.err = stmt.Exec(f.Title, nil, f.NbChildrenFolders)
+		res, db.err = stmt.Exec(f.Title, 1, f.NbChildrenFolders)
 	}
 	id, _ := res.LastInsertId() // we should check the error here too...
 
@@ -746,7 +662,7 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 	if b.Folder != nil {
 		_, db.err = stmt.Exec(b.Title, b.URL, b.Folder.Id, b.Favicon, b.Id)
 	} else {
-		_, db.err = stmt.Exec(b.Title, b.URL, nil, b.Favicon, b.Id)
+		_, db.err = stmt.Exec(b.Title, b.URL, 1, b.Favicon, b.Id)
 	}
 
 	if db.err != nil {
@@ -791,7 +707,7 @@ func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 	if b.Folder != nil {
 		res, db.err = stmt.Exec(b.Title, b.URL, b.Folder.Id, b.Favicon)
 	} else {
-		res, db.err = stmt.Exec(b.Title, b.URL, nil, b.Favicon)
+		res, db.err = stmt.Exec(b.Title, b.URL, 1, b.Favicon)
 	}
 
 	if db.err != nil {
@@ -869,7 +785,7 @@ func (db *SQLiteDataStore) UpdateFolder(f *types.Folder) {
 	if f.Parent != nil {
 		_, db.err = stmt.Exec(f.Title, f.Parent.Id, f.Id, f.Id)
 	} else {
-		_, db.err = stmt.Exec(f.Title, nil, f.Id, f.Id)
+		_, db.err = stmt.Exec(f.Title, 1, f.Id, f.Id)
 	}
 
 	if db.err != nil {

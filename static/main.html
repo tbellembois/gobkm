@@ -60,6 +60,17 @@
         <span onclick="openInParent('/export/');">export</span>
     </div>
 
+    <div id="import-box" title="import from HTML">
+        <span onclick="toogleDisplayImport();">import</span>
+        <div id="import-input-box" style="display:none">
+            <form action="/import/" method="post" enctype="multipart/form-data">
+                <input type="file" name="importFile" id="import-file">
+                <input type="submit" value="import" name="submit">
+            </form>
+        </div>
+
+    </div>
+
 </div>
 
 <div id="folder-list">

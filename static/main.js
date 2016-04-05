@@ -84,6 +84,22 @@ var getClosest = function (elem, selector) {
 };
 
 /*
+ * toogleDisplayImport shows/hiddes the import box form 
+ * */
+function toogleDisplayImport() {
+
+    visibility = document.getElementById('import-input-box').style.display
+
+    if (visibility == 'none') {
+        document.getElementById('import-input-box').style.display = 'block';
+    }
+    else {
+        document.getElementById('import-input-box').style.display = 'none';
+    }
+
+}
+
+/*
  * showRenameBox shows the rename box form 
  * */
 function showRenameBox() {

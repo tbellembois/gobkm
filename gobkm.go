@@ -89,6 +89,7 @@ func main() {
 	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
 	http.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
 	http.HandleFunc("/export/", env.ExportHandler)
+	http.HandleFunc("/import/", env.ImportHandler)
 	http.HandleFunc("/", env.MainHandler)
 
 	fs := http.FileServer(http.Dir("static"))

@@ -38,9 +38,13 @@ div.bookmark > div {
     color: blue;
 }
 
-div#export-box {
+div#export-box, div#import-box {
     cursor: pointer;
     font-size: 0.8em;
+}
+
+div#import-input-box {
+    padding: 5px;
 }
 
 div#rename-box, div#delete-box {
