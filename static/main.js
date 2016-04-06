@@ -521,8 +521,11 @@ window.onload=function() {
             newFolderStruct = createFolder(data.FolderId, data.FolderTitle) ;
 
             // appending the new folder to the root
-            document.getElementById("subfolders-1").appendChild(newFolderStruct[0]);
-            document.getElementById("subfolders-1").appendChild(newFolderStruct[1]);
+            //document.getElementById("subfolders-1").appendChild(newFolderStruct[0]);
+            //document.getElementById("subfolders-1").appendChild(newFolderStruct[1]);
+            rootChildren = document.getElementById("subfolders-1");
+            rootChildren.insertBefore(newFolderStruct[1], rootChildren.firstChild);
+            rootChildren.insertBefore(newFolderStruct[0], rootChildren.firstChild);
             document.getElementById("add-folder").value = "";
       
       } else if (requestAddFolder.status != 200) {
@@ -994,8 +997,10 @@ function dropFolder(ev) {
           if (requestMoveFolder.status >= 200 && requestMoveFolder.status < 400) {
 
                // moving the dragged folder and its children 
-               droppedFolderChildren.appendChild(draggedFolder);
-               droppedFolderChildren.appendChild(draggedFolderChildren);
+               //droppedFolderChildren.appendChild(draggedFolder);
+               //droppedFolderChildren.appendChild(draggedFolderChildren);
+               droppedFolderChildren.insertBefore(draggedFolderChildren, droppedFolderChildren.firstChild);
+               droppedFolderChildren.insertBefore(draggedFolder, droppedFolderChildren.firstChild);
 
                removeClass(droppedFolder, CLASS_ITEM_OVER);
                removeClass(droppedFolder, CLASS_ITEM_FOLDER_CLOSED);
@@ -1050,7 +1055,9 @@ function dropFolder(ev) {
 
                 console.log('folder open');
 
-                droppedFolderChildren.appendChild(draggedBookmark);
+                //droppedFolderChildren.appendChild(draggedBookmark);
+                droppedFolderChildren.insertBefore(draggedBookmark, droppedFolderChildren.firstChild);
+
                 removeClass(droppedFolder, CLASS_ITEM_FOLDER_CLOSED);
                 addClass(droppedFolder, CLASS_ITEM_FOLDER_OPEN);
 

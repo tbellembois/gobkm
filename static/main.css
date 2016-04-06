@@ -30,7 +30,7 @@ div.folder {
 }
 
 div.folder-over, div.addBookmark-over {
-    border-bottom: 1px dotted grey;
+    border-bottom: 1px dotted black;
     background-color: #FFFAAE;
 }
 
@@ -38,10 +38,10 @@ div#action-box {
     position: fixed;
     width: 230px;
     background-color: white;
-    border-bottom: 1px dotted grey;
-    border-top: 1px dotted grey;
-    border-left: 10px solid grey;
-    border-right: 10px solid grey;
+    border-bottom: 1px dotted black;
+    border-top: 1px dotted black;
+    border-left: 10px solid black;
+    border-right: 10px solid black;
     padding: 5px;
 }
 
