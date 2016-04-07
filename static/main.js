@@ -1096,6 +1096,7 @@ function dropFolder(ev) {
         droppedFolderChildren = document.getElementById("subfolders-" + _droppedFolderIdNumber);
  
         url = ev.dataTransfer.getData('URL');
+        url = encodeURIComponent(url);
         console.log("dropFolder:url=" + url);
         console.log("dropFolder:_droppedFolderIdNumber=" + _droppedFolderIdNumber);
 
@@ -1113,7 +1114,8 @@ function dropFolder(ev) {
                console.log(data.BookmarkTitle);
 
                newBookmark = createBookmark(data.BookmarkId, data.BookmarkURL, data.BookmarkURL, '');
-               droppedFolderChildren.appendChild(newBookmark);
+               //droppedFolderChildren.appendChild(newBookmark);
+               droppedFolderChildren.insertBefore(newBookmark, droppedFolderChildren.firstChild);
 
                removeClass(droppedFolder, CLASS_ITEM_OVER);
                removeClass(droppedFolder, CLASS_ITEM_FOLDER_CLOSED);

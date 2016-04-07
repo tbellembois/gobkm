@@ -127,6 +127,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var destinationFolderId int
 	var err error
 	var js []byte // the returned JSON
+	var bookmarkUrlDecoded string
 
 	// GET parameters retrieval
 	bookmarkUrl := r.URL.Query()["bookmarkUrl"]
@@ -145,6 +146,13 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	if bookmarkUrlDecoded, err = url.QueryUnescape(bookmarkUrl[0]); err != nil {
+
+		failHTTP(w, "AddBookmarkHandler", "URL decode error", http.StatusInternalServerError)
+		return
+
+	}
+
 	// destinationFolderId convertion
 	if destinationFolderId, err = strconv.Atoi(destinationFolderIdParam[0]); err != nil {
 
@@ -155,7 +163,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	// getting the destination folder
 	dstFld := env.DB.GetFolder(destinationFolderId)
 	// creating a new Bookmark
-	newBookmark := types.Bookmark{Title: bookmarkUrl[0], URL: bookmarkUrl[0], Folder: dstFld}
+	newBookmark := types.Bookmark{Title: bookmarkUrlDecoded, URL: bookmarkUrlDecoded, Folder: dstFld}
 	// saving the bookmark into the DB, getting its id
 	bookmarkId := env.DB.SaveBookmark(&newBookmark)
 
@@ -168,7 +176,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// building the JSON result
-	if js, err = json.Marshal(newBookmarkStruct{BookmarkId: bookmarkId, BookmarkURL: bookmarkUrl[0]}); err != nil {
+	if js, err = json.Marshal(newBookmarkStruct{BookmarkId: bookmarkId, BookmarkURL: bookmarkUrlDecoded}); err != nil {
 
 		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
 		return

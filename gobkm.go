@@ -75,6 +75,9 @@ func main() {
 		panic(err)
 	}
 
+	log.WithFields(log.Fields{
+		"len(noIconBookmarks)": len(noIconBookmarks),
+	}).Debug("main")
 	// updating them
 	for _, bkm := range noIconBookmarks {
 
