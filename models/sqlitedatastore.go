@@ -76,7 +76,7 @@ func (db *SQLiteDataStore) CreateDatabase() {
 
 	}
 
-	if _, db.err = db.Exec("CREATE TABLE IF NOT EXISTS bookmark ( id integer PRIMARY KEY, title string NOT NULL, url string NOT NULL, favicon string, folderId integer, FOREIGN KEY (folderId) references folder(id) ON DELETE CASCADE)"); db.err != nil {
+	if _, db.err = db.Exec("CREATE TABLE IF NOT EXISTS bookmark ( id integer PRIMARY KEY, title string NOT NULL, url string NOT NULL, favicon string, starred integer, folderId integer, FOREIGN KEY (folderId) references folder(id) ON DELETE CASCADE)"); db.err != nil {
 
 		log.Error("CreateDatabase: error executing the CREATE TABLE request for table bookmark")
 		return
@@ -124,7 +124,7 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 	folder1 := types.Folder{Id: 1, Title: "IT", Parent: folderRoot}
 	folder2 := types.Folder{Id: 2, Title: "Development", Parent: &folder1}
 
-	bookmark1 := types.Bookmark{Id: 1, Title: "GoLang", URL: "https://golang.org/", Favicon: "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAb9JREFUOI3tkj9oU1EUh797c3lgjA4xL61FX0yhMQqmW5QgFim4+GcyQ3Hp1MlBqFIyOGUobRScnYoQikNA0Ao6WJS2UIdiK7SUVGtfIZg0iMSA+Iy5Dg9fGnyLu2e6nHPu9zv3/K7QWuMXjfqebjQbOM5PIuEjHI6Ywq9P/TlUdm09+3KeNxtlAHbLWzTrNeTBQxjhHuLHohrgwqkBRi5dpO+4JQDEh80NfePOXaIDJ3FigximBUAyk+5SOvFphR/tNovvyzg769TKmxQLecS5a9d1dOQ2zp7N6bjF1PAZlJKMv1hFpVxIa+0t96+cBWD82TLr2zaGaVGbvYcEqLx+gmFajKZiqANBeo/2MZcb89RHUzEAeiNh5nJjGKZF9VUJAFks5FGVrc7IuuW7VH518slMGlHdpljII/sTSW+7j5ohEIrP9S9cnnxIaShOaSjOzNoOBNz81ceLHqg/kRRqv0ggGGLCdm3t+fqRmZtZ15HKEhN2Go1ABUO06VjfBdDSLQS0IFNd4fytSQAWHuR4B8gW7lWJP8B7rtA8zU7zfH4V8f0brew0ou37j/wBHigx2D2d/LvHJ/Vv8R8AvwHjjZMncK4ImgAAAABJRU5ErkJggg==", Folder: &folder2}
+	bookmark1 := types.Bookmark{Id: 1, Title: "GoLang", Starred: true, URL: "https://golang.org/", Favicon: "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAb9JREFUOI3tkj9oU1EUh797c3lgjA4xL61FX0yhMQqmW5QgFim4+GcyQ3Hp1MlBqFIyOGUobRScnYoQikNA0Ao6WJS2UIdiK7SUVGtfIZg0iMSA+Iy5Dg9fGnyLu2e6nHPu9zv3/K7QWuMXjfqebjQbOM5PIuEjHI6Ywq9P/TlUdm09+3KeNxtlAHbLWzTrNeTBQxjhHuLHohrgwqkBRi5dpO+4JQDEh80NfePOXaIDJ3FigximBUAyk+5SOvFphR/tNovvyzg769TKmxQLecS5a9d1dOQ2zp7N6bjF1PAZlJKMv1hFpVxIa+0t96+cBWD82TLr2zaGaVGbvYcEqLx+gmFajKZiqANBeo/2MZcb89RHUzEAeiNh5nJjGKZF9VUJAFks5FGVrc7IuuW7VH518slMGlHdpljII/sTSW+7j5ohEIrP9S9cnnxIaShOaSjOzNoOBNz81ceLHqg/kRRqv0ggGGLCdm3t+fqRmZtZ15HKEhN2Go1ABUO06VjfBdDSLQS0IFNd4fytSQAWHuR4B8gW7lWJP8B7rtA8zU7zfH4V8f0brew0ou37j/wBHigx2D2d/LvHJ/Vv8R8AvwHjjZMncK4ImgAAAABJRU5ErkJggg==", Folder: &folder2}
 
 	folders = append(folders, &folder1)
 	folders = append(folders, &folder2)
@@ -155,9 +155,11 @@ func (db *SQLiteDataStore) GetBookmark(id int) *types.Bookmark {
 	}
 
 	var folderId sql.NullInt64
+	var starred sql.NullInt64
+
 	bkm := new(types.Bookmark)
 
-	db.err = db.QueryRow("SELECT id, title, url, favicon, folderId FROM bookmark WHERE id=?", id).Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &folderId)
+	db.err = db.QueryRow("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE id=?", id).Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &folderId)
 
 	switch {
 
@@ -179,6 +181,10 @@ func (db *SQLiteDataStore) GetBookmark(id int) *types.Bookmark {
 			"Title":    bkm.Title,
 			"folderId": folderId,
 		}).Debug("GetBookmark:bookmark found")
+
+		if int(starred.Int64) != 0 {
+			bkm.Starred = true
+		}
 
 		// retrieving the parent
 		if folderId.Int64 != 0 {
@@ -247,6 +253,72 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 	return fld
 }
 
+// GetStarredBookmarks returns the starred bookmarks
+func (db *SQLiteDataStore) GetStarredBookmarks() []*types.Bookmark {
+
+	if db.err != nil {
+		return nil
+	}
+
+	var rows *sql.Rows
+
+	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE starred ORDER BY title")
+
+	defer rows.Close()
+
+	switch {
+
+	case db.err == sql.ErrNoRows:
+		log.Debug("GetStarredBookmarks:no bookmarks")
+		return nil
+
+	case db.err != nil:
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("GetStarredBookmarks:SELECT query error")
+		return nil
+
+	default:
+
+		bkms := make([]*types.Bookmark, 0)
+
+		for rows.Next() {
+
+			bkm := new(types.Bookmark)
+			var fldId sql.NullInt64
+
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &bkm.Starred, &fldId)
+
+			if db.err != nil {
+
+				log.WithFields(log.Fields{
+					"err": db.err,
+				}).Error("GetStarredBookmarks:error scanning the query result row")
+				return nil
+
+			}
+
+			bkm.Folder = db.GetFolder(int(fldId.Int64))
+
+			bkms = append(bkms, bkm)
+
+		}
+
+		if db.err = rows.Err(); db.err != nil {
+
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetStarredBookmarks:error looping rows")
+			return nil
+
+		}
+
+		return bkms
+
+	}
+
+}
+
 // GetNoIconBookmarks returns the bookmarks with no favicon
 func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 
@@ -256,7 +328,7 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 
 	var rows *sql.Rows
 
-	rows, db.err = db.Query("SELECT id, title, url, favicon, folderId FROM bookmark WHERE favicon='' ORDER BY title")
+	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE favicon='' ORDER BY title")
 
 	defer rows.Close()
 
@@ -280,8 +352,9 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 
 			bkm := new(types.Bookmark)
 			var fldId sql.NullInt64
+			var starred sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &fldId)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &fldId)
 
 			if db.err != nil {
 
@@ -290,6 +363,10 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 				}).Error("GetNoIconBookmarks:error scanning the query result row")
 				return nil
 
+			}
+
+			if int(starred.Int64) != 0 {
+				bkm.Starred = true
 			}
 
 			bkm.Folder = db.GetFolder(int(fldId.Int64))
@@ -346,8 +423,9 @@ func (db *SQLiteDataStore) GetAllBookmarks() []*types.Bookmark {
 
 			bkm := new(types.Bookmark)
 			var fldId sql.NullInt64
+			var starred sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &fldId)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &fldId)
 
 			if db.err != nil {
 
@@ -356,6 +434,10 @@ func (db *SQLiteDataStore) GetAllBookmarks() []*types.Bookmark {
 				}).Error("GetAllBookmarks:error scanning the query result row")
 				return nil
 
+			}
+
+			if int(starred.Int64) != 0 {
+				bkm.Starred = true
 			}
 
 			bkm.Folder = db.GetFolder(int(fldId.Int64))
@@ -389,7 +471,7 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 
 	var rows *sql.Rows
 
-	rows, db.err = db.Query("SELECT id, title, url, favicon, folderId FROM bookmark WHERE folderId is ? ORDER BY title", id)
+	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE folderId is ? ORDER BY title", id)
 
 	defer rows.Close()
 
@@ -413,8 +495,13 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 
 			bkm := new(types.Bookmark)
 			var parentFldId sql.NullInt64
+			var starred sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &parentFldId)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &parentFldId)
+
+			if int(starred.Int64) != 0 {
+				bkm.Starred = true
+			}
 
 			if db.err != nil {
 
@@ -424,6 +511,10 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 				return nil
 
 			}
+
+			log.WithFields(log.Fields{
+				"bkm": bkm,
+			}).Debug("GetFolderBookmarks:bookmark found")
 
 			bkms = append(bkms, bkm)
 
@@ -646,7 +737,7 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 		return
 	}
 
-	stmt, db.err = tx.Prepare("UPDATE bookmark SET title=?, url=?, folderId=?, favicon=? WHERE id=?")
+	stmt, db.err = tx.Prepare("UPDATE bookmark SET title=?, url=?, folderId=?, starred=?, favicon=? WHERE id=?")
 
 	if db.err != nil {
 
@@ -660,9 +751,9 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 	defer stmt.Close()
 
 	if b.Folder != nil {
-		_, db.err = stmt.Exec(b.Title, b.URL, b.Folder.Id, b.Favicon, b.Id)
+		_, db.err = stmt.Exec(b.Title, b.URL, b.Folder.Id, b.Starred, b.Favicon, b.Id)
 	} else {
-		_, db.err = stmt.Exec(b.Title, b.URL, 1, b.Favicon, b.Id)
+		_, db.err = stmt.Exec(b.Title, b.URL, 1, b.Starred, b.Favicon, b.Id)
 	}
 
 	if db.err != nil {
@@ -680,7 +771,7 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 
 }
 
-// SaveBookmark saves the given Bookmark into the db
+// SaveBookmark saves the new given Bookmark into the db
 func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 
 	log.WithFields(log.Fields{

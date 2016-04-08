@@ -12,6 +12,7 @@ type Datastore interface {
 	GetBookmark(int) *types.Bookmark
 	GetFolderBookmarks(int) []*types.Bookmark
 	GetNoIconBookmarks() []*types.Bookmark
+	GetStarredBookmarks() []*types.Bookmark
 	SaveBookmark(*types.Bookmark) int64
 	UpdateBookmark(*types.Bookmark)
 	DeleteBookmark(*types.Bookmark)

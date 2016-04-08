@@ -29,31 +29,37 @@ type Env struct {
 	JsData        []byte // js data
 }
 
-type folderAndBookmarkStruct struct {
-	Flds          []*types.Folder
+// staticDataStruct is used  to pass data to the Main template
+type staticDataStruct struct {
 	Bkms          []*types.Bookmark
 	CssData       string
 	JsData        string
 	GoBkmProxyURL string
 }
 
+// newFolderStruct is returned by the NewFolderHandler to pass the new folder id to the view
 type newFolderStruct struct {
 	FolderId    int64
 	FolderTitle string
 }
 
+// newBookmarkStruct is returned by the NewBookmarkHandler to pass the new bookmark id to the view
 type newBookmarkStruct struct {
 	BookmarkId      int64
+	BookmarkTitle   string
 	BookmarkURL     string
 	BookmarkFavicon []byte
+	BookmarkStarred bool
 }
 
+// exportBookmarksStruct is used to build the bookmarks and folders tree in the export operation
 type exportBookmarksStruct struct {
 	Fld  *types.Folder
 	Bkms []*types.Bookmark
 	Sub  []*exportBookmarksStruct
 }
 
+// failHTTP send an HTTP error (httpStatus) with the given errorMessage
 func failHTTP(w http.ResponseWriter, functionName string, errorMessage string, httpStatus int) {
 
 	log.Error("%s: %s", functionName, errorMessage)
@@ -62,6 +68,7 @@ func failHTTP(w http.ResponseWriter, functionName string, errorMessage string, h
 
 }
 
+// insertIndent the "depth" number of tabs to the given io.Writer
 func insertIndent(wr io.Writer, depth int) {
 
 	for i := 0; i < depth; i++ {
@@ -424,6 +431,76 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
+	// vars
+	var bookmarkId int
+	var err error
+	var js []byte // the returned JSON
+	star := true
+
+	// GET parameters retrieval
+	bookmarkIdParam := r.URL.Query()["bookmarkId"]
+	starParam := r.URL.Query()["star"]
+
+	log.WithFields(log.Fields{
+		"bookmarkId": bookmarkId,
+		"starParam":  starParam,
+	}).Debug("StarBookmarkHandler:Query parameter")
+
+	// parameters check
+	if len(bookmarkIdParam) == 0 {
+
+		failHTTP(w, "StarBookmarkHandler", "bookmarkId empty", http.StatusBadRequest)
+		return
+
+	}
+
+	// star parameter retrieval
+	if len(starParam) == 0 || starParam[0] != "true" {
+		star = false
+	}
+
+	log.WithFields(log.Fields{
+		"star": star,
+	}).Debug("StarBookmarkHandler")
+
+	// bookmarkId convertion
+	if bookmarkId, err = strconv.Atoi(bookmarkIdParam[0]); err != nil {
+
+		failHTTP(w, "StarBookmarkHandler", "bookmarkId Atoi conversion", http.StatusInternalServerError)
+		return
+
+	}
+
+	// getting the bookmark
+	bkm := env.DB.GetBookmark(bookmarkId)
+	// renaming it
+	bkm.Starred = star
+	// updating the folder into the DB
+	env.DB.UpdateBookmark(bkm)
+
+	// datastore error check
+	if err = env.DB.FlushErrors(); err != nil {
+
+		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
+		return
+
+	}
+
+	// building the JSON result
+	if js, err = json.Marshal(newBookmarkStruct{BookmarkId: int64(bookmarkId), BookmarkTitle: bkm.Title, BookmarkURL: bkm.URL, BookmarkFavicon: []byte(bkm.Favicon), BookmarkStarred: bkm.Starred}); err != nil {
+
+		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
+		return
+
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+
+}
+
 func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	// vars
@@ -692,20 +769,14 @@ func (env *Env) GetChildrenFoldersHandler(w http.ResponseWriter, r *http.Request
 
 func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
-	var folderAndBookmark = new(folderAndBookmarkStruct)
+	var folderAndBookmark = new(staticDataStruct)
 
-	//bkms := env.DB.GetRootBookmarks()
-	//flds := env.DB.GetRootFolders()
+	starredBookmarks := env.DB.GetStarredBookmarks()
 
-	//if err := env.DB.FlushErrors(); err != nil {
-	//	log.Panic(err)
-	//}
-
-	//folderAndBookmark.Bkms = bkms
-	//folderAndBookmark.Flds = flds
 	folderAndBookmark.CssData = string(env.CssData)
 	folderAndBookmark.JsData = string(env.JsData)
 	folderAndBookmark.GoBkmProxyURL = env.GoBkmProxyURL
+	folderAndBookmark.Bkms = starredBookmarks
 
 	htmlTpl := template.New("main")
 	htmlTpl.Parse(string(env.TplMainData))

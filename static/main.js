@@ -8,6 +8,8 @@ var CLASS_ITEM_OVER = "folder-over";
 var CLASS_ITEM_FOLDER = "folder";
 var CLASS_ITEM_FOLDER_OPEN = "fa-folder-open-o";
 var CLASS_ITEM_FOLDER_CLOSED = "fa-folder-o";
+var CLASS_BOOKMARK_STARRED = "fa-star";
+var CLASS_BOOKMARK_NOTSTARRED = "fa-star-o";
 
 var CLASS_ITEM_BOOKMARK = "bookmark";
 
@@ -248,6 +250,19 @@ function undisplayChildrenFolders(folderIdNumber) {
 }
 
 /*
+ * isStarred returns true if the bookmark with bookmarkIdNumber
+ * is starred in the current HTML page (no DB stuff here)
+ * */
+function isStarredBookmark(bookmarkIdNum) {
+
+    //bookmarkStar = document.getElementById("bookmark-star-" + bookmarkIdNum);
+
+    //return hasClass(bookmarkStar, CLASS_BOOKMARK_STARRED);
+
+    return document.getElementById("bookmark-starred-link-" + bookmarkIdNum);
+}
+
+/*
  * hasChildrenFolders returns true if the folder with folderIdNumber
  * has children in the current HTML page (no DB stuff here)
  * */
@@ -257,7 +272,7 @@ function hasChildrenFolders(folderIdNumber) {
 
     folder = document.getElementById("folder-" + folderIdNumber);
 
-    return hasClass(folder, CLASS_ITEM_FOLDER_OPEN)
+    return hasClass(folder, CLASS_ITEM_FOLDER_OPEN);
 
 //    // getting the folder children ul
 //    subfolders = document.getElementById("subfolders-" + folderIdNumber);
@@ -273,57 +288,89 @@ function hasChildrenFolders(folderIdNumber) {
 /*
  * createBookmark creates a new Bookmark structure
  * */
-function createBookmark(bkmId, bkmTitle, bkmURL, bkmFavicon) {
+function createBookmark(bkmId, bkmTitle, bkmURL, bkmFavicon, bkmStarred, starred=false) {
 
     // bookmark title
     var newATitle = document.createTextNode(bkmTitle);
 
     // tags attributes
+    // - the bookmark link
     var attAOnClick = document.createAttribute("onclick");
     var attATitle = document.createAttribute("title");
     var attAId = document.createAttribute("id");
-    var attDivId = document.createAttribute("id");
-    var attDivClass = document.createAttribute("class");
-    var attDivDraggable = document.createAttribute("draggable");
+    // - the main DIV
+    var attMainDivId = document.createAttribute("id");
+    var attMainDivClass = document.createAttribute("class");
+    var attMainDivDraggable = document.createAttribute("draggable");
+    // - the favicon
     var attImageSrc = document.createAttribute("src");
     var attImageClass = document.createAttribute("class");
+    // - the starred DIV
+    var attStarClass = document.createAttribute("class");
+    var attStarId = document.createAttribute("id");
+    var attStarOnClick = document.createAttribute("onclick");
 
     // tags (the bookmark link is not a A but a clickable DIV)
-    var newDivElem = document.createElement("div");
+    var newMainDivElem = document.createElement("div");
     var newA = document.createElement("div");
     var newImage = document.createElement("img");
+    var newStar = document.createElement("div");
 
     // tags attributes init
-    attDivId.value = "bookmark-" + bkmId;
-    attDivClass.value = CLASS_ITEM_BOOKMARK;
-    attDivDraggable.value = "true";
+    if (starred) {
+        attMainDivId.value = "bookmark-starred-" + bkmId;
+        attMainDivDraggable.value = "false";
+        attAId.value = "bookmark-starred-link-" + bkmId;
+        attStarId.value = "bookmark-starred-star-" + bkmId;
+        attStarClass.value = CLASS_BOOKMARK_STARRED;
+    }
+    else {
+        attMainDivId.value = "bookmark-" + bkmId;
+        attMainDivDraggable.value = "true";
+        attAId.value = "bookmark-link-" + bkmId;
+        attStarId.value = "bookmark-star-" + bkmId;    
+        if (bkmStarred === true) {
+            attStarClass.value = CLASS_BOOKMARK_STARRED;
+        }
+        else {
+            attStarClass.value = CLASS_BOOKMARK_NOTSTARRED;
+        }
+    }
+    attMainDivClass.value = CLASS_ITEM_BOOKMARK;
     attAOnClick.value = "openInParent('" + bkmURL  + "');";
     attATitle.value = bkmURL;
-    attAId.value = "bookmark-link-" + bkmId;
     attImageSrc.value = bkmFavicon;
     attImageClass.value = "favicon";
+    attStarOnClick.value = "starBookmark('" + bkmId + "');";
+    
 
     // tags attributes linking
     newA.setAttributeNode(attAOnClick);
     newA.setAttributeNode(attAId);
     newA.setAttributeNode(attATitle);
-    newDivElem.setAttributeNode(attDivId);
-    newDivElem.setAttributeNode(attDivClass);
-    newDivElem.setAttributeNode(attDivDraggable);
+    newMainDivElem.setAttributeNode(attMainDivId);
+    newMainDivElem.setAttributeNode(attMainDivClass);
+    newMainDivElem.setAttributeNode(attMainDivDraggable);
     newImage.setAttributeNode(attImageSrc);
     newImage.setAttributeNode(attImageClass);
+    newStar.setAttributeNode(attStarClass);
+    newStar.setAttributeNode(attStarOnClick);
+    newStar.setAttributeNode(attStarId);
 
     // final structure build
     newA.appendChild(newATitle);
-    newDivElem.appendChild(newImage);
-    newDivElem.appendChild(newA);
+    newMainDivElem.appendChild(newStar);
+    newMainDivElem.appendChild(newImage);
+    newMainDivElem.appendChild(newA);
     
     // adding drag and drop events
-    newDivElem.addEventListener("dragstart", dragBookmark);
+    if (! starred) {
+        newMainDivElem.addEventListener("dragstart", dragBookmark);
+    }
 
     console.log(newA);
 
-    return newDivElem;
+    return newMainDivElem;
 
 }
 
@@ -406,18 +453,19 @@ function displaySubfolder(parentFolderId, folderId, folderTitle, nbChildrenFolde
  * displayBookmark displays a bookmark struct with the given bkmId, bkmTitle and bkmURL
  * as a children of parentFolderId
  * */
-function displayBookmark(parentFolderId, bkmId, bkmTitle, bkmURL, bkmFavicon) {
+function displayBookmark(parentFolderId, bkmId, bkmTitle, bkmURL, bkmFavicon, bkmStarred) {
 
     console.log("parentFolderId:" + parentFolderId);
     console.log("bkmId:" + bkmId);
     console.log("bkmTitle:" + bkmTitle);
+    console.log("bkmStarred:" + bkmStarred);
 
     // checking if the bookmark does not exist
     if(document.getElementById('bookmark-' + bkmId)) {
         return;
     }
 
-    newBookmark = createBookmark(bkmId, bkmTitle, bkmURL, bkmFavicon);
+    newBookmark = createBookmark(bkmId, bkmTitle, bkmURL, bkmFavicon, bkmStarred);
  
     // then adding the new DIV to the DOM
     // and the new UL to contains the children
@@ -622,6 +670,68 @@ function renameFolder() {
 }
 
 /*
+ * starBookmark is called when a click is performed on a bookmark star
+ * and star or unstar it
+ * */
+function starBookmark(bookmarkIdNum) {
+
+    console.log("starBookmark:bookmarkIdNum=" + bookmarkIdNum);
+
+    starBookmarkDiv = document.getElementById("bookmark-star-" + bookmarkIdNum);
+
+    starredBookmark = isStarredBookmark(bookmarkIdNum);
+    if (starredBookmark) {
+        star = false;
+    }
+    else {
+        star = true;
+    }
+
+    console.log("starBookmark:starredBookmark=" + starredBookmark);
+
+    var requestStarBookmark = new XMLHttpRequest();
+
+    requestStarBookmark.open('GET', encodeURI(GoBkmProxyURL + "/starBookmark/?star=" + star + "&bookmarkId=" + bookmarkIdNum + "&t=" + Math.random()), true);
+
+    requestStarBookmark.onreadystatechange = function() {
+
+      if (requestStarBookmark.readyState == 4 && requestStarBookmark.status == 200) {
+      //if (requestStarBookmark.status >= 200 && requestStarBookmark.status < 400) {
+
+        if ( requestStarBookmark.responseText.length == 0) { return };
+
+        if (starredBookmark) {
+            if (starBookmarkDiv) {
+                starBookmarkDiv.className = CLASS_BOOKMARK_NOTSTARRED;
+            }
+            document.getElementById("bookmark-starred-" + bookmarkIdNum).remove();
+        }
+        else {
+            starBookmarkDiv.className = CLASS_BOOKMARK_STARRED;
+
+           var data = JSON.parse(requestStarBookmark.responseText);
+           newBookmark = createBookmark(data.BookmarkId, data.BookmarkTitle, data.BookmarkURL, data.BookmarkFavicon, data.BookmarkStarred, starred=true);
+
+            document.getElementById("starred").appendChild(newBookmark);
+        }
+
+      } else if (requestStarBookmark.status != 200) {
+
+        // We reached our target server, but it returned an error
+        alert("Oups, an error occured ! (starBookmark)");
+
+      }
+    };
+
+    requestStarBookmark.onerror = function() {
+      // There was a connection error of some sort
+    };
+
+    requestStarBookmark.send();
+
+}
+
+/*
  * getChildrenFolders is called when a click is performed on a folder
  * and retrieves from the server the subfolders of the clicked folder
  * */
@@ -697,7 +807,7 @@ function getChildrenFolders(ev, folderIdNum) {
 
             var bkm = data[i];
             console.log("getChildrenFolders:bkm.Title=" + bkm.Title);
-            displayBookmark(folderIdNum, bkm.Id, bkm.Title, bkm.URL, bkm.Favicon);
+            displayBookmark(folderIdNum, bkm.Id, bkm.Title, bkm.URL, bkm.Favicon, bkm.Starred);
 
         }
 

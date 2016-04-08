@@ -96,6 +96,7 @@ func main() {
 	http.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
 	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
 	http.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
+	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/import/", env.ImportHandler)
 	http.HandleFunc("/", env.MainHandler)

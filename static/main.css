@@ -27,10 +27,12 @@ div.folder {
     cursor: pointer;
     width: 200px;
     height: 20px;
+    float: left;
+    clear: left;
 }
 
 div.folder-over, div.addBookmark-over {
-    border-bottom: 1px dotted black;
+    border-bottom: 1px dotted grey;
     background-color: #FFFAAE;
 }
 
@@ -38,18 +40,26 @@ div#action-box {
     position: fixed;
     width: 230px;
     background-color: white;
-    border-bottom: 1px dotted black;
-    border-top: 1px dotted black;
-    border-left: 10px solid black;
-    border-right: 10px solid black;
+    border-bottom: 1px dotted grey;
+    border-top: 1px dotted grey;
+    border-left: 10px solid grey;
+    border-right: 10px solid grey;
     padding: 5px;
 }
 
 div.bookmark {
     word-break: break-all;
+    float: left;
+    clear: left;
+}
+
+div.fa-star, div.fa-star-o {
+    width: 15px;
+    float: left;
 }
 
 div.bookmark > div {
+    float: left;
     font-size: 0.8em;
     min-height: 22px;
     cursor: pointer;
@@ -80,9 +90,14 @@ input#add-folder, input#rename-input-box-form {
     width: 100px;
 }
 
+div#starred-list {
+    margin-top: 140px;
+    float: left;
+    width: 100%;
+}
+
 div#folder-list {
     margin-bottom: 100px;
-    margin-top: 140px;
     float: left;
     width: 100%;
 }

@@ -16,6 +16,7 @@ type Bookmark struct {
 	Title   string
 	URL     string
 	Favicon string // base64 encoded image
+	Starred bool
 	Folder  *Folder
 }
 
