@@ -74,6 +74,34 @@
 
 </div>
 
+<div id="starred-list">
+{{with .Bkms}}
+
+    <ul id="starred">
+
+        {{range .}}
+        <li>
+           <div id="bookmark-starred-{{.Id}}" class="bookmark">
+
+                <div class="fa-star"
+                     onclick="starBookmark('{{.Id}}');"
+                     id="bookmark-starred-star-{{.Id}}">
+                </div>
+                <img src="{{.Favicon}}" class="favicon">
+                <div onclick="openInParent('{{.URL}}');" 
+                     id="bookmark-starred-link-{{.Id}}" 
+                     title="{{.Title}}">{{.Title}}
+                </div>
+
+            </div>
+        </li>
+        {{end}}
+
+    </ul>
+
+{{end}}
+</div>
+
 <div id="folder-list">
     <ul id="root">
         <li>
