@@ -22,7 +22,10 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# Custom locations
 bindata.go
 bkm.db
 documents/***
 gobkm
+build

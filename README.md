@@ -108,6 +108,14 @@ Thanks to [Sébastien Binet](https://github.com/sbinet) for the tutorial and hel
 - folders and bookmarks are sorted by title (currently not configurable)
 - supports only latest versions of Web browsers
 
+## Notes
+
+Cross compiled under Arch Linux with:
+```bash
+    # requires the package arm-linux-gnueabihf-gcc
+    env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build .
+```
+
 ## References
 
 - <http://youmightnotneedjquery.com/>
