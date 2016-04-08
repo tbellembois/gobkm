@@ -22,19 +22,21 @@ import (
 
 // Env is a structure used to pass objects throughout the application
 type Env struct {
-	DB            models.Datastore
-	GoBkmProxyURL string // the application URL
-	TplMainData   []byte // main template data
-	CssData       []byte // css data
-	JsData        []byte // js data
+	DB                  models.Datastore
+	GoBkmProxyURL       string // the application URL
+	TplMainData         []byte // main template data
+	CssMainData         []byte // main css data
+	CssAwesoneFontsData []byte // awesome fonts css data
+	JsData              []byte // js data
 }
 
 // staticDataStruct is used  to pass data to the Main template
 type staticDataStruct struct {
-	Bkms          []*types.Bookmark
-	CssData       string
-	JsData        string
-	GoBkmProxyURL string
+	Bkms                []*types.Bookmark
+	CssMainData         string
+	CssAwesoneFontsData string
+	JsData              string
+	GoBkmProxyURL       string
 }
 
 // newFolderStruct is returned by the NewFolderHandler to pass the new folder id to the view
@@ -773,7 +775,8 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	starredBookmarks := env.DB.GetStarredBookmarks()
 
-	folderAndBookmark.CssData = string(env.CssData)
+	folderAndBookmark.CssMainData = string(env.CssMainData)
+	folderAndBookmark.CssAwesoneFontsData = string(env.CssAwesoneFontsData)
 	folderAndBookmark.JsData = string(env.JsData)
 	folderAndBookmark.GoBkmProxyURL = env.GoBkmProxyURL
 	folderAndBookmark.Bkms = starredBookmarks

@@ -57,7 +57,12 @@ func main() {
 		log.Panic(err)
 	}
 
-	env.CssData, err = Asset("static/main.css")
+	env.CssMainData, err = Asset("static/main.css")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	env.CssAwesoneFontsData, err = Asset("static/font-awesome.min.css")
 	if err != nil {
 		log.Panic(err)
 	}
