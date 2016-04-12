@@ -122,6 +122,10 @@ Cross compiled under Arch Linux with:
 - <http://youmightnotneedjquery.com/>
 - <http://gomakethings.com/climbing-up-and-down-the-dom-tree-with-vanilla-javascript/>
 - <https://golang.org>
+- <https://github.com/jteeuwen/go-bindata>
+- <https://godoc.org/github.com/GeertJohan/go.rice>
 - <http://www.w3schools.com/>
 - <http://blog.teamtreehouse.com/uploading-files-ajax>
-
+- <https://joeshaw.org/net-context-and-http-handler/>
+- <https://medium.com/@matryer/the-http-handlerfunc-wrapper-technique-in-golang-c60bf76e6124#.xx66llwp4>
+- <http://wpvkp.com/font-awesome-doesnt-display-in-firefox-maxcdn/>
