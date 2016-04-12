@@ -72,27 +72,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// initializing the static data
-	//env.TplMainData, err = Asset("static/main.html")
-	//if err != nil {
-	//	log.Panic(err)
-	//}
-
-	//	env.CssMainData, err = Asset("static/main.css")
-	//	if err != nil {
-	//		log.Panic(err)
-	//	}
-	//
-	//	env.CssAwesoneFontsData, err = Asset("static/font-awesome.min.css")
-	//	if err != nil {
-	//		log.Panic(err)
-	//	}
-	//
-	//	env.JsData, err = Asset("static/main.js")
-	//	if err != nil {
-	//		log.Panic(err)
-	//	}
-
 	// getting the bookmarks with no favicon
 	noIconBookmarks := env.DB.GetNoIconBookmarks()
 
