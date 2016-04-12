@@ -99,6 +99,7 @@ Thanks to [Sébastien Binet](https://github.com/sbinet) for the tutorial and hel
 
 - provide a systemd startup script
 - translate the Javascript into gopherjs <https://github.com/gopherjs/gopherjs>
+- do not reload folder content from server at each click
 - ~~import export feature (HTML?)~~
 
 ## Known limitations

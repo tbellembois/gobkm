@@ -24,7 +24,7 @@ import (
 type Env struct {
 	DB                  models.Datastore
 	GoBkmProxyURL       string // the application URL
-	TplMainData         []byte // main template data
+	TplMainData         string // main template data
 	CssMainData         []byte // main css data
 	CssAwesoneFontsData []byte // awesome fonts css data
 	JsData              []byte // js data
@@ -50,7 +50,7 @@ type newBookmarkStruct struct {
 	BookmarkId      int64
 	BookmarkTitle   string
 	BookmarkURL     string
-	BookmarkFavicon []byte
+	BookmarkFavicon string
 	BookmarkStarred bool
 }
 
@@ -490,8 +490,14 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	resultBookmarkStruct := newBookmarkStruct{BookmarkId: int64(bookmarkId), BookmarkTitle: bkm.Title, BookmarkURL: bkm.URL, BookmarkFavicon: bkm.Favicon, BookmarkStarred: bkm.Starred}
+
+	log.WithFields(log.Fields{
+		"resultBookmarkStruct": resultBookmarkStruct,
+	}).Debug("StarBookmarkHandler")
+
 	// building the JSON result
-	if js, err = json.Marshal(newBookmarkStruct{BookmarkId: int64(bookmarkId), BookmarkTitle: bkm.Title, BookmarkURL: bkm.URL, BookmarkFavicon: []byte(bkm.Favicon), BookmarkStarred: bkm.Starred}); err != nil {
+	if js, err = json.Marshal(resultBookmarkStruct); err != nil {
 
 		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
 		return
@@ -775,14 +781,14 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
 	starredBookmarks := env.DB.GetStarredBookmarks()
 
-	folderAndBookmark.CssMainData = string(env.CssMainData)
-	folderAndBookmark.CssAwesoneFontsData = string(env.CssAwesoneFontsData)
+	//folderAndBookmark.CssMainData = string(env.CssMainData)
+	//folderAndBookmark.CssAwesoneFontsData = string(env.CssAwesoneFontsData)
 	folderAndBookmark.JsData = string(env.JsData)
 	folderAndBookmark.GoBkmProxyURL = env.GoBkmProxyURL
 	folderAndBookmark.Bkms = starredBookmarks
 
 	htmlTpl := template.New("main")
-	htmlTpl.Parse(string(env.TplMainData))
+	htmlTpl.Parse(env.TplMainData)
 
 	htmlTpl.Execute(w, folderAndBookmark)
 

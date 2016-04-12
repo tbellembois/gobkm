@@ -38,7 +38,7 @@ div.folder-over, div.addBookmark-over {
 
 div#action-box {
     position: fixed;
-    width: 230px;
+    width: 242px;
     background-color: white;
     border-bottom: 1px dotted grey;
     border-top: 1px dotted grey;
@@ -66,13 +66,10 @@ div.bookmark > div {
     color: blue;
 }
 
-div#export-box, div#import-box {
+div#import-export-box {
     cursor: pointer;
     font-size: 0.8em;
-}
-
-div#import-input-box {
-    padding: 5px;
+    text-align: right;
 }
 
 div#rename-box, div#delete-box {

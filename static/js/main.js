@@ -8,8 +8,8 @@ var CLASS_ITEM_OVER = "folder-over";
 var CLASS_ITEM_FOLDER = "folder";
 var CLASS_ITEM_FOLDER_OPEN = "fa-folder-open-o";
 var CLASS_ITEM_FOLDER_CLOSED = "fa-folder-o";
-var CLASS_BOOKMARK_STARRED = "fa-star";
-var CLASS_BOOKMARK_NOTSTARRED = "fa-star-o";
+var CLASS_BOOKMARK_STARRED = "fa fa-star";
+var CLASS_BOOKMARK_NOTSTARRED = "fa fa-star-o";
 
 var CLASS_ITEM_BOOKMARK = "bookmark";
 
@@ -137,7 +137,7 @@ function hideImport() {
  * showRenameBox shows the rename box form 
  * */
 function showRenameBox() {
-    document.getElementById('rename-input-box').style.visibility = 'visible';
+    document.getElementById('rename-input-box').style.display = 'block';
    
     document.getElementById('add-folder').disabled = true;
     document.getElementById('add-folder-button').disabled = true;
@@ -147,7 +147,7 @@ function showRenameBox() {
  * hideRenameBox hides the rename box form 
  * */
 function hideRenameBox() {
-    document.getElementById('rename-input-box').style.visibility = 'hidden';
+    document.getElementById('rename-input-box').style.display = 'none';
     document.getElementById('rename-input-box-form').value = "";
     document.getElementById('rename-hidden-input-box-form').value = "";
 
@@ -696,7 +696,6 @@ function starBookmark(bookmarkIdNum) {
     requestStarBookmark.onreadystatechange = function() {
 
       if (requestStarBookmark.readyState == 4 && requestStarBookmark.status == 200) {
-      //if (requestStarBookmark.status >= 200 && requestStarBookmark.status < 400) {
 
         if ( requestStarBookmark.responseText.length == 0) { return };
 
@@ -708,8 +707,8 @@ function starBookmark(bookmarkIdNum) {
         }
         else {
             starBookmarkDiv.className = CLASS_BOOKMARK_STARRED;
-
-           var data = JSON.parse(requestStarBookmark.responseText);
+            
+            var data = JSON.parse(requestStarBookmark.responseText);
            newBookmark = createBookmark(data.BookmarkId, data.BookmarkTitle, data.BookmarkURL, data.BookmarkFavicon, data.BookmarkStarred, starred=true);
 
             document.getElementById("starred").appendChild(newBookmark);

@@ -1,27 +1,19 @@
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="en-GB">
 <head>
-
   <meta charset="utf-8">
-
   <title>GoBkm</title>
-
   <meta name="description" content="A minimalist folder-based bookmark manager">
   <meta name="author" content="Thomas Bellembois">
 
-  <style type="text/css">
-    {{.CssAwesoneFontsData}}
-  </style>
-
-  <style type="text/css">
-    {{.CssMainData}}
-  </style>
-
   <script>
     var GoBkmProxyURL="{{.GoBkmProxyURL}}"
-
-    {{.JsData}}
   </script>
+
+  <link rel="stylesheet" type="text/css" href="/css/main.css">
+  <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="/js/main.js"> </script>
 
 </head>
 
@@ -31,7 +23,7 @@
 
     <div id="add-folder-box">
 
-        add folder: <input type="text" id="add-folder"></input>
+        add folder: <input type="text" id="add-folder" />
         <button id="add-folder-button" onclick="addFolder();">ok</button>
 
     </div>
@@ -48,22 +40,23 @@
         ondrop="dropDelete(event)">
     </div>
 
-    <div id="rename-input-box" style="visibility:hidden">
+    <div id="rename-input-box" style="display: none">
 
         new name:
-        <input id="rename-input-box-form" type="text"></input>
-        <input id="rename-hidden-input-box-form" type="hidden" name="folderId">
+        <input id="rename-input-box-form" type="text" />
+        <input id="rename-hidden-input-box-form" type="hidden" name="folderId" />
         
         <button onclick="renameFolder();">ok</button>
 
     </div>
 
-    <div id="export-box" title="export in HTML">
-        <span onclick="openInParent('/export/');">export</span>
-    </div>
+    <div id="import-export-box">
 
-    <div id="import-box" title="import from HTML">
-        <span onclick="toogleDisplayImport();">import</span>
+        <span title="export in HTML" onclick="openInParent('/export/');">export</span>
+        &nbsp;|&nbsp;
+        <span title="import from HTML" onclick="toogleDisplayImport();">import</span>
+
+    </div>
 
         <div id="import-input-box" style="display:none">
             <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
@@ -72,24 +65,22 @@
             </form>
         </div>
 
-    </div>
-
 </div>
 
 <div id="starred-list">
-{{with .Bkms}}
-
+    
     <ul id="starred">
+        {{with .Bkms}}
 
         {{range .}}
         <li>
            <div id="bookmark-starred-{{.Id}}" class="bookmark">
 
-                <div class="fa-star"
+                <div class="fa fa-star"
                      onclick="starBookmark('{{.Id}}');"
                      id="bookmark-starred-star-{{.Id}}">
                 </div>
-                <img src="{{.Favicon}}" class="favicon">
+                <img src="{{.Favicon}}" alt="favicon" class="favicon">
                 <div onclick="openInParent('{{.URL}}');" 
                      id="bookmark-starred-link-{{.Id}}" 
                      title="{{.Title}}">{{.Title}}
@@ -97,11 +88,11 @@
 
             </div>
         </li>
-        {{end}}
+    {{end}}
+
+    {{end}}
 
     </ul>
-
-{{end}}
 </div>
 
 <div id="folder-list">

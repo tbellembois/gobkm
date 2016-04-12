@@ -1,21 +1,30 @@
 package main
 
-//go:generate go-bindata -pkg $GOPACKAGE -o bindata.go static/...
-
 import (
 	"flag"
 	"net/http"
 
+	"github.com/GeertJohan/go.rice"
+	log "github.com/Sirupsen/logrus"
 	"github.com/tbellembois/gobkm/handlers"
 	"github.com/tbellembois/gobkm/models"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 // DB URL
 const (
 	dbURL = "./bkm.db"
 )
+
+// a decorator to set custom HTTP headers
+func decoratedHandler(h http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.Header().Set("Access-Control-Allow-Origin", "*")
+
+		h.ServeHTTP(rw, req)
+	})
+
+}
 
 func main() {
 
@@ -51,26 +60,38 @@ func main() {
 	// create the environment
 	env := handlers.Env{DB: datastore, GoBkmProxyURL: *goBkmProxyURL}
 
+	// template
+	templateBox, err := rice.FindBox("static")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// get file contents as string
+	env.TplMainData, err = templateBox.String("main.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// initializing the static data
-	env.TplMainData, err = Asset("static/main.html")
-	if err != nil {
-		log.Panic(err)
-	}
+	//env.TplMainData, err = Asset("static/main.html")
+	//if err != nil {
+	//	log.Panic(err)
+	//}
 
-	env.CssMainData, err = Asset("static/main.css")
-	if err != nil {
-		log.Panic(err)
-	}
-
-	env.CssAwesoneFontsData, err = Asset("static/font-awesome.min.css")
-	if err != nil {
-		log.Panic(err)
-	}
-
-	env.JsData, err = Asset("static/main.js")
-	if err != nil {
-		log.Panic(err)
-	}
+	//	env.CssMainData, err = Asset("static/main.css")
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//
+	//	env.CssAwesoneFontsData, err = Asset("static/font-awesome.min.css")
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//
+	//	env.JsData, err = Asset("static/main.js")
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
 
 	// getting the bookmarks with no favicon
 	noIconBookmarks := env.DB.GetNoIconBookmarks()
@@ -84,12 +105,12 @@ func main() {
 		"len(noIconBookmarks)": len(noIconBookmarks),
 	}).Debug("main")
 	// updating them
-	for _, bkm := range noIconBookmarks {
+	//for _, bkm := range noIconBookmarks {
 
-		//go env.UpdateBookmarkFavicon(bkm)
-		env.UpdateBookmarkFavicon(bkm)
+	//go env.UpdateBookmarkFavicon(bkm)
+	//env.UpdateBookmarkFavicon(bkm)
 
-	}
+	//}
 
 	http.HandleFunc("/getChildrenFolders/", env.GetChildrenFoldersHandler)
 	http.HandleFunc("/getFolderBookmarks/", env.GetFolderBookmarksHandler)
@@ -106,8 +127,18 @@ func main() {
 	http.HandleFunc("/import/", env.ImportHandler)
 	http.HandleFunc("/", env.MainHandler)
 
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	// Awesome fonts may need to send the Access-Control-Allow-Origin header to "*"
+	fontsBox := rice.MustFindBox("static/fonts")
+	fontsFileServer := http.StripPrefix("/fonts/", decoratedHandler(http.FileServer(fontsBox.HTTPBox())))
+	http.Handle("/fonts/", fontsFileServer)
+
+	cssBox := rice.MustFindBox("static/css")
+	cssFileServer := http.StripPrefix("/css/", http.FileServer(cssBox.HTTPBox()))
+	http.Handle("/css/", cssFileServer)
+
+	jsBox := rice.MustFindBox("static/js")
+	jsFileServer := http.StripPrefix("/js/", http.FileServer(jsBox.HTTPBox()))
+	http.Handle("/js/", jsFileServer)
 
 	http.ListenAndServe(":"+*listenPort, nil)
 

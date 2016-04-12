@@ -180,6 +180,7 @@ func (db *SQLiteDataStore) GetBookmark(id int) *types.Bookmark {
 			"Id":       bkm.Id,
 			"Title":    bkm.Title,
 			"folderId": folderId,
+			"Favicon":  bkm.Favicon,
 		}).Debug("GetBookmark:bookmark found")
 
 		if int(starred.Int64) != 0 {
