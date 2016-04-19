@@ -10,12 +10,11 @@ import (
 	"github.com/tbellembois/gobkm/models"
 )
 
-// DB URL
 const (
 	dbURL = "./bkm.db"
 )
 
-// a decorator to set custom HTTP headers
+// A decorator to set custom HTTP headers.
 func decoratedHandler(h http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -28,11 +27,10 @@ func decoratedHandler(h http.Handler) http.Handler {
 
 func main() {
 
-	// getting the params
+	// Getting the program parameters.
 	listenPort := flag.String("port", "8080", "the port to listen")
 	goBkmProxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
 	debug := flag.Bool("debug", false, "debug (verbose log)")
-
 	flag.Parse()
 
 	log.WithFields(log.Fields{
@@ -40,42 +38,40 @@ func main() {
 		"goBkmURL":   *goBkmProxyURL,
 	}).Debug("main:flags")
 
+	// Setting the log level.
 	if *debug {
 		log.SetLevel(log.DebugLevel)
 	} else {
 		log.SetLevel(log.ErrorLevel)
 	}
 
-	// database init
+	// Database initialization.
 	datastore, err := models.NewDBstore(dbURL)
-
 	if err != nil {
 		log.Panic(err)
 	}
 
-	// create DB
+	// Database creation.
 	datastore.CreateDatabase()
 	datastore.PopulateDatabase()
 
-	// create the environment
+	// Environment creation.
 	env := handlers.Env{DB: datastore, GoBkmProxyURL: *goBkmProxyURL}
 
-	// template
+	// Building a rice box with the static directory.
 	templateBox, err := rice.FindBox("static")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// get file contents as string
+	// Getting the main template file content as a string.
 	env.TplMainData, err = templateBox.String("main.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// getting the bookmarks with no favicon
+	// Getting the bookmarks with no favicon.
 	noIconBookmarks := env.DB.GetNoIconBookmarks()
-
-	// datastore error check
 	if err := env.DB.FlushErrors(); err != nil {
 		panic(err)
 	}
@@ -83,14 +79,14 @@ func main() {
 	log.WithFields(log.Fields{
 		"len(noIconBookmarks)": len(noIconBookmarks),
 	}).Debug("main")
-	// updating them
-	//for _, bkm := range noIconBookmarks {
 
+	// Updating them.
+	//for _, bkm := range noIconBookmarks {
 	//go env.UpdateBookmarkFavicon(bkm)
 	//env.UpdateBookmarkFavicon(bkm)
-
 	//}
 
+	// Handlers initialization.
 	http.HandleFunc("/getChildrenFolders/", env.GetChildrenFoldersHandler)
 	http.HandleFunc("/getFolderBookmarks/", env.GetFolderBookmarksHandler)
 	http.HandleFunc("/moveFolder/", env.MoveFolderHandler)
@@ -106,6 +102,7 @@ func main() {
 	http.HandleFunc("/import/", env.ImportHandler)
 	http.HandleFunc("/", env.MainHandler)
 
+	// Rice boxes initialization.
 	// Awesome fonts may need to send the Access-Control-Allow-Origin header to "*"
 	fontsBox := rice.MustFindBox("static/fonts")
 	fontsFileServer := http.StripPrefix("/fonts/", decoratedHandler(http.FileServer(fontsBox.HTTPBox())))

@@ -14,14 +14,14 @@ const (
 )
 
 // SQLiteDataStore implements the Datastore interface
-// to store the Bookmarks in SQLite3
+// to store the Bookmarks in SQLite3.
 type SQLiteDataStore struct {
 	*sql.DB
 	err error
 }
 
 // NewDBstore returns a database connection to the given dataSourceName
-// ie. a path to the sqlite database file
+// ie. a path to the sqlite database file.
 func NewDBstore(dataSourceName string) (*SQLiteDataStore, error) {
 
 	log.WithFields(log.Fields{
@@ -32,30 +32,26 @@ func NewDBstore(dataSourceName string) (*SQLiteDataStore, error) {
 	var err error
 
 	if db, err = sql.Open(dbdriver, dataSourceName); err != nil {
-
 		log.WithFields(log.Fields{
 			"dataSourceName": dataSourceName,
 		}).Error("NewDBstore:error opening the database")
-
 		return nil, err
-
 	}
 
 	return &SQLiteDataStore{db, nil}, nil
 
 }
 
+// FlushErrors returns the last DB errors and flushes it.
 func (db *SQLiteDataStore) FlushErrors() error {
 
 	lastError := db.err
-
 	db.err = nil
-
 	return lastError
 
 }
 
-// CreateDatabase creates the database tables
+// CreateDatabase creates the database tables.
 func (db *SQLiteDataStore) CreateDatabase() {
 
 	if db.err != nil {
@@ -63,24 +59,18 @@ func (db *SQLiteDataStore) CreateDatabase() {
 	}
 
 	if _, db.err = db.Exec("PRAGMA foreign_keys = ON"); db.err != nil {
-
 		log.Error("CreateDatabase: error executing the PRAGMA request")
 		return
-
 	}
 
 	if _, db.err = db.Exec("CREATE TABLE IF NOT EXISTS folder ( id integer PRIMARY KEY, title string NOT NULL, parentFolderId integer, nbChildrenFolders integer, FOREIGN KEY (parentFolderId) references folder(id) ON DELETE CASCADE)"); db.err != nil {
-
 		log.Error("CreateDatabase: error executing the CREATE TABLE request for table bookmark")
 		return
-
 	}
 
 	if _, db.err = db.Exec("CREATE TABLE IF NOT EXISTS bookmark ( id integer PRIMARY KEY, title string NOT NULL, url string NOT NULL, favicon string, starred integer, folderId integer, FOREIGN KEY (folderId) references folder(id) ON DELETE CASCADE)"); db.err != nil {
-
 		log.Error("CreateDatabase: error executing the CREATE TABLE request for table bookmark")
 		return
-
 	}
 
 	var count int
@@ -92,49 +82,43 @@ func (db *SQLiteDataStore) CreateDatabase() {
 	}
 
 	if _, db.err = db.Exec("INSERT INTO folder(id, title) values(\"1\", \"/\")"); db.err != nil {
-
 		log.Error("CreateDatabase: error inserting the root folder")
 		return
-
 	}
 
 }
 
-// PopulateDatabase populate the database with sample folders and bookmarks
+// PopulateDatabase populate the database with sample folders and bookmarks.
 func (db *SQLiteDataStore) PopulateDatabase() {
+
+	var folders []*types.Folder
+	var bookmarks []*types.Bookmark
 
 	if db.err != nil {
 		return
 	}
 
+	// Leaving if database already populated.
 	var count int
-
-	db.err = db.QueryRow("SELECT COUNT(*) as count FROM folder").Scan(&count)
-
-	if count > 0 {
+	if db.err = db.QueryRow("SELECT COUNT(*) as count FROM folder").Scan(&count); db.err != nil || count > 0 {
 		return
 	}
 
-	// getting the root folder
+	// Getting the root folder.
 	folderRoot := db.GetFolder(1)
-
-	var folders []*types.Folder
-	var bookmarks []*types.Bookmark
-
+	// Creating new sample folders.
 	folder1 := types.Folder{Id: 1, Title: "IT", Parent: folderRoot}
 	folder2 := types.Folder{Id: 2, Title: "Development", Parent: &folder1}
-
+	// Creating new sample bookmark.
 	bookmark1 := types.Bookmark{Id: 1, Title: "GoLang", Starred: true, URL: "https://golang.org/", Favicon: "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAb9JREFUOI3tkj9oU1EUh797c3lgjA4xL61FX0yhMQqmW5QgFim4+GcyQ3Hp1MlBqFIyOGUobRScnYoQikNA0Ao6WJS2UIdiK7SUVGtfIZg0iMSA+Iy5Dg9fGnyLu2e6nHPu9zv3/K7QWuMXjfqebjQbOM5PIuEjHI6Ywq9P/TlUdm09+3KeNxtlAHbLWzTrNeTBQxjhHuLHohrgwqkBRi5dpO+4JQDEh80NfePOXaIDJ3FigximBUAyk+5SOvFphR/tNovvyzg769TKmxQLecS5a9d1dOQ2zp7N6bjF1PAZlJKMv1hFpVxIa+0t96+cBWD82TLr2zaGaVGbvYcEqLx+gmFajKZiqANBeo/2MZcb89RHUzEAeiNh5nJjGKZF9VUJAFks5FGVrc7IuuW7VH518slMGlHdpljII/sTSW+7j5ohEIrP9S9cnnxIaShOaSjOzNoOBNz81ceLHqg/kRRqv0ggGGLCdm3t+fqRmZtZ15HKEhN2Go1ABUO06VjfBdDSLQS0IFNd4fytSQAWHuR4B8gW7lWJP8B7rtA8zU7zfH4V8f0brew0ou37j/wBHigx2D2d/LvHJ/Vv8R8AvwHjjZMncK4ImgAAAABJRU5ErkJggg==", Folder: &folder2}
 
-	folders = append(folders, &folder1)
-	folders = append(folders, &folder2)
-
+	folders = append(folders, &folder1, &folder2)
 	bookmarks = append(bookmarks, &bookmark1)
 
+	// DB save.
 	for _, fld := range folders {
 		db.SaveFolder(fld)
 	}
-
 	for _, bkm := range bookmarks {
 		db.SaveBookmark(bkm)
 	}
