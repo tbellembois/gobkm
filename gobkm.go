@@ -116,6 +116,14 @@ func main() {
 	jsFileServer := http.StripPrefix("/js/", http.FileServer(jsBox.HTTPBox()))
 	http.Handle("/js/", jsFileServer)
 
+	imgBox := rice.MustFindBox("static/img")
+	imgFileServer := http.StripPrefix("/img/", http.FileServer(imgBox.HTTPBox()))
+	http.Handle("/img/", imgFileServer)
+
+	manifestBox := rice.MustFindBox("static/manifest")
+	manifestFileServer := http.StripPrefix("/manifest/", http.FileServer(manifestBox.HTTPBox()))
+	http.Handle("/manifest/", manifestFileServer)
+
 	http.ListenAndServe(":"+*listenPort, nil)
 
 }

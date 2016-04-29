@@ -27,6 +27,8 @@ _testmain.go
 bindata.go
 bkm.db
 documents/***
+static/img
+static/manifest
 gobkm
 build
 bkm.db*
