@@ -19,6 +19,8 @@
 
 <body>
 
+<div id="container">
+
 <div id="action-box">
 
     <div id="add-folder-box">
@@ -80,7 +82,7 @@
                      onclick="starBookmark('{{.Id}}');"
                      id="bookmark-starred-star-{{.Id}}">
                 </div>
-                <img src="{{.Favicon}}" alt="favicon" class="favicon">
+                <img src="{{.Favicon}}" alt="" class="favicon">
                 <div onclick="openInParent('{{.URL}}');" 
                      id="bookmark-starred-link-{{.Id}}" 
                      title="{{.Title}}">{{.Title}}
@@ -116,13 +118,14 @@
 </div>
 
 <div id="bookmarklet">
-    Drag and drop the bookmarklet below in your bookmark bar:
-    <a href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm</a>
+    <a title="Drag and drop this bookmarklet in your bookmark bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm</a>
 </div>
 
 <div id="copyright">
     GoBkm - Copyright (C) 2006-2016 Thomas Bellembois.<br/>
     Licensed under the GNU GPL, Version 3.0.
+</div>
+
 </div>
 
 </body>
