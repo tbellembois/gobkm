@@ -5,8 +5,6 @@ It is designed to run on a remote server (I run it on a [RaspberryPi](https://ww
 
 The purpose of this project was to study the Go programming language in its different aspects (OOP, databases, HTML templates, learning curve).
 
-GoBkm uses [Google](http://www.google.com) to retrieve sites favicon, the [FontAwesome](https://fontawesome.github.io/Font-Awesome/) library for folders and bookmarks icons and the [OpenClipart](https://openclipart.org/) library for the drag ghost icon.
-
 ![screenshot](screenshot.png)
 
 ## Usage
@@ -116,6 +114,14 @@ Cross compiled under Arch Linux with:
     # requires the package arm-linux-gnueabihf-gcc
     env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build .
 ```
+
+## Credits
+
+- sites favicon retrieved from [Google](http://www.google.com)
+- folders, bookmarks, rename and delete icons from the [FontAwesome](https://fontawesome.github.io/Font-Awesome/) library
+- drag ghost icon from the [OpenClipart](https://openclipart.org/)
+- GoBKM SVG favicon build with [Inkscape](http://www.inkscape-fr.org/) from <https://github.com/golang-samples/gopher-vector> and <https://commons.wikimedia.org/wiki/File:Bookmark_empty_font_awesome.svg>
+- favicon PNG generated from <https://realfavicongenerator.net>
 
 ## References
 
