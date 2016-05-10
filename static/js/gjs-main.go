@@ -1,6 +1,13 @@
 package main
 
-import "honnef.co/go/js/dom"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+
+	"honnef.co/go/js/dom"
+)
 
 const (
 	ClassItemOver           = "folder-over"
@@ -21,7 +28,7 @@ func init() {
 	w = dom.GetWindow()
 	d = w.Document()
 
-	d.GetElementByID("test").AddEventListener("click", false, toogleDisplayImport)
+	d.GetElementByID("add-folder-button").AddEventListener("click", false, addFolder)
 }
 
 // Utils functions.
@@ -133,16 +140,12 @@ func leaveItem(e dom.Event) {
 	removeClass(e.Target().(dom.HTMLElement), ClassItemOver)
 }
 
-func renameFolder() {
-	print("renameFolder")
-}
-
-func addFolder() {
-	print("addFolder")
-}
-
 func dragBookmark(e dom.Event) {
-	e.Set("dragItemId", e.Target().ID())
+	e.(dom.DragEvent).Set("dragItemId", e.Target().ID())
+}
+
+func dragFolder(e dom.Event) {
+	e.(dom.DragEvent).Set("dragItemId", e.Target().ID())
 }
 
 func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool, starred bool) dom.HTMLElement {
@@ -150,6 +153,7 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 	// Link (actually a clickable div).
 	a := d.CreateElement("div").(dom.HTMLDivElement)
 	a.SetTitle(bkmURL)
+	a.AppendChild(d.CreateTextNode(bkmURL))
 	a.SetAttribute("onclick", "openInParent('"+bkmURL+"');")
 	// Main div.
 	md := d.CreateElement("div").(dom.HTMLDivElement)
@@ -191,6 +195,145 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 	return md
 }
 
+type folderStruct struct {
+	fld     dom.HTMLDivElement
+	subFlds dom.HTMLUListElement
+}
+
+func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderStruct {
+
+	// Main div.
+	md := d.CreateElement("div").(*dom.HTMLDivElement)
+	md.SetTitle(fldTitle)
+	md.SetClass(ClassItemFolder + " " + ClassItemFolderClosed)
+	md.SetID("folder-" + fldID)
+	md.SetDraggable(true)
+	md.SetAttribute("onclick", "getChildrenFolders(event, "+fldID+");")
+	// Subfolders.
+	ul := d.CreateElement("ul").(*dom.HTMLUListElement)
+	ul.SetID("subfolders-" + fldID)
+
+	md.AppendChild(d.CreateTextNode(fldTitle))
+	md.AppendChild(ul)
+
+	return folderStruct{fld: *md, subFlds: *ul}
+}
+
+func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFolders int) {
+
+	if d.GetElementByID("folder-"+fldID) != nil {
+		return
+	}
+
+	newFld := createFolder(fldID, fldTitle, nbChildrenFolders)
+
+	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.fld)
+	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.subFlds)
+
+}
+
+func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool) {
+
+	if d.GetElementByID("bookmark-"+bkmID) != nil {
+		return
+	}
+
+	newBkm := createBookmark(bkmID, bkmTitle, bkmURL, bkmFavicon, bkmStarred, false)
+
+	d.GetElementByID("subfolders-" + pFldID).AppendChild(newBkm)
+
+}
+
+type newFolderStruct struct {
+	FolderId    int64
+	FolderTitle string
+}
+
+func addFolder(e dom.Event) {
+
+	go func() {
+
+		fmt.Println("addFolder")
+
+		fldName := d.GetElementByID("add-folder").(*dom.HTMLInputElement).Value
+
+		req, err := http.NewRequest("GET", "/addFolder/?folderName="+fldName, nil)
+
+		if err != nil {
+			return
+		}
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Println("addFolder response code error")
+			return
+		}
+
+		var data newFolderStruct
+		err = json.NewDecoder(resp.Body).Decode(&data)
+		if err != nil {
+			fmt.Println("addFolder JSON decoder error")
+			return
+		}
+
+		newFld := createFolder(string(data.FolderId), data.FolderTitle, 0)
+
+		rootFld := d.GetElementByID("subfolders-1")
+		rootFld.InsertBefore(newFld.fld, rootFld.FirstChild())
+		rootFld.InsertBefore(newFld.subFlds, rootFld.FirstChild())
+	}()
+}
+
+func dropRename(e dom.Event) {
+
+	draggedItem := e.Target()
+	draggedItemID := e.(dom.DropEvent).Get("dragItemId")
+	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+
+	if strings.HasPrefix(draggedItemID, "folder") {
+		draggedFldName := d.GetElementByID(draggedItemID).InnerHTML()
+	}
+
+}
+
+func renameFolder(e dom.Event) {
+
+	go func() {
+
+		fmt.Println("renameFolder")
+
+		fldID := d.GetElementByID("rename-hidden-input-box-form").(*dom.HTMLInputElement).Value
+		fldName := d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Value
+
+		fldIDDigit := strings.Split(fldID, "-")[1]
+
+		if strings.HasPrefix(fldID, "folder") {
+			req, err := http.NewRequest("GET", "/renameFolder/?folderId="+fldIDDigit+"&folderName="+fldName, nil)
+
+			if err != nil {
+				return
+			}
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			defer resp.Body.Close()
+
+			if resp.StatusCode != http.StatusOK {
+				fmt.Println("renameFolder response code error")
+				return
+			}
+
+			d.GetElementByID()
+
+		}
+
+	}()
+
+}
+
 func main() {
 
 	// Bind enter key to add or rename a folder.
@@ -198,13 +341,6 @@ func main() {
 		ke := e.(*dom.KeyboardEvent)
 		if ke.KeyCode == 13 {
 			e.PreventDefault()
-
-			dsbl := d.GetElementByID("add-folder").HasAttribute("disabled")
-			if dsbl {
-				renameFolder()
-			} else {
-				addFolder()
-			}
 		}
 	})
 
