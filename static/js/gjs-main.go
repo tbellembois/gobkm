@@ -20,8 +20,9 @@ const (
 )
 
 var (
-	w dom.Window
-	d dom.Document
+	w             dom.Window
+	d             dom.Document
+	draggedItemID string
 )
 
 func init() {
@@ -289,13 +290,20 @@ func addFolder(e dom.Event) {
 
 func dropRename(e dom.Event) {
 
-	draggedItem := e.Target()
-	draggedItemID := e.(dom.DropEvent).Get("dragItemId")
+	draggedItemID = e.(dom.DragEvent).Get("dragItemId").String()
 	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
 
 	if strings.HasPrefix(draggedItemID, "folder") {
-		draggedFldName := d.GetElementByID(draggedItemID).InnerHTML()
+		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
+		setRenameFormValue(draggedFldName)
+
+	} else {
+		draggedBkmName := d.GetElementByID("bookmark-link-" + draggedItemIDDigit).TextContent()
+		setRenameFormValue(draggedBkmName)
 	}
+	showRenameBox()
+	setRenameHiddenFormValue(draggedItemID)
+	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassItemOver)
 
 }
 
@@ -326,7 +334,7 @@ func renameFolder(e dom.Event) {
 				return
 			}
 
-			d.GetElementByID()
+			d.GetElementByID(draggedItemID).SetInnerHTML(fldName)
 
 		}
 
