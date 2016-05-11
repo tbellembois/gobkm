@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"honnef.co/go/js/dom"
@@ -20,8 +21,9 @@ const (
 )
 
 var (
-	w dom.Window
-	d dom.Document
+	w             dom.Window
+	d             dom.Document
+	draggedItemID string
 )
 
 func init() {
@@ -48,10 +50,10 @@ func disableItem(id string) {
 	d.GetElementByID(id).SetAttribute("disabled", "true")
 }
 func resetItemValue(id string) {
-	d.GetElementByID(id).SetNodeValue("")
+	d.GetElementByID(id).SetAttribute("value", "")
 }
 func setItemValue(id string, val string) {
-	d.GetElementByID(id).SetNodeValue(val)
+	d.GetElementByID(id).SetAttribute("value", val)
 }
 func setClass(el dom.HTMLElement, class string) {
 	el.Class().SetString(class)
@@ -77,7 +79,7 @@ func undisplayChildrenFolders(fldID string) {
 	// Removing folder content.
 	d.GetElementByID("subfolders-" + fldID).SetInnerHTML("")
 	// Changing folder icon.
-	setClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolder+ClassItemFolderClosed)
+	setClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderClosed)
 }
 
 func isStarredBookmark(bkmID string) bool {
@@ -141,29 +143,30 @@ func leaveItem(e dom.Event) {
 }
 
 func dragBookmark(e dom.Event) {
-	e.(dom.DragEvent).Set("dragItemId", e.Target().ID())
+	e.(*dom.DragEvent).Set("dragItemId", e.Target().ID())
 }
 
 func dragFolder(e dom.Event) {
-	e.(dom.DragEvent).Set("dragItemId", e.Target().ID())
+	draggedItemID = e.Target().ID()
+	e.(*dom.DragEvent).Set("dragItemId", e.Target().ID())
 }
 
 func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool, starred bool) dom.HTMLElement {
 
 	// Link (actually a clickable div).
-	a := d.CreateElement("div").(dom.HTMLDivElement)
+	a := d.CreateElement("div").(*dom.HTMLDivElement)
 	a.SetTitle(bkmURL)
 	a.AppendChild(d.CreateTextNode(bkmURL))
 	a.SetAttribute("onclick", "openInParent('"+bkmURL+"');")
 	// Main div.
-	md := d.CreateElement("div").(dom.HTMLDivElement)
+	md := d.CreateElement("div").(*dom.HTMLDivElement)
 	md.SetClass(ClassItemBookmark)
 	// Favicon.
-	fav := d.CreateElement("img").(dom.HTMLImageElement)
+	fav := d.CreateElement("img").(*dom.HTMLImageElement)
 	fav.Src = bkmFavicon
 	fav.SetClass("favicon")
 	// Star.
-	str := d.CreateElement("div").(dom.HTMLDivElement)
+	str := d.CreateElement("div").(*dom.HTMLDivElement)
 	str.SetAttribute("onclick", "starBookmark('"+bkmID+"');")
 
 	if starred {
@@ -202,13 +205,13 @@ type folderStruct struct {
 
 func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderStruct {
 
+	fmt.Println("createFolder:fldID=" + fldID)
 	// Main div.
 	md := d.CreateElement("div").(*dom.HTMLDivElement)
 	md.SetTitle(fldTitle)
 	md.SetClass(ClassItemFolder + " " + ClassItemFolderClosed)
 	md.SetID("folder-" + fldID)
 	md.SetDraggable(true)
-	md.SetAttribute("onclick", "getChildrenFolders(event, "+fldID+");")
 	// Subfolders.
 	ul := d.CreateElement("ul").(*dom.HTMLUListElement)
 	ul.SetID("subfolders-" + fldID)
@@ -216,11 +219,18 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 	md.AppendChild(d.CreateTextNode(fldTitle))
 	md.AppendChild(ul)
 
+	md.AddEventListener("click", false, func(e dom.Event) { getChildrenFolders(e, fldID) })
+	md.AddEventListener("dragover", false, func(e dom.Event) { overItem(e) })
+	md.AddEventListener("dragleave", false, func(e dom.Event) { leaveItem(e) })
+	md.AddEventListener("dragstart", false, func(e dom.Event) { dragFolder(e) })
+	md.AddEventListener("drop", false, func(e dom.Event) { dropFolder(e) })
+
 	return folderStruct{fld: *md, subFlds: *ul}
 }
 
 func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFolders int) {
 
+	fmt.Println("displaySubfolder:fldID=" + fldID)
 	if d.GetElementByID("folder-"+fldID) != nil {
 		return
 	}
@@ -247,6 +257,22 @@ func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string
 type newFolderStruct struct {
 	FolderId    int64
 	FolderTitle string
+}
+
+type Bookmark struct {
+	Id      int
+	Title   string
+	URL     string
+	Favicon string // base64 encoded image
+	Starred bool
+	Folder  *Folder
+}
+
+type Folder struct {
+	Id                int
+	Title             string
+	Parent            *Folder
+	NbChildrenFolders int
 }
 
 func addFolder(e dom.Event) {
@@ -279,7 +305,7 @@ func addFolder(e dom.Event) {
 			return
 		}
 
-		newFld := createFolder(string(data.FolderId), data.FolderTitle, 0)
+		newFld := createFolder(strconv.Itoa(int(data.FolderId)), data.FolderTitle, 0)
 
 		rootFld := d.GetElementByID("subfolders-1")
 		rootFld.InsertBefore(newFld.fld, rootFld.FirstChild())
@@ -287,15 +313,24 @@ func addFolder(e dom.Event) {
 	}()
 }
 
+func dropDelete(e dom.Event) {}
+func dropFolder(e dom.Event) {}
 func dropRename(e dom.Event) {
 
-	draggedItem := e.Target()
-	draggedItemID := e.(dom.DropEvent).Get("dragItemId")
+	//draggedItemID = e.(*dom.DragEvent).Get("dragItemId").String()
 	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
 
 	if strings.HasPrefix(draggedItemID, "folder") {
-		draggedFldName := d.GetElementByID(draggedItemID).InnerHTML()
+		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
+		setRenameFormValue(draggedFldName)
+
+	} else {
+		draggedBkmName := d.GetElementByID("bookmark-link-" + draggedItemIDDigit).TextContent()
+		setRenameFormValue(draggedBkmName)
 	}
+	showRenameBox()
+	setRenameHiddenFormValue(draggedItemID)
+	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassItemOver)
 
 }
 
@@ -312,7 +347,6 @@ func renameFolder(e dom.Event) {
 
 		if strings.HasPrefix(fldID, "folder") {
 			req, err := http.NewRequest("GET", "/renameFolder/?folderId="+fldIDDigit+"&folderName="+fldName, nil)
-
 			if err != nil {
 				return
 			}
@@ -326,8 +360,70 @@ func renameFolder(e dom.Event) {
 				return
 			}
 
-			d.GetElementByID()
+			d.GetElementByID(draggedItemID).SetInnerHTML(fldName)
 
+		}
+	}()
+
+}
+
+func getChildrenFolders(e dom.Event, fldIDDigit string) {
+
+	go func() {
+
+		fmt.Println("getChildrenFolders:fldIDDigit=" + fldIDDigit)
+		if hasChildrenFolders(fldIDDigit) {
+			undisplayChildrenFolders(fldIDDigit)
+			return
+		}
+
+		req, err := http.NewRequest("GET", "/getChildrenFolders/?folderId="+fldIDDigit, nil)
+		if err != nil {
+			return
+		}
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Println("getChildrenFolders response code error")
+			return
+		}
+
+		var dataFld []Folder
+		err = json.NewDecoder(resp.Body).Decode(&dataFld)
+
+		if err != nil {
+			fmt.Println("getChildrenFolders JSON decoder error")
+			return
+		}
+
+		for _, fld := range dataFld {
+			displaySubfolder(fldIDDigit, strconv.Itoa(fld.Id), fld.Title, fld.NbChildrenFolders)
+		}
+
+		setClass(d.GetElementByID("folder-"+fldIDDigit).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderOpen)
+
+		req, err = http.NewRequest("GET", "/getFolderBookmarks/?folderId="+fldIDDigit, nil)
+		if err != nil {
+			return
+		}
+
+		client = &http.Client{}
+		resp, err = client.Do(req)
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Println("getChildrenFolders response code error")
+			return
+		}
+
+		var dataBkm []Bookmark
+		err = json.NewDecoder(resp.Body).Decode(&dataBkm)
+
+		for _, bkm := range dataBkm {
+			displayBookmark(fldIDDigit, strconv.Itoa(bkm.Id), bkm.Title, bkm.URL, bkm.Favicon, bkm.Starred)
 		}
 
 	}()
@@ -342,6 +438,40 @@ func main() {
 		if ke.KeyCode == 13 {
 			e.PreventDefault()
 		}
+	})
+
+	// Root folder listeners.
+	fld := d.GetElementByID("folder-1").(*dom.HTMLDivElement)
+	fld.AddEventListener("click", false, func(e dom.Event) {
+		getChildrenFolders(e, "1")
+	})
+	fld.AddEventListener("dragover", false, func(e dom.Event) {
+		overItem(e)
+	})
+	fld.AddEventListener("dragleave", false, func(e dom.Event) {
+		leaveItem(e)
+	})
+
+	// Rename and delete boxes listeners.
+	rb := d.GetElementByID("rename-box").(*dom.HTMLDivElement)
+	rb.AddEventListener("dragover", false, func(e dom.Event) {
+		overItem(e)
+	})
+	rb.AddEventListener("dragleave", false, func(e dom.Event) {
+		leaveItem(e)
+	})
+	rb.AddEventListener("drop", false, func(e dom.Event) {
+		dropRename(e)
+	})
+	db := d.GetElementByID("delete-box").(*dom.HTMLDivElement)
+	db.AddEventListener("dragover", false, func(e dom.Event) {
+		overItem(e)
+	})
+	db.AddEventListener("dragleave", false, func(e dom.Event) {
+		leaveItem(e)
+	})
+	db.AddEventListener("drop", false, func(e dom.Event) {
+		dropDelete(e)
 	})
 
 }

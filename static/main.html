@@ -24,7 +24,9 @@
   <link rel="stylesheet" type="text/css" href="/css/main.css">
   <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
 
+  <!--
   <script type="text/javascript" src="/js/main.js"> </script>
+  -->
 
 </head>
 
@@ -45,16 +47,10 @@
 
     </div>
 
-    <div id="rename-box" title="drag and drop a folder/bookmark to rename here" class="fa fa-pencil-square-o"
-        ondragover="overRename(event)"
-        ondragleave="leaveRename(event)"
-        ondrop="dropRename(event)">
+    <div id="rename-box" title="drag and drop a folder/bookmark to rename here" class="fa fa-pencil-square-o">
     </div>
 
-    <div id="delete-box" title="drag and drop a folder/bookmark to delete here" class="fa fa-trash-o"
-        ondragover="overDelete(event)"
-        ondragleave="leaveDelete(event)"
-        ondrop="dropDelete(event)">
+    <div id="delete-box" title="drag and drop a folder/bookmark to delete here" class="fa fa-trash-o">
     </div>
 
     <div id="rename-input-box" style="display: none">
@@ -118,11 +114,6 @@
                <div id="folder-1"
                      class="folder fa fa-folder-o"
                      draggable="false"
-                     onclick="getChildrenFolders(event, 1)"
-                     ondragover="overFolder(event)"
-                     ondragleave="leaveFolder(event)"
-                     ondragstart="dragFolder(event)"
-                     ondrop="dropFolder(event)">
                      /
                 </div>
                 <ul id="subfolders-1"></ul>
@@ -143,6 +134,7 @@
 
 </div>
 
+  <script type="text/javascript" src="/js/gjs-main.js"> </script>
 </body>
 
 </html>
