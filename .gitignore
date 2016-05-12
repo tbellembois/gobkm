@@ -29,6 +29,7 @@ bkm.db
 documents/***
 static/img
 static/manifest
+static/js/*.js*
 gobkm
 build
 bkm.db*
