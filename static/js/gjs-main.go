@@ -33,7 +33,6 @@ func init() {
 	w = dom.GetWindow()
 	d = w.Document()
 
-	d.GetElementByID("add-folder-button").AddEventListener("click", false, addFolder)
 }
 
 // Utils functions.
@@ -72,6 +71,42 @@ func hasClass(el dom.HTMLElement, class string) bool {
 }
 func openInParent(url string) {
 	w.Parent().Open(url, "", "")
+}
+
+type arg struct {
+	key string
+	val string
+}
+
+func sendRequest(url string, args []arg) *http.Response {
+
+	var err error
+	var req *http.Request
+	var resp *http.Response
+
+	url = strings.Join([]string{url, "?"}, "")
+	for i, arg := range args {
+		if i == 0 {
+			url = strings.Join([]string{url, fmt.Sprintf("%s=%s", arg.key, arg.val)}, "")
+		} else {
+			url = strings.Join([]string{url, fmt.Sprintf("%s=%s", arg.key, arg.val)}, "&")
+		}
+	}
+
+	if req, err = http.NewRequest("GET", url, nil); err != nil {
+		fmt.Println("request build error:", url)
+		return resp
+	}
+
+	client := &http.Client{}
+	if resp, err = client.Do(req); err != nil {
+		fmt.Println("request error:", url)
+		return resp
+	}
+	defer resp.Body.Close()
+
+	return resp
+
 }
 
 func hasChildrenFolders(fldID string) bool {
@@ -150,15 +185,66 @@ func dragItem(e dom.Event) {
 }
 
 func starBookmark(bkmID string) {
+	go func() {
+
+		star := true
+		starredBookmark := isStarredBookmark(bkmID)
+		starBookmarkDiv := d.GetElementByID("bookmark-star-" + bkmID).(dom.HTMLElement)
+		fmt.Printf("starBookmarkDiv:%t\n", starredBookmark)
+
+		if starredBookmark {
+			star = false
+		}
+
+		req, err := http.NewRequest("GET", "/starBookmark/?star="+strconv.FormatBool(star)+"&bookmarkId="+bkmID, nil)
+		if err != nil {
+			return
+		}
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println("starBookmark request error")
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Println("starBookmark response code error")
+			return
+		}
+		if starredBookmark {
+			if starBookmarkDiv != nil {
+				setClass(starBookmarkDiv, ClassBookmarkNotStarred)
+			}
+			el := d.GetElementByID("bookmark-starred-" + bkmID)
+			el.ParentNode().RemoveChild(el)
+		} else {
+			setClass(starBookmarkDiv, ClassBookmarkStarred)
+
+			var data newBookmarkStruct
+			err = json.NewDecoder(resp.Body).Decode(&data)
+			if err != nil {
+				fmt.Println("starBookmark JSON decoder error")
+				return
+			}
+			newBkm := createBookmark(bkmID, data.BookmarkTitle, data.BookmarkURL, data.BookmarkFavicon, data.BookmarkStarred, true)
+			fmt.Printf("data:%v\n", data)
+
+			li := d.CreateElement("li").(*dom.HTMLLIElement)
+			li.AppendChild(newBkm)
+			d.GetElementByID("starred").AppendChild(li)
+		}
+	}()
 }
 
 func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool, starred bool) dom.HTMLElement {
 
 	// Link (actually a clickable div).
 	a := d.CreateElement("div").(*dom.HTMLDivElement)
-	a.SetTitle(bkmURL)
-	a.AppendChild(d.CreateTextNode(bkmURL))
-	a.AddEventListener("onclick", false, func(e dom.Event) { openInParent(bkmURL) })
+	a.SetTitle(bkmTitle)
+	a.AppendChild(d.CreateTextNode(bkmTitle))
+	a.AddEventListener("click", false, func(e dom.Event) { openInParent(bkmURL) })
 	// Main div.
 	md := d.CreateElement("div").(*dom.HTMLDivElement)
 	md.SetClass(ClassItemBookmark)
@@ -168,7 +254,7 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 	fav.SetClass("favicon")
 	// Star.
 	str := d.CreateElement("div").(*dom.HTMLDivElement)
-	a.AddEventListener("onclick", false, func(e dom.Event) { starBookmark(bkmID) })
+	str.AddEventListener("click", false, func(e dom.Event) { starBookmark(bkmID) })
 
 	if starred {
 		a.SetID("bookmark-starred-link-" + bkmID)
@@ -186,15 +272,13 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 		} else {
 			str.SetClass(ClassBookmarkNotStarred)
 		}
+		md.AddEventListener("dragstart", false, dragItem)
+
 	}
 
 	md.AppendChild(str)
 	md.AppendChild(fav)
 	md.AppendChild(a)
-
-	if !starred {
-		md.AddEventListener("dragstart", false, dragItem)
-	}
 
 	return md
 }
@@ -202,6 +286,14 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 type folderStruct struct {
 	fld     dom.HTMLDivElement
 	subFlds dom.HTMLUListElement
+}
+
+type newBookmarkStruct struct {
+	BookmarkId      int64
+	BookmarkTitle   string
+	BookmarkURL     string
+	BookmarkFavicon string
+	BookmarkStarred bool
 }
 
 func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderStruct {
@@ -220,7 +312,7 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 	md.AppendChild(d.CreateTextNode(fldTitle))
 	md.AppendChild(ul)
 
-	md.AddEventListener("click", false, func(e dom.Event) { getChildrenFolders(e, fldID) })
+	md.AddEventListener("click", false, func(e dom.Event) { getChildrenItems(e, fldID) })
 	md.AddEventListener("dragover", false, func(e dom.Event) { overItem(e) })
 	md.AddEventListener("dragleave", false, func(e dom.Event) { leaveItem(e) })
 	md.AddEventListener("dragstart", false, func(e dom.Event) { dragItem(e) })
@@ -302,7 +394,60 @@ func addFolder(e dom.Event) {
 	}()
 }
 
-func dropDelete(e dom.Event) {}
+func dropDelete(e dom.Event) {
+
+	e.PreventDefault()
+	go func() {
+
+		draggedItem := d.GetElementByID(draggedItemID)
+		draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+
+		if strings.HasPrefix(draggedItemID, "folder") {
+			req, err := http.NewRequest("GET", "/deleteFolder/?folderId="+draggedItemIDDigit, nil)
+			if err != nil {
+				return
+			}
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			if err != nil {
+				fmt.Println("dropDelete request error")
+				return
+			}
+			defer resp.Body.Close()
+
+			if resp.StatusCode != http.StatusOK {
+				fmt.Println("dropDelete response code error")
+				return
+			}
+
+			children := d.GetElementByID("subfolders-" + draggedItemIDDigit)
+			children.ParentNode().RemoveChild(children)
+			draggedItem.ParentNode().RemoveChild(draggedItem)
+		} else {
+			req, err := http.NewRequest("GET", "/deleteBookmark/?bookmarkId="+draggedItemIDDigit, nil)
+			if err != nil {
+				return
+			}
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			if err != nil {
+				fmt.Println("dropDelete request error")
+				return
+			}
+			defer resp.Body.Close()
+
+			if resp.StatusCode != http.StatusOK {
+				fmt.Println("dropDelete response code error")
+				return
+			}
+
+			draggedItem.ParentNode().RemoveChild(draggedItem)
+		}
+	}()
+
+}
 
 func dropFolder(e dom.Event) {
 
@@ -386,6 +531,11 @@ func dropFolder(e dom.Event) {
 				draggedItem.ParentNode().RemoveChild(draggedItem)
 			}
 		} else {
+			url := e.(*dom.DragEvent).Get("dataTransfer").Get("items").Get("length")
+			//url := js.Global.Get("dataTransfer").Call("getData", "URL")
+			fmt.Printf("url:%v", url)
+			//Url, err := url.Parse(url)
+
 		}
 	}()
 
@@ -414,26 +564,20 @@ func renameFolder(e dom.Event) {
 
 	go func() {
 
-		fmt.Println("renameFolder")
+		var (
+			resp *http.Response
+		)
 
 		fldID := d.GetElementByID("rename-hidden-input-box-form").(*dom.HTMLInputElement).Value
 		fldName := d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Value
-
 		fldIDDigit := strings.Split(fldID, "-")[1]
 
 		if strings.HasPrefix(fldID, "folder") {
-			req, err := http.NewRequest("GET", "/renameFolder/?folderId="+fldIDDigit+"&folderName="+fldName, nil)
-			if err != nil {
-				return
-			}
 
-			client := &http.Client{}
-			resp, err := client.Do(req)
-			if err != nil {
-				fmt.Println("renameFolder request error")
+			if resp = sendRequest("/renameFolder/", []arg{{key: "folderId", val: fldIDDigit}, {key: "folderName", val: fldName}}); resp.StatusCode != http.StatusOK {
+				fmt.Println("renameFolder response code error")
 				return
 			}
-			defer resp.Body.Close()
 
 			if resp.StatusCode != http.StatusOK {
 				fmt.Println("renameFolder response code error")
@@ -442,83 +586,77 @@ func renameFolder(e dom.Event) {
 
 			d.GetElementByID(draggedItemID).SetInnerHTML(fldName)
 
+		} else {
+
+			if resp = sendRequest("/renameBookmark/", []arg{{key: "bookmarkId", val: fldIDDigit}, {key: "bookmarkName", val: fldName}}); resp.StatusCode != http.StatusOK {
+				fmt.Println("renameBookmark response code error")
+				return
+			}
+
+			d.GetElementByID("bookmark-link-" + fldIDDigit).SetInnerHTML(fldName)
+
 		}
+
+		hideRenameBox()
 	}()
 
 }
 
-func getChildrenFolders(e dom.Event, fldIDDigit string) {
+func getChildrenItems(e dom.Event, fldIDDigit string) {
 
 	go func() {
 
-		fmt.Println("getChildrenFolders:fldIDDigit=" + fldIDDigit)
+		var (
+			err     error
+			resp    *http.Response
+			dataFld []types.Folder
+			dataBkm []types.Bookmark
+		)
+
+		// Toggle display.
 		if hasChildrenFolders(fldIDDigit) {
 			undisplayChildrenFolders(fldIDDigit)
 			return
 		}
 
-		req, err := http.NewRequest("GET", "/getChildrenFolders/?folderId="+fldIDDigit, nil)
-		if err != nil {
-			return
-		}
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			fmt.Println("getChildrenFolders request error")
-			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
+		// Getting the folder subfolders.
+		if resp = sendRequest("/getChildrenFolders/", []arg{{key: "folderId", val: fldIDDigit}}); resp.StatusCode != http.StatusOK {
 			fmt.Println("getChildrenFolders response code error")
 			return
 		}
-
-		var dataFld []types.Folder
-		err = json.NewDecoder(resp.Body).Decode(&dataFld)
-
-		if err != nil {
+		if err = json.NewDecoder(resp.Body).Decode(&dataFld); err != nil {
 			fmt.Println("getChildrenFolders JSON decoder error")
 			return
 		}
-
 		for _, fld := range dataFld {
 			displaySubfolder(fldIDDigit, strconv.Itoa(fld.Id), fld.Title, fld.NbChildrenFolders)
 		}
 
-		setClass(d.GetElementByID("folder-"+fldIDDigit).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderOpen)
-
-		req, err = http.NewRequest("GET", "/getFolderBookmarks/?folderId="+fldIDDigit, nil)
-		if err != nil {
-			return
-		}
-
-		client = &http.Client{}
-		resp, err = client.Do(req)
-		if err != nil {
-			fmt.Println("getChildrenFolders request error")
-			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
+		// Getting the folder bookmarks.
+		if resp = sendRequest("/getFolderBookmarks/", []arg{{key: "folderId", val: fldIDDigit}}); resp.StatusCode != http.StatusOK {
 			fmt.Println("getChildrenFolders response code error")
 			return
 		}
-
-		var dataBkm []types.Bookmark
-		err = json.NewDecoder(resp.Body).Decode(&dataBkm)
-
+		if err = json.NewDecoder(resp.Body).Decode(&dataBkm); err != nil {
+			fmt.Println("getChildrenFolders JSON decoder error")
+			return
+		}
 		for _, bkm := range dataBkm {
 			displayBookmark(fldIDDigit, strconv.Itoa(bkm.Id), bkm.Title, bkm.URL, bkm.Favicon, bkm.Starred)
 		}
+
+		// Changing the folder icon.
+		setClass(d.GetElementByID("folder-"+fldIDDigit).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderOpen)
 
 	}()
 
 }
 
 func main() {
+
+	// Add/Rename folder button listener.
+	d.GetElementByID("add-folder-button").AddEventListener("click", false, addFolder)
+	d.GetElementByID("rename-folder-button").AddEventListener("click", false, renameFolder)
 
 	// Bind enter key to add or rename a folder.
 	d.AddEventListener("keydown", false, func(e dom.Event) {
@@ -531,7 +669,7 @@ func main() {
 	// Root folder listeners.
 	fld := d.GetElementByID("folder-1").(*dom.HTMLDivElement)
 	fld.AddEventListener("click", false, func(e dom.Event) {
-		getChildrenFolders(e, "1")
+		getChildrenItems(e, "1")
 	})
 	fld.AddEventListener("dragover", false, func(e dom.Event) {
 		overItem(e)
