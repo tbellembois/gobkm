@@ -452,6 +452,8 @@ func dropDelete(e dom.Event) {
 func dropFolder(e dom.Event) {
 
 	e.PreventDefault()
+	// Putting the following instruction inside the go routine does not work. I don't know why.
+	url := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "URL").String()
 
 	go func() {
 
@@ -459,6 +461,8 @@ func dropFolder(e dom.Event) {
 		var (
 			draggedItemIDDigit  string
 			draggedItemChildren dom.Element
+			err                 error
+			resp                *http.Response
 		)
 		if draggedItem != nil {
 			draggedItemIDDigit = strings.Split(draggedItemID, "-")[1]
@@ -531,11 +535,22 @@ func dropFolder(e dom.Event) {
 				draggedItem.ParentNode().RemoveChild(draggedItem)
 			}
 		} else {
-			url := e.(*dom.DragEvent).Get("dataTransfer").Get("items").Get("length")
-			//url := js.Global.Get("dataTransfer").Call("getData", "URL")
-			fmt.Printf("url:%v", url)
-			//Url, err := url.Parse(url)
+			var dataBkm newBookmarkStruct
+			if resp = sendRequest("/addBookmark/", []arg{{key: "bookmarkUrl", val: url}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
+				fmt.Println("dropFolder response code error")
+				return
+			}
+			if err = json.NewDecoder(resp.Body).Decode(&dataBkm); err != nil {
+				fmt.Println("getChildrenFolders JSON decoder error")
+				return
+			}
 
+			newBkm := createBookmark(strconv.Itoa(int(dataBkm.BookmarkId)), dataBkm.BookmarkURL, dataBkm.BookmarkURL, "", dataBkm.BookmarkStarred, false)
+
+			droppedItemChildren.InsertBefore(newBkm, droppedItemChildren.FirstChild())
+			removeClass(droppedItem, ClassItemOver)
+			removeClass(droppedItem, ClassItemFolderClosed)
+			addClass(droppedItem, ClassItemFolderOpen)
 		}
 	}()
 
