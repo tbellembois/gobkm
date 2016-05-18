@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -37,7 +38,7 @@ func init() {
 
 // Utils functions.
 func isHidden(id string) bool {
-	return d.GetElementByID(id).(dom.HTMLElement).Style().GetPropertyValue("display") == "block"
+	return d.GetElementByID(id).(dom.HTMLElement).Style().GetPropertyValue("display") == "none"
 }
 func hideItem(id string) {
 	d.GetElementByID(id).(dom.HTMLElement).Style().SetProperty("display", "none", "")
@@ -109,6 +110,37 @@ func sendRequest(url string, args []arg) *http.Response {
 
 }
 
+func importBookmarks(e dom.Event) {
+	e.PreventDefault()
+	go func() {
+
+		setWait()
+		setItemValue("import-button", "importing...")
+
+		fileSelect := d.GetElementByID("import-file").(*dom.HTMLInputElement)
+		file := fileSelect.Files()[0]
+
+		v := url.Values{}
+		v.Set("importFile", file.String())
+		resp, err := http.PostForm("/import/", v)
+		if err != nil {
+			fmt.Println("importBookmarks response code error")
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Println("importBookmarks response code error")
+			return
+		}
+
+		unsetWait()
+		setItemValue("import-button", "import")
+		hideImport()
+		d.GetElementByID("folder-1").(dom.HTMLDivElement).Click()
+	}()
+}
+
 func hasChildrenFolders(fldID string) bool {
 	return hasClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolderOpen)
 }
@@ -151,7 +183,7 @@ func hideImport() {
 	hideItem("import-input-box")
 }
 
-func toogleDisplayImport(e dom.Event) {
+func toogleDisplayImport() {
 	print("toogleDisplayImport")
 	if isHidden("import-input-box") {
 		showItem("import-input-box")
@@ -463,6 +495,7 @@ func dropFolder(e dom.Event) {
 			draggedItemChildren dom.Element
 			err                 error
 			resp                *http.Response
+			req                 *http.Request
 		)
 		if draggedItem != nil {
 			draggedItemIDDigit = strings.Split(draggedItemID, "-")[1]
@@ -484,13 +517,13 @@ func dropFolder(e dom.Event) {
 			// Can not move a folder into one of its children.
 			//TODO
 
-			req, err := http.NewRequest("GET", "/moveFolder/?sourceFolderId="+draggedItemIDDigit+"&destinationFolderId="+droppedItemIDDigit, nil)
+			req, err = http.NewRequest("GET", "/moveFolder/?sourceFolderId="+draggedItemIDDigit+"&destinationFolderId="+droppedItemIDDigit, nil)
 			if err != nil {
 				return
 			}
 
 			client := &http.Client{}
-			resp, err := client.Do(req)
+			resp, err = client.Do(req)
 			if err != nil {
 				fmt.Println("dropFolder request error")
 				return
@@ -509,7 +542,7 @@ func dropFolder(e dom.Event) {
 			addClass(droppedItem, ClassItemFolderOpen)
 		} else if draggedItem != nil && strings.HasPrefix(draggedItemID, "bookmark") {
 
-			req, err := http.NewRequest("GET", "/moveBookmark/?bookmarkId="+draggedItemIDDigit+"&destinationFolderId="+droppedItemIDDigit, nil)
+			req, err = http.NewRequest("GET", "/moveBookmark/?bookmarkId="+draggedItemIDDigit+"&destinationFolderId="+droppedItemIDDigit, nil)
 			if err != nil {
 				return
 			}
@@ -713,6 +746,22 @@ func main() {
 	})
 	db.AddEventListener("drop", false, func(e dom.Event) {
 		dropDelete(e)
+	})
+
+	// Import export links listeners.
+	importLink := d.GetElementByID("import-link").(*dom.HTMLSpanElement)
+	importLink.AddEventListener("click", false, func(e dom.Event) {
+		toogleDisplayImport()
+	})
+	exportLink := d.GetElementByID("export-link").(*dom.HTMLSpanElement)
+	exportLink.AddEventListener("click", false, func(e dom.Event) {
+		openInParent("/export/")
+	})
+
+	// Import form listener.
+	formImport := d.GetElementByID("import-file-form")
+	formImport.AddEventListener("submit", false, func(e dom.Event) {
+		importBookmarks(e)
 	})
 
 }
