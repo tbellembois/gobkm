@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -691,17 +692,31 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// TestHandler
+func (env *Env) TestHandler(w http.ResponseWriter, r *http.Request) {
+	log.WithFields(log.Fields{
+		"r": r,
+	}).Debug("TestHandler")
+}
+
 // ImportHandler handles the import requests.
 func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Getting the uploaded import file.
-	file, _, err := r.FormFile("importFile")
+	//	file, _, err := r.FormFile("importFile")
+	//	if err != nil {
+	//		failHTTP(w, "ImportHandler", err.Error(), http.StatusInternalServerError)
+	//	}
+
+	file, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		failHTTP(w, "ImportHandler", err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// Parsing the HTML.
-	doc, err := html.Parse(file)
+	//doc, err := html.Parse(file)
+	doc, err := html.Parse(bytes.NewReader(file))
 	if err != nil {
 		failHTTP(w, "ImportHandler", err.Error(), http.StatusBadRequest)
 		return

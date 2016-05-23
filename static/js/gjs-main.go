@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/tbellembois/gobkm/types"
 	"honnef.co/go/js/dom"
+	"honnef.co/go/js/xhr"
 )
 
 // CSS classes.
@@ -30,13 +30,33 @@ var (
 	draggedItemID string
 )
 
+type folderStruct struct {
+	fld     dom.HTMLDivElement
+	subFlds dom.HTMLUListElement
+}
+
+type newBookmarkStruct struct {
+	BookmarkId      int64
+	BookmarkTitle   string
+	BookmarkURL     string
+	BookmarkFavicon string
+	BookmarkStarred bool
+}
+
+type newFolderStruct struct {
+	FolderID    int64
+	FolderTitle string
+}
+
 func init() {
 	w = dom.GetWindow()
 	d = w.Document()
 
 }
 
+//
 // Utils functions.
+//
 func isHidden(id string) bool {
 	return d.GetElementByID(id).(dom.HTMLElement).Style().GetPropertyValue("display") == "none"
 }
@@ -74,122 +94,11 @@ func openInParent(url string) {
 	w.Parent().Open(url, "", "")
 }
 
-type arg struct {
-	key string
-	val string
-}
-
-func sendRequest(url string, args []arg) *http.Response {
-
-	var err error
-	var req *http.Request
-	var resp *http.Response
-
-	url = strings.Join([]string{url, "?"}, "")
-	for i, arg := range args {
-		if i == 0 {
-			url = strings.Join([]string{url, fmt.Sprintf("%s=%s", arg.key, arg.val)}, "")
-		} else {
-			url = strings.Join([]string{url, fmt.Sprintf("%s=%s", arg.key, arg.val)}, "&")
-		}
-	}
-
-	if req, err = http.NewRequest("GET", url, nil); err != nil {
-		fmt.Println("request build error:", url)
-		return resp
-	}
-
-	client := &http.Client{}
-	if resp, err = client.Do(req); err != nil {
-		fmt.Println("request error:", url)
-		return resp
-	}
-	defer resp.Body.Close()
-
-	return resp
-
-}
-
-func importBookmarks(e dom.Event) {
-	e.PreventDefault()
-	go func() {
-
-		setWait()
-		setItemValue("import-button", "importing...")
-
-		fileSelect := d.GetElementByID("import-file").(*dom.HTMLInputElement)
-		file := fileSelect.Files()[0]
-
-		v := url.Values{}
-		v.Set("importFile", file.String())
-		resp, err := http.PostForm("/import/", v)
-		if err != nil {
-			fmt.Println("importBookmarks response code error")
-			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			fmt.Println("importBookmarks response code error")
-			return
-		}
-
-		unsetWait()
-		setItemValue("import-button", "import")
-		hideImport()
-		d.GetElementByID("folder-1").(dom.HTMLDivElement).Click()
-	}()
-}
-
-func hasChildrenFolders(fldID string) bool {
-	return hasClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolderOpen)
-}
-
-func undisplayChildrenFolders(fldID string) {
-	// Removing folder content.
-	d.GetElementByID("subfolders-" + fldID).SetInnerHTML("")
-	// Changing folder icon.
-	setClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderClosed)
-}
-
 func isStarredBookmark(bkmID string) bool {
 	return d.GetElementByID("bookmark-starred-link-"+bkmID) != nil
 }
-
-func showRenameBox() {
-	showItem("rename-input-box")
-	disableItem("add-folder")
-	disableItem("add-folder-button")
-}
-
-func hideRenameBox() {
-	hideItem("rename-input-box")
-	resetItemValue("rename-input-box-form")
-	resetItemValue("rename-hidden-input-box-form")
-	enableItem("add-folder")
-	enableItem("add-folder-button")
-}
-
-func setRenameFormValue(val string) {
-	setItemValue("rename-input-box-form", val)
-	d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Select()
-}
-func setRenameHiddenFormValue(val string) {
-	setItemValue("rename-hidden-input-box-form", val)
-}
-
-func hideImport() {
-	print("hideImport")
-	hideItem("import-input-box")
-}
-
-func toogleDisplayImport() {
-	print("toogleDisplayImport")
-	if isHidden("import-input-box") {
-		showItem("import-input-box")
-	} else {
-		hideItem("import-input-box")
-	}
+func hasChildrenFolders(fldID string) bool {
+	return hasClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolderOpen)
 }
 
 func setWait() {
@@ -201,7 +110,71 @@ func unsetWait() {
 	print("unsetWait")
 	d.GetElementsByTagName("body")[0].Class().Remove("wait")
 }
+func undisplayChildrenFolders(fldID string) {
+	// Removing folder content.
+	d.GetElementByID("subfolders-" + fldID).SetInnerHTML("")
+	// Changing folder icon.
+	setClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderClosed)
+}
+func showRenameBox() {
+	showItem("rename-input-box")
+	disableItem("add-folder")
+	disableItem("add-folder-button")
+}
+func hideRenameBox() {
+	hideItem("rename-input-box")
+	resetItemValue("rename-input-box-form")
+	resetItemValue("rename-hidden-input-box-form")
+	enableItem("add-folder")
+	enableItem("add-folder-button")
+}
+func setRenameFormValue(val string) {
+	setItemValue("rename-input-box-form", val)
+	d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Select()
+}
+func setRenameHiddenFormValue(val string) {
+	setItemValue("rename-hidden-input-box-form", val)
+}
+func hideImport() {
+	hideItem("import-input-box")
+}
+func toogleDisplayImport() {
+	if isHidden("import-input-box") {
+		showItem("import-input-box")
+	} else {
+		hideItem("import-input-box")
+	}
+}
 
+func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFolders int) {
+
+	fmt.Printf("displaySubfolder:pFldID=%s,fldID=%s,", pFldID, fldID)
+	if d.GetElementByID("folder-"+fldID) != nil {
+		return
+	}
+
+	newFld := createFolder(fldID, fldTitle, nbChildrenFolders)
+
+	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.fld)
+	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.subFlds)
+
+}
+
+func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool) {
+
+	if d.GetElementByID("bookmark-"+bkmID) != nil {
+		return
+	}
+
+	newBkm := createBookmark(bkmID, bkmTitle, bkmURL, bkmFavicon, bkmStarred, false)
+
+	d.GetElementByID("subfolders-" + pFldID).AppendChild(newBkm)
+
+}
+
+//
+// drag/over/leave folder/bookmark listeners
+//
 func overItem(e dom.Event) {
 	e.PreventDefault()
 	addClass(e.Target().(dom.HTMLElement), ClassItemOver)
@@ -216,60 +189,9 @@ func dragItem(e dom.Event) {
 	draggedItemID = e.Target().ID()
 }
 
-func starBookmark(bkmID string) {
-	go func() {
-
-		star := true
-		starredBookmark := isStarredBookmark(bkmID)
-		starBookmarkDiv := d.GetElementByID("bookmark-star-" + bkmID).(dom.HTMLElement)
-		fmt.Printf("starBookmarkDiv:%t\n", starredBookmark)
-
-		if starredBookmark {
-			star = false
-		}
-
-		req, err := http.NewRequest("GET", "/starBookmark/?star="+strconv.FormatBool(star)+"&bookmarkId="+bkmID, nil)
-		if err != nil {
-			return
-		}
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			fmt.Println("starBookmark request error")
-			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			fmt.Println("starBookmark response code error")
-			return
-		}
-		if starredBookmark {
-			if starBookmarkDiv != nil {
-				setClass(starBookmarkDiv, ClassBookmarkNotStarred)
-			}
-			el := d.GetElementByID("bookmark-starred-" + bkmID)
-			el.ParentNode().RemoveChild(el)
-		} else {
-			setClass(starBookmarkDiv, ClassBookmarkStarred)
-
-			var data newBookmarkStruct
-			err = json.NewDecoder(resp.Body).Decode(&data)
-			if err != nil {
-				fmt.Println("starBookmark JSON decoder error")
-				return
-			}
-			newBkm := createBookmark(bkmID, data.BookmarkTitle, data.BookmarkURL, data.BookmarkFavicon, data.BookmarkStarred, true)
-			fmt.Printf("data:%v\n", data)
-
-			li := d.CreateElement("li").(*dom.HTMLLIElement)
-			li.AppendChild(newBkm)
-			d.GetElementByID("starred").AppendChild(li)
-		}
-	}()
-}
-
+//
+// HTML elements creation helpers
+//
 func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool, starred bool) dom.HTMLElement {
 
 	// Link (actually a clickable div).
@@ -315,22 +237,8 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 	return md
 }
 
-type folderStruct struct {
-	fld     dom.HTMLDivElement
-	subFlds dom.HTMLUListElement
-}
-
-type newBookmarkStruct struct {
-	BookmarkId      int64
-	BookmarkTitle   string
-	BookmarkURL     string
-	BookmarkFavicon string
-	BookmarkStarred bool
-}
-
 func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderStruct {
 
-	fmt.Println("createFolder:fldID=" + fldID)
 	// Main div.
 	md := d.CreateElement("div").(*dom.HTMLDivElement)
 	md.SetTitle(fldTitle)
@@ -353,67 +261,131 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 	return folderStruct{fld: *md, subFlds: *ul}
 }
 
-func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFolders int) {
+//
+// AJAX requests
+//
+// structure to pass arguments to the sendRequest method
+type arg struct {
+	key string
+	val string
+}
 
-	fmt.Printf("displaySubfolder:pFldID=%s,fldID=%s,", pFldID, fldID)
-	if d.GetElementByID("folder-"+fldID) != nil {
-		return
+// sendRequest performs a GET request to url with args
+func sendRequest(url string, args []arg) *http.Response {
+
+	var err error
+	var req *http.Request
+	var resp *http.Response
+
+	url = strings.Join([]string{url, "?"}, "")
+	for i, arg := range args {
+		if i == 0 {
+			url = strings.Join([]string{url, fmt.Sprintf("%s=%s", arg.key, arg.val)}, "")
+		} else {
+			url = strings.Join([]string{url, fmt.Sprintf("%s=%s", arg.key, arg.val)}, "&")
+		}
 	}
 
-	newFld := createFolder(fldID, fldTitle, nbChildrenFolders)
+	if req, err = http.NewRequest("GET", url, nil); err != nil {
+		fmt.Println("request build error:", url)
+		return resp
+	}
 
-	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.fld)
-	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.subFlds)
+	client := &http.Client{}
+	if resp, err = client.Do(req); err != nil {
+		fmt.Println("request error:", url)
+		return resp
+	}
+	defer resp.Body.Close()
+
+	return resp
 
 }
 
-func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool) {
+func importBookmarks(e dom.Event) {
+	e.PreventDefault()
+	go func() {
 
-	if d.GetElementByID("bookmark-"+bkmID) != nil {
-		return
-	}
+		setWait()
+		setItemValue("import-button", "importing...")
 
-	newBkm := createBookmark(bkmID, bkmTitle, bkmURL, bkmFavicon, bkmStarred, false)
+		fileSelect := d.GetElementByID("import-file").(*dom.HTMLInputElement)
+		file := fileSelect.Files()[0]
 
-	d.GetElementByID("subfolders-" + pFldID).AppendChild(newBkm)
+		req := xhr.NewRequest("POST", "/import/")
+		if err := req.Send(file.Object); err != nil {
+			fmt.Println("importBookmarks response code error")
+			return
+		}
 
+		unsetWait()
+		setItemValue("import-button", "import")
+		hideImport()
+		d.GetElementByID("folder-1").(*dom.HTMLDivElement).Click()
+	}()
 }
 
-type newFolderStruct struct {
-	FolderID    int64
-	FolderTitle string
+func starBookmark(bkmID string) {
+	go func() {
+
+		var (
+			err  error
+			resp *http.Response
+			data newBookmarkStruct // returned struct from server
+		)
+
+		star := true
+		starredBookmark := isStarredBookmark(bkmID)
+		starBookmarkDiv := d.GetElementByID("bookmark-star-" + bkmID).(dom.HTMLElement)
+		if starredBookmark {
+			star = false
+		}
+
+		if resp = sendRequest("/starBookmark/", []arg{{key: "star", val: strconv.FormatBool(star)}, {key: "bookmarkId", val: bkmID}}); resp.StatusCode != http.StatusOK {
+			fmt.Println("starBookmark response code error")
+			return
+		}
+
+		if starredBookmark {
+			if starBookmarkDiv != nil {
+				setClass(starBookmarkDiv, ClassBookmarkNotStarred)
+			}
+			el := d.GetElementByID("bookmark-starred-" + bkmID)
+			el.ParentNode().RemoveChild(el)
+		} else {
+			setClass(starBookmarkDiv, ClassBookmarkStarred)
+
+			if err = json.NewDecoder(resp.Body).Decode(&data); err != nil {
+				fmt.Println("starBookmark JSON decoder error")
+				return
+			}
+			newBkm := createBookmark(bkmID, data.BookmarkTitle, data.BookmarkURL, data.BookmarkFavicon, data.BookmarkStarred, true)
+
+			li := d.CreateElement("li").(*dom.HTMLLIElement)
+			li.AppendChild(newBkm)
+			d.GetElementByID("starred").AppendChild(li)
+		}
+	}()
 }
 
 func addFolder(e dom.Event) {
-
+	e.PreventDefault()
 	go func() {
 
-		fmt.Println("addFolder")
+		var (
+			err  error
+			resp *http.Response
+			data newFolderStruct // returned struct from server
+		)
 
 		fldName := d.GetElementByID("add-folder").(*dom.HTMLInputElement).Value
 
-		req, err := http.NewRequest("GET", "/addFolder/?folderName="+fldName, nil)
-
-		if err != nil {
+		if resp = sendRequest("/addFolder/", []arg{{key: "folderName", val: fldName}}); resp.StatusCode != http.StatusOK {
+			fmt.Println("starBookmark response code error")
 			return
 		}
 
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			fmt.Println("addFolder request error")
-			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			fmt.Println("addFolder response code error")
-			return
-		}
-
-		var data newFolderStruct
-		err = json.NewDecoder(resp.Body).Decode(&data)
-		if err != nil {
+		if err = json.NewDecoder(resp.Body).Decode(&data); err != nil {
 			fmt.Println("addFolder JSON decoder error")
 			return
 		}
@@ -427,7 +399,6 @@ func addFolder(e dom.Event) {
 }
 
 func dropDelete(e dom.Event) {
-
 	e.PreventDefault()
 	go func() {
 
