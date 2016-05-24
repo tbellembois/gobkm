@@ -7,6 +7,10 @@ The purpose of this project was to study the Go programming language in its diff
 
 ![screenshot](screenshot.png)
 
+## Installation
+
+Download and uncompress the latest release from <https://github.com/tbellembois/gobkm/releases>.
+
 ## Usage
 
 ```bash
@@ -91,13 +95,14 @@ Click it to open the GoBkm bar, resize and place it wherever you want.
 
 ## Thanks
 
-Thanks to [Sébastien Binet](https://github.com/sbinet) for the tutorial and help.
+Thanks to [Sébastien Binet](https://github.com/sbinet) for the tutorial and help on Go.  
+Thanks to [Dmitri Shuralyov](https://github.com/shurcooL) for the help on GopherJS.
 
 ## Roadmap
 
 - provide a systemd startup script
-- translate the Javascript into gopherjs <https://github.com/gopherjs/gopherjs>
 - do not reload folder content from server at each click
+- ~~translate the Javascript into gopherjs <https://github.com/gopherjs/gopherjs>~~
 - ~~import export feature (HTML?)~~
 
 ## Known limitations
@@ -113,6 +118,11 @@ Cross compiled under Arch Linux with:
 ```bash
     # requires the package arm-linux-gnueabihf-gcc
     env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build .
+```
+
+Javascript generation:
+```bash
+    gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js
 ```
 
 ## Credits

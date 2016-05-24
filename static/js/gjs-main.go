@@ -57,8 +57,43 @@ func init() {
 //
 // Utils functions.
 //
+func getClosest(elem dom.Node, selector string) dom.Node {
+
+	firstChar := string(selector[0])
+
+	for ; elem.NodeName() != d.NodeName(); elem = elem.ParentNode() {
+
+		// class selector
+		if firstChar == "." {
+			if elem.(dom.HTMLElement).Class().Contains(selector[1:]) {
+				return elem
+			}
+		}
+		// id selector
+		if firstChar == "#" {
+			if elem.(dom.HTMLElement).ID() == selector[1:] {
+				return elem
+			}
+		}
+		// attribute selector
+		if firstChar == "[" {
+			if elem.(dom.HTMLElement).HasAttribute(selector[1 : len(selector)-2]) {
+				return elem
+			}
+		}
+		// tag selector
+		if elem.(dom.HTMLElement).TagName() == selector {
+			return elem
+		}
+	}
+	return nil
+}
+
 func isHidden(id string) bool {
 	return d.GetElementByID(id).(dom.HTMLElement).Style().GetPropertyValue("display") == "none"
+}
+func isDisabled(id string) bool {
+	return d.GetElementByID(id).(dom.HTMLElement).HasAttribute("disabled")
 }
 func hideItem(id string) {
 	d.GetElementByID(id).(dom.HTMLElement).Style().SetProperty("display", "none", "")
@@ -105,11 +140,11 @@ func setWait() {
 	print("setWait")
 	d.GetElementsByTagName("body")[0].Class().SetString("wait")
 }
-
 func unsetWait() {
 	print("unsetWait")
 	d.GetElementsByTagName("body")[0].Class().Remove("wait")
 }
+
 func undisplayChildrenFolders(fldID string) {
 	// Removing folder content.
 	d.GetElementByID("subfolders-" + fldID).SetInnerHTML("")
@@ -130,7 +165,7 @@ func hideRenameBox() {
 }
 func setRenameFormValue(val string) {
 	setItemValue("rename-input-box-form", val)
-	d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Select()
+	d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Call("select")
 }
 func setRenameHiddenFormValue(val string) {
 	setItemValue("rename-hidden-input-box-form", val)
@@ -148,7 +183,6 @@ func toogleDisplayImport() {
 
 func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFolders int) {
 
-	fmt.Printf("displaySubfolder:pFldID=%s,fldID=%s,", pFldID, fldID)
 	if d.GetElementByID("folder-"+fldID) != nil {
 		return
 	}
@@ -187,6 +221,25 @@ func leaveItem(e dom.Event) {
 
 func dragItem(e dom.Event) {
 	draggedItemID = e.Target().ID()
+}
+
+func dropRename(e dom.Event) {
+
+	//draggedItemID = e.(*dom.DragEvent).Get("dragItemId").String()
+	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+
+	if strings.HasPrefix(draggedItemID, "folder") {
+		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
+		setRenameFormValue(draggedFldName)
+
+	} else {
+		draggedBkmName := d.GetElementByID("bookmark-link-" + draggedItemIDDigit).TextContent()
+		setRenameFormValue(draggedBkmName)
+	}
+	showRenameBox()
+	setRenameHiddenFormValue(draggedItemID)
+	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassItemOver)
+
 }
 
 //
@@ -402,24 +455,15 @@ func dropDelete(e dom.Event) {
 	e.PreventDefault()
 	go func() {
 
+		var (
+			resp *http.Response
+		)
+
 		draggedItem := d.GetElementByID(draggedItemID)
 		draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
 
 		if strings.HasPrefix(draggedItemID, "folder") {
-			req, err := http.NewRequest("GET", "/deleteFolder/?folderId="+draggedItemIDDigit, nil)
-			if err != nil {
-				return
-			}
-
-			client := &http.Client{}
-			resp, err := client.Do(req)
-			if err != nil {
-				fmt.Println("dropDelete request error")
-				return
-			}
-			defer resp.Body.Close()
-
-			if resp.StatusCode != http.StatusOK {
+			if resp = sendRequest("/deleteFolder/", []arg{{key: "folderId", val: draggedItemIDDigit}}); resp.StatusCode != http.StatusOK {
 				fmt.Println("dropDelete response code error")
 				return
 			}
@@ -428,26 +472,16 @@ func dropDelete(e dom.Event) {
 			children.ParentNode().RemoveChild(children)
 			draggedItem.ParentNode().RemoveChild(draggedItem)
 		} else {
-			req, err := http.NewRequest("GET", "/deleteBookmark/?bookmarkId="+draggedItemIDDigit, nil)
-			if err != nil {
-				return
-			}
-
-			client := &http.Client{}
-			resp, err := client.Do(req)
-			if err != nil {
-				fmt.Println("dropDelete request error")
-				return
-			}
-			defer resp.Body.Close()
-
-			if resp.StatusCode != http.StatusOK {
+			if resp = sendRequest("/deleteBookmark/", []arg{{key: "bookmarkId", val: draggedItemIDDigit}}); resp.StatusCode != http.StatusOK {
 				fmt.Println("dropDelete response code error")
 				return
 			}
 
 			draggedItem.ParentNode().RemoveChild(draggedItem)
 		}
+
+		removeClass(d.GetElementByID("delete-box").(dom.HTMLElement), ClassItemOver)
+
 	}()
 
 }
@@ -466,7 +500,6 @@ func dropFolder(e dom.Event) {
 			draggedItemChildren dom.Element
 			err                 error
 			resp                *http.Response
-			req                 *http.Request
 		)
 		if draggedItem != nil {
 			draggedItemIDDigit = strings.Split(draggedItemID, "-")[1]
@@ -484,24 +517,20 @@ func dropFolder(e dom.Event) {
 				return
 			}
 			// Can not move a folder into its first parent.
-			//TODO
+			draggedParentChildrenUlId := getClosest(draggedItem, "UL").(dom.HTMLElement).ID()
+			if draggedParentChildrenUlId == "subfolders-"+droppedItemIDDigit {
+				fmt.Println("can not move a folder into its first parent")
+				return
+			}
+
 			// Can not move a folder into one of its children.
 			//TODO
-
-			req, err = http.NewRequest("GET", "/moveFolder/?sourceFolderId="+draggedItemIDDigit+"&destinationFolderId="+droppedItemIDDigit, nil)
-			if err != nil {
+			if getClosest(droppedItem, "#subfolders-"+draggedItemIDDigit) != nil {
+				fmt.Println("can not move a folder into one of its children")
 				return
 			}
 
-			client := &http.Client{}
-			resp, err = client.Do(req)
-			if err != nil {
-				fmt.Println("dropFolder request error")
-				return
-			}
-			defer resp.Body.Close()
-
-			if resp.StatusCode != http.StatusOK {
+			if resp = sendRequest("/moveFolder/", []arg{{key: "sourceFolderId", val: draggedItemIDDigit}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
 				fmt.Println("dropFolder response code error")
 				return
 			}
@@ -513,20 +542,7 @@ func dropFolder(e dom.Event) {
 			addClass(droppedItem, ClassItemFolderOpen)
 		} else if draggedItem != nil && strings.HasPrefix(draggedItemID, "bookmark") {
 
-			req, err = http.NewRequest("GET", "/moveBookmark/?bookmarkId="+draggedItemIDDigit+"&destinationFolderId="+droppedItemIDDigit, nil)
-			if err != nil {
-				return
-			}
-
-			client := &http.Client{}
-			resp, err := client.Do(req)
-			if err != nil {
-				fmt.Println("dropFolder request error")
-				return
-			}
-			defer resp.Body.Close()
-
-			if resp.StatusCode != http.StatusOK {
+			if resp = sendRequest("/moveBookmark/", []arg{{key: "bookmarkId", val: draggedItemIDDigit}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
 				fmt.Println("dropFolder response code error")
 				return
 			}
@@ -560,27 +576,8 @@ func dropFolder(e dom.Event) {
 
 }
 
-func dropRename(e dom.Event) {
-
-	//draggedItemID = e.(*dom.DragEvent).Get("dragItemId").String()
-	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
-
-	if strings.HasPrefix(draggedItemID, "folder") {
-		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
-		setRenameFormValue(draggedFldName)
-
-	} else {
-		draggedBkmName := d.GetElementByID("bookmark-link-" + draggedItemIDDigit).TextContent()
-		setRenameFormValue(draggedBkmName)
-	}
-	showRenameBox()
-	setRenameHiddenFormValue(draggedItemID)
-	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassItemOver)
-
-}
-
 func renameFolder(e dom.Event) {
-
+	e.PreventDefault()
 	go func() {
 
 		var (
@@ -594,11 +591,6 @@ func renameFolder(e dom.Event) {
 		if strings.HasPrefix(fldID, "folder") {
 
 			if resp = sendRequest("/renameFolder/", []arg{{key: "folderId", val: fldIDDigit}, {key: "folderName", val: fldName}}); resp.StatusCode != http.StatusOK {
-				fmt.Println("renameFolder response code error")
-				return
-			}
-
-			if resp.StatusCode != http.StatusOK {
 				fmt.Println("renameFolder response code error")
 				return
 			}
@@ -733,6 +725,18 @@ func main() {
 	formImport := d.GetElementByID("import-file-form")
 	formImport.AddEventListener("submit", false, func(e dom.Event) {
 		importBookmarks(e)
+	})
+
+	// Enter key listener
+	d.AddEventListener("keydown", false, func(e dom.Event) {
+		fmt.Println(e.(*dom.KeyboardEvent).KeyCode)
+		if e.(*dom.KeyboardEvent).KeyCode == 13 {
+			if isDisabled("add-folder") {
+				renameFolder(e)
+			} else {
+				addFolder(e)
+			}
+		}
 	})
 
 }

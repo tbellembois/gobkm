@@ -194,13 +194,16 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 	// GET parameters retrieval.
 	folderName := r.URL.Query()["folderName"]
+	if folderName == nil {
+		return
+	}
 
 	log.WithFields(log.Fields{
 		"folderName": folderName,
 	}).Debug("AddFolderHandler:Query parameter")
 
 	// Parameters check.
-	if len(folderName) == 0 {
+	if len(folderName[0]) == 0 {
 		failHTTP(w, "AddFolderHandler", "bookmarkUrl empty", http.StatusBadRequest)
 		return
 	}
