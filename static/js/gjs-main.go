@@ -227,6 +227,7 @@ func dropRename(e dom.Event) {
 
 	//draggedItemID = e.(*dom.DragEvent).Get("dragItemId").String()
 	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+	defer func() { draggedItemID = "" }()
 
 	if strings.HasPrefix(draggedItemID, "folder") {
 		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
@@ -461,6 +462,7 @@ func dropDelete(e dom.Event) {
 
 		draggedItem := d.GetElementByID(draggedItemID)
 		draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+		defer func() { draggedItemID = "" }()
 
 		if strings.HasPrefix(draggedItemID, "folder") {
 			if resp = sendRequest("/deleteFolder/", []arg{{key: "folderId", val: draggedItemIDDigit}}); resp.StatusCode != http.StatusOK {
@@ -481,7 +483,6 @@ func dropDelete(e dom.Event) {
 		}
 
 		removeClass(d.GetElementByID("delete-box").(dom.HTMLElement), ClassItemOver)
-
 	}()
 
 }
@@ -495,6 +496,8 @@ func dropFolder(e dom.Event) {
 	go func() {
 
 		draggedItem := d.GetElementByID(draggedItemID)
+		defer func() { draggedItemID = "" }()
+
 		var (
 			draggedItemIDDigit  string
 			draggedItemChildren dom.Element
@@ -583,6 +586,8 @@ func renameFolder(e dom.Event) {
 		var (
 			resp *http.Response
 		)
+
+		defer func() { draggedItemID = "" }()
 
 		fldID := d.GetElementByID("rename-hidden-input-box-form").(*dom.HTMLInputElement).Value
 		fldName := d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Value
