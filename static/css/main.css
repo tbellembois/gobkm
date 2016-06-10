@@ -54,6 +54,9 @@ div.bookmark {
     word-break: break-all;
     float: left;
     clear: left;
+    height: 1.2em;
+    line-height: 1.2em;
+    min-width: 450px;
 }
 
 div.fa-star, div.fa-star-o {
@@ -67,6 +70,10 @@ div.bookmark > div {
     min-height: 22px;
     cursor: pointer;
     color: blue;
+}
+
+div.bookmark:HOVER, div.folder:HOVER {
+    background-color: #efefef;
 }
 
 div#logo {

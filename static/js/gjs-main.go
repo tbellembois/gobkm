@@ -137,11 +137,9 @@ func hasChildrenFolders(fldID string) bool {
 }
 
 func setWait() {
-	print("setWait")
 	d.GetElementsByTagName("body")[0].Class().SetString("wait")
 }
 func unsetWait() {
-	print("unsetWait")
 	d.GetElementsByTagName("body")[0].Class().Remove("wait")
 }
 
@@ -221,6 +219,7 @@ func leaveItem(e dom.Event) {
 
 func dragItem(e dom.Event) {
 	draggedItemID = e.Target().ID()
+	fmt.Println("draggedItemID:", draggedItemID)
 }
 
 func dropRename(e dom.Event) {
@@ -250,7 +249,7 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 
 	// Link (actually a clickable div).
 	a := d.CreateElement("div").(*dom.HTMLDivElement)
-	a.SetTitle(bkmTitle)
+	a.SetTitle(bkmURL)
 	a.AppendChild(d.CreateTextNode(bkmTitle))
 	a.AddEventListener("click", false, func(e dom.Event) { openInParent(bkmURL) })
 	// Main div.
@@ -262,16 +261,18 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 	fav.SetClass("favicon")
 	// Star.
 	str := d.CreateElement("div").(*dom.HTMLDivElement)
-	str.AddEventListener("click", false, func(e dom.Event) { starBookmark(bkmID) })
+	str.AddEventListener("click", false, func(e dom.Event) { starBookmark(bkmID, false) })
 
 	if starred {
 		a.SetID("bookmark-starred-link-" + bkmID)
+		a.SetClass("bookmark-starred-link")
 		md.SetID("bookmark-starred-" + bkmID)
 		md.SetDraggable(false)
 		str.SetID("bookmark-starred-star-" + bkmID)
 		str.SetClass(ClassBookmarkStarred)
 	} else {
 		a.SetID("bookmark-link-" + bkmID)
+		a.SetClass("bookmark-link")
 		md.SetID("bookmark-" + bkmID)
 		md.SetDraggable(true)
 		str.SetID("bookmark-star-" + bkmID)
@@ -379,20 +380,27 @@ func importBookmarks(e dom.Event) {
 	}()
 }
 
-func starBookmark(bkmID string) {
+func starBookmark(bkmID string, forceUnstar bool) {
 	go func() {
 
 		var (
-			err  error
-			resp *http.Response
-			data newBookmarkStruct // returned struct from server
+			star, starredBookmark bool
+			starBookmarkDiv       dom.HTMLElement
+			err                   error
+			resp                  *http.Response
+			data                  newBookmarkStruct // returned struct from server
 		)
 
-		star := true
-		starredBookmark := isStarredBookmark(bkmID)
-		starBookmarkDiv := d.GetElementByID("bookmark-star-" + bkmID).(dom.HTMLElement)
-		if starredBookmark {
+		if forceUnstar {
 			star = false
+			starredBookmark = true
+		} else {
+			star = true
+			starredBookmark = isStarredBookmark(bkmID)
+			starBookmarkDiv = d.GetElementByID("bookmark-star-" + bkmID).(dom.HTMLElement)
+			if starredBookmark {
+				star = false
+			}
 		}
 
 		if resp = sendRequest("/starBookmark/", []arg{{key: "star", val: strconv.FormatBool(star)}, {key: "bookmarkId", val: bkmID}}); resp.StatusCode != http.StatusOK {
@@ -622,6 +630,10 @@ func getChildrenItems(e dom.Event, fldIDDigit string) {
 
 	go func() {
 
+		setWait()
+
+		defer unsetWait()
+
 		var (
 			err     error
 			resp    *http.Response
@@ -734,7 +746,6 @@ func main() {
 
 	// Enter key listener
 	d.AddEventListener("keydown", false, func(e dom.Event) {
-		fmt.Println(e.(*dom.KeyboardEvent).KeyCode)
 		if e.(*dom.KeyboardEvent).KeyCode == 13 {
 			if isDisabled("add-folder") {
 				renameFolder(e)
@@ -743,5 +754,21 @@ func main() {
 			}
 		}
 	})
+
+	// Starred bookmarks listeners
+	for _, e := range d.GetElementsByClassName("fa-star") {
+		id := e.ID()
+		idSplt := strings.Split(id, "-")
+		idDigit := idSplt[len(idSplt)-1]
+		e.AddEventListener("click", false, func(e dom.Event) {
+			starBookmark(idDigit, true)
+		})
+	}
+	for _, e := range d.GetElementsByClassName("bookmark-starred-link") {
+		u := e.GetAttribute("Title")
+		e.AddEventListener("click", false, func(e dom.Event) {
+			openInParent(u)
+		})
+	}
 
 }

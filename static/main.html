@@ -86,13 +86,12 @@
            <div id="bookmark-starred-{{.Id}}" class="bookmark">
 
                 <div class="fa fa-star"
-                     onclick="starBookmark('{{.Id}}');"
                      id="bookmark-starred-star-{{.Id}}">
                 </div>
                 <img src="{{.Favicon}}" alt="" class="favicon">
-                <div onclick="openInParent('{{.URL}}');" 
-                     id="bookmark-starred-link-{{.Id}}" 
-                     title="{{.Title}}">{{.Title}}
+                <div id="bookmark-starred-link-{{.Id}}" 
+                     class="bookmark-starred-link" 
+                     title="{{.URL}}">{{.Title}}
                 </div>
 
             </div>
