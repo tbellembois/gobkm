@@ -15,6 +15,8 @@ import (
 // CSS classes.
 const (
 	ClassItemOver           = "folder-over"
+	ClassRenameOver         = "rename-over"
+	ClassDeleteOver         = "delete-over"
 	ClassItemFolder         = "folder"
 	ClassItemFolderOpen     = "fa-folder-open-o"
 	ClassItemFolderClosed   = "fa-folder-o"
@@ -126,6 +128,8 @@ func hasClass(el dom.HTMLElement, class string) bool {
 	return el.Class().Contains(class)
 }
 func openInParent(url string) {
+	hideImport()
+	hideRenameBox()
 	w.Parent().Open(url, "", "")
 }
 
@@ -155,6 +159,7 @@ func showRenameBox() {
 	disableItem("add-folder-button")
 }
 func hideRenameBox() {
+	removeClass(d.GetElementByID("rename-box").(*dom.HTMLDivElement), ClassRenameOver)
 	hideItem("rename-input-box")
 	resetItemValue("rename-input-box-form")
 	resetItemValue("rename-hidden-input-box-form")
@@ -217,6 +222,26 @@ func leaveItem(e dom.Event) {
 	removeClass(e.Target().(dom.HTMLElement), ClassItemOver)
 }
 
+func overRename(e dom.Event) {
+	e.PreventDefault()
+	addClass(e.Target().(dom.HTMLElement), ClassRenameOver)
+}
+
+func leaveRename(e dom.Event) {
+	e.PreventDefault()
+	removeClass(e.Target().(dom.HTMLElement), ClassRenameOver)
+}
+
+func overDelete(e dom.Event) {
+	e.PreventDefault()
+	addClass(e.Target().(dom.HTMLElement), ClassDeleteOver)
+}
+
+func leaveDelete(e dom.Event) {
+	e.PreventDefault()
+	removeClass(e.Target().(dom.HTMLElement), ClassDeleteOver)
+}
+
 func dragItem(e dom.Event) {
 	draggedItemID = e.Target().ID()
 	fmt.Println("draggedItemID:", draggedItemID)
@@ -226,7 +251,6 @@ func dropRename(e dom.Event) {
 
 	//draggedItemID = e.(*dom.DragEvent).Get("dragItemId").String()
 	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
-	defer func() { draggedItemID = "" }()
 
 	if strings.HasPrefix(draggedItemID, "folder") {
 		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
@@ -238,7 +262,7 @@ func dropRename(e dom.Event) {
 	}
 	showRenameBox()
 	setRenameHiddenFormValue(draggedItemID)
-	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassItemOver)
+	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassRenameOver)
 
 }
 
@@ -470,7 +494,10 @@ func dropDelete(e dom.Event) {
 
 		draggedItem := d.GetElementByID(draggedItemID)
 		draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
-		defer func() { draggedItemID = "" }()
+		defer func() {
+			draggedItemID = ""
+			removeClass(d.GetElementByID("delete-box").(*dom.HTMLDivElement), ClassDeleteOver)
+		}()
 
 		if strings.HasPrefix(draggedItemID, "folder") {
 			if resp = sendRequest("/deleteFolder/", []arg{{key: "folderId", val: draggedItemIDDigit}}); resp.StatusCode != http.StatusOK {
@@ -504,7 +531,6 @@ func dropFolder(e dom.Event) {
 	go func() {
 
 		draggedItem := d.GetElementByID(draggedItemID)
-		defer func() { draggedItemID = "" }()
 
 		var (
 			draggedItemIDDigit  string
@@ -520,6 +546,11 @@ func dropFolder(e dom.Event) {
 		droppedItemID := droppedItem.GetAttribute("id")
 		droppedItemIDDigit := strings.Split(droppedItemID, "-")[1]
 		droppedItemChildren := d.GetElementByID("subfolders-" + droppedItemIDDigit)
+
+		defer func() {
+			draggedItemID = ""
+			removeClass(droppedItem, ClassItemOver)
+		}()
 
 		if draggedItem != nil && strings.HasPrefix(draggedItemID, "folder") {
 			// Can not move a folder into itself.
@@ -548,7 +579,6 @@ func dropFolder(e dom.Event) {
 
 			droppedItemChildren.InsertBefore(draggedItemChildren, droppedItemChildren.FirstChild())
 			droppedItemChildren.InsertBefore(draggedItem, droppedItemChildren.FirstChild())
-			removeClass(droppedItem, ClassItemOver)
 			removeClass(droppedItem, ClassItemFolderClosed)
 			addClass(droppedItem, ClassItemFolderOpen)
 		} else if draggedItem != nil && strings.HasPrefix(draggedItemID, "bookmark") {
@@ -579,7 +609,6 @@ func dropFolder(e dom.Event) {
 			newBkm := createBookmark(strconv.Itoa(int(dataBkm.BookmarkId)), dataBkm.BookmarkURL, dataBkm.BookmarkURL, "", dataBkm.BookmarkStarred, false)
 
 			droppedItemChildren.InsertBefore(newBkm, droppedItemChildren.FirstChild())
-			removeClass(droppedItem, ClassItemOver)
 			removeClass(droppedItem, ClassItemFolderClosed)
 			addClass(droppedItem, ClassItemFolderOpen)
 		}
@@ -595,7 +624,9 @@ func renameFolder(e dom.Event) {
 			resp *http.Response
 		)
 
-		defer func() { draggedItemID = "" }()
+		defer func() {
+			draggedItemID = ""
+		}()
 
 		fldID := d.GetElementByID("rename-hidden-input-box-form").(*dom.HTMLInputElement).Value
 		fldName := d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Value
@@ -631,7 +662,8 @@ func getChildrenItems(e dom.Event, fldIDDigit string) {
 	go func() {
 
 		setWait()
-
+		hideRenameBox()
+		hideImport()
 		defer unsetWait()
 
 		var (
@@ -709,31 +741,31 @@ func main() {
 	// Rename and delete boxes listeners.
 	rb := d.GetElementByID("rename-box").(*dom.HTMLDivElement)
 	rb.AddEventListener("dragover", false, func(e dom.Event) {
-		overItem(e)
+		overRename(e)
 	})
 	rb.AddEventListener("dragleave", false, func(e dom.Event) {
-		leaveItem(e)
+		leaveRename(e)
 	})
 	rb.AddEventListener("drop", false, func(e dom.Event) {
 		dropRename(e)
 	})
 	db := d.GetElementByID("delete-box").(*dom.HTMLDivElement)
 	db.AddEventListener("dragover", false, func(e dom.Event) {
-		overItem(e)
+		overDelete(e)
 	})
 	db.AddEventListener("dragleave", false, func(e dom.Event) {
-		leaveItem(e)
+		leaveDelete(e)
 	})
 	db.AddEventListener("drop", false, func(e dom.Event) {
 		dropDelete(e)
 	})
 
 	// Import export links listeners.
-	importLink := d.GetElementByID("import-link").(*dom.HTMLSpanElement)
+	importLink := d.GetElementByID("import-box").(*dom.HTMLDivElement)
 	importLink.AddEventListener("click", false, func(e dom.Event) {
 		toogleDisplayImport()
 	})
-	exportLink := d.GetElementByID("export-link").(*dom.HTMLSpanElement)
+	exportLink := d.GetElementByID("export-box").(*dom.HTMLDivElement)
 	exportLink.AddEventListener("click", false, func(e dom.Event) {
 		openInParent("/export/")
 	})
