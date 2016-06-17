@@ -32,10 +32,10 @@ div.folder {
 }
 
 div.folder-over {
-    font-size: 1.2em;
+    color: green;
 }
 div.rename-over, div.delete-over {
-    font-style: italic;
+    color: green;
 }
 
 div#action-box {
@@ -159,4 +159,9 @@ div#copyright {
 
 img.favicon {
     float: left;
+}
+
+.dragged-item {
+    opacity: 0.4;
+    font-style: italic;
 }

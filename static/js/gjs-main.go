@@ -14,6 +14,7 @@ import (
 
 // CSS classes.
 const (
+	ClassDraggedItem        = "dragged-item"
 	ClassItemOver           = "folder-over"
 	ClassRenameOver         = "rename-over"
 	ClassDeleteOver         = "delete-over"
@@ -23,13 +24,13 @@ const (
 	ClassItemBookmark       = "bookmark"
 	ClassBookmarkStarred    = "fa fa-star"
 	ClassBookmarkNotStarred = "fa fa-star-o"
+	DragImage               = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAQAAACROWYpAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwACKaQAAimkAScW8mcAAAAHdElNRQfgBhEMEhox+QS1AAAC70lEQVQ4y5WVTWicdRDGf+/uJmSlaRJ7qKI0ftWrTUQUtfQDlQakh1q0pPWj1QZWRVMhHqpCraRgDwEpNIhSixS82EsLGsTiIado9OBJqR7SJWHbmGS3bbLZ7O7787DvbrMxtduZ2zDPO/Of55l5A1YxgQAfJsU8Q8EsSEBDJgJuK6d/9Ge9GG6iUROA8FVnTtjkOk/pJbdX4w1Y+JbXj4qId/ipLtrTENy4b1jqj6AVP25B99/o6+bg13L21UERB7ymh25ZuThz5D9QxD79zfX1uYmV4PjEjjtzxFniNFeBFvpopcROyHK50nqwcsLGfbl4ORxzq78649y8nSJ2OBuaddoxd5d/Kl3xYN3bI14P5PzEMR0H8LGsGyJw5rpPAHjqe4+5qG+vkESYspgSD+kMgE8uA8+7BWz2wj7xFV2wt1I7AQHh3uD4QGIYiEPMLhIsV1WMR1wiydo4cIa1yRNfmw5GBXCL08eimb7jgjlzZr3kvSK2edFr5sy55J4o6zNL2gW4sTxxskZIuw9Efp8JEWN2RpEHXVPL+0rn7MKhCzatyuz/eczz+m2MxTW0crsW8hAUcJ1/f2Ey+mKL7ZG3GRMxsC2KdNhcqzyi6fB+wG7Tg1Gw3+lwcmEyP1n4w3uigf1upjCZn8xnyy+KmHBYM2F3levnLFTmfUTnfNxtvne1xvN03gGf8Xl/eV3Ew5bn3AxWhebORfvFj/QKgJvrRLIdTDpyQHxJ874QiSSoSP2cqY+Hc/TAX2Azybr5tJikialnKXO6yGBwFgKoLogE+D69ZDlJDxtoL3ZvZALoYKLcOs4/TJVH472sZyQ4XN2s+u26m0w4OvLUN8QpcJ55oJndtBKyg13fcRCCqVVuaXXJSnNHV5XFfh33rlucIlN590Yc3/A9uuRgA4fXd82/uQzY5Aea98MGDiCA+wyHauDPLc+6qyFoxPvWkl8aiD9oxqcbrFprvtvsOf/UdLjpNv4XNfijnvVM2Hlz6L/COmiuQg3JqwAAAABJRU5ErkJggg=="
 )
 
 var (
 	w dom.Window
 	d dom.Document
 	// The dragged element ID.
-	draggedItemID string
 )
 
 type folderStruct struct {
@@ -242,15 +243,24 @@ func leaveDelete(e dom.Event) {
 	removeClass(e.Target().(dom.HTMLElement), ClassDeleteOver)
 }
 
+func dragStartItem(e dom.Event) {
+	draggedItemID := e.Target().ID()
+	img := d.CreateElement("img").(*dom.HTMLImageElement)
+	img.Src = DragImage
+	e.(*dom.DragEvent).Get("dataTransfer").Call("setDragImage", img, -5, -5)
+	e.(*dom.DragEvent).Get("dataTransfer").Call("setData", "draggedItemID", draggedItemID)
+}
+
 func dragItem(e dom.Event) {
-	draggedItemID = e.Target().ID()
-	fmt.Println("draggedItemID:", draggedItemID)
+	e.Target().Class().Add(ClassDraggedItem)
 }
 
 func dropRename(e dom.Event) {
 
-	//draggedItemID = e.(*dom.DragEvent).Get("dragItemId").String()
+	draggedItemID := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "draggedItemID").String()
 	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+
+	fmt.Println(draggedItemIDDigit)
 
 	if strings.HasPrefix(draggedItemID, "folder") {
 		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
@@ -263,7 +273,6 @@ func dropRename(e dom.Event) {
 	showRenameBox()
 	setRenameHiddenFormValue(draggedItemID)
 	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassRenameOver)
-
 }
 
 //
@@ -305,7 +314,8 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 		} else {
 			str.SetClass(ClassBookmarkNotStarred)
 		}
-		md.AddEventListener("dragstart", false, dragItem)
+		md.AddEventListener("dragstart", false, dragStartItem)
+		md.AddEventListener("drag", false, dragItem)
 
 	}
 
@@ -334,7 +344,8 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 	md.AddEventListener("click", false, func(e dom.Event) { getChildrenItems(e, fldID) })
 	md.AddEventListener("dragover", false, func(e dom.Event) { overItem(e) })
 	md.AddEventListener("dragleave", false, func(e dom.Event) { leaveItem(e) })
-	md.AddEventListener("dragstart", false, func(e dom.Event) { dragItem(e) })
+	md.AddEventListener("dragstart", false, func(e dom.Event) { dragStartItem(e) })
+	md.AddEventListener("drag", false, func(e dom.Event) { dragItem(e) })
 	md.AddEventListener("drop", false, func(e dom.Event) { dropFolder(e) })
 
 	return folderStruct{fld: *md, subFlds: *ul}
@@ -382,7 +393,9 @@ func sendRequest(url string, args []arg) *http.Response {
 }
 
 func importBookmarks(e dom.Event) {
+
 	e.PreventDefault()
+
 	go func() {
 
 		setWait()
@@ -405,6 +418,7 @@ func importBookmarks(e dom.Event) {
 }
 
 func starBookmark(bkmID string, forceUnstar bool) {
+
 	go func() {
 
 		var (
@@ -455,7 +469,9 @@ func starBookmark(bkmID string, forceUnstar bool) {
 }
 
 func addFolder(e dom.Event) {
+
 	e.PreventDefault()
+
 	go func() {
 
 		var (
@@ -485,7 +501,10 @@ func addFolder(e dom.Event) {
 }
 
 func dropDelete(e dom.Event) {
+
 	e.PreventDefault()
+	draggedItemID := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "draggedItemID").String()
+
 	go func() {
 
 		var (
@@ -494,8 +513,8 @@ func dropDelete(e dom.Event) {
 
 		draggedItem := d.GetElementByID(draggedItemID)
 		draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+
 		defer func() {
-			draggedItemID = ""
 			removeClass(d.GetElementByID("delete-box").(*dom.HTMLDivElement), ClassDeleteOver)
 		}()
 
@@ -527,6 +546,7 @@ func dropFolder(e dom.Event) {
 	e.PreventDefault()
 	// Putting the following instruction inside the go routine does not work. I don't know why.
 	url := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "URL").String()
+	draggedItemID := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "draggedItemID").String()
 
 	go func() {
 
@@ -548,7 +568,6 @@ func dropFolder(e dom.Event) {
 		droppedItemChildren := d.GetElementByID("subfolders-" + droppedItemIDDigit)
 
 		defer func() {
-			draggedItemID = ""
 			removeClass(droppedItem, ClassItemOver)
 		}()
 
@@ -579,8 +598,9 @@ func dropFolder(e dom.Event) {
 
 			droppedItemChildren.InsertBefore(draggedItemChildren, droppedItemChildren.FirstChild())
 			droppedItemChildren.InsertBefore(draggedItem, droppedItemChildren.FirstChild())
-			removeClass(droppedItem, ClassItemFolderClosed)
 			addClass(droppedItem, ClassItemFolderOpen)
+			removeClass(droppedItem, ClassItemFolderClosed)
+			removeClass(draggedItem.(*dom.HTMLDivElement), ClassDraggedItem)
 		} else if draggedItem != nil && strings.HasPrefix(draggedItemID, "bookmark") {
 
 			if resp = sendRequest("/moveBookmark/", []arg{{key: "bookmarkId", val: draggedItemIDDigit}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
@@ -591,6 +611,7 @@ func dropFolder(e dom.Event) {
 			if hasChildrenFolders(droppedItemIDDigit) {
 				droppedItemChildren.InsertBefore(draggedItem, droppedItemChildren.FirstChild())
 				removeClass(droppedItem, ClassItemFolderClosed)
+				removeClass(draggedItem.(*dom.HTMLDivElement), ClassDraggedItem)
 				addClass(droppedItem, ClassItemFolderOpen)
 			} else {
 				draggedItem.ParentNode().RemoveChild(draggedItem)
@@ -609,24 +630,22 @@ func dropFolder(e dom.Event) {
 			newBkm := createBookmark(strconv.Itoa(int(dataBkm.BookmarkId)), dataBkm.BookmarkURL, dataBkm.BookmarkURL, "", dataBkm.BookmarkStarred, false)
 
 			droppedItemChildren.InsertBefore(newBkm, droppedItemChildren.FirstChild())
-			removeClass(droppedItem, ClassItemFolderClosed)
 			addClass(droppedItem, ClassItemFolderOpen)
+			removeClass(droppedItem, ClassItemFolderClosed)
 		}
 	}()
 
 }
 
 func renameFolder(e dom.Event) {
+
 	e.PreventDefault()
+
 	go func() {
 
 		var (
 			resp *http.Response
 		)
-
-		defer func() {
-			draggedItemID = ""
-		}()
 
 		fldID := d.GetElementByID("rename-hidden-input-box-form").(*dom.HTMLInputElement).Value
 		fldName := d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Value
@@ -639,7 +658,7 @@ func renameFolder(e dom.Event) {
 				return
 			}
 
-			d.GetElementByID(draggedItemID).SetInnerHTML(fldName)
+			d.GetElementByID(fldID).SetInnerHTML(fldName)
 
 		} else {
 
@@ -652,6 +671,7 @@ func renameFolder(e dom.Event) {
 
 		}
 
+		removeClass(d.GetElementByID(fldID).(*dom.HTMLDivElement), ClassDraggedItem)
 		hideRenameBox()
 	}()
 
