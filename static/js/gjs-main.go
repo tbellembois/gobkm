@@ -591,16 +591,17 @@ func dropFolder(e dom.Event) {
 
 		defer func() {
 			removeClass(droppedItem, ClassItemOver)
-			removeClass(droppedItem, ClassItemFolderClosed)
 			removeClass(draggedItem.(*dom.HTMLDivElement), ClassDraggedItem)
 		}()
 
 		if draggedItem != nil && strings.HasPrefix(draggedItemID, "folder") {
+
 			// Can not move a folder into itself.
 			if draggedItemIDDigit == droppedItemIDDigit {
 				fmt.Println("can not move a folder into itself")
 				return
 			}
+
 			// Can not move a folder into its first parent.
 			draggedParentChildrenUlId := getClosest(draggedItem, "UL").(dom.HTMLElement).ID()
 			if draggedParentChildrenUlId == "subfolders-"+droppedItemIDDigit {
@@ -622,6 +623,8 @@ func dropFolder(e dom.Event) {
 			droppedItemChildren.InsertBefore(draggedItemChildren, droppedItemChildren.FirstChild())
 			droppedItemChildren.InsertBefore(draggedItem, droppedItemChildren.FirstChild())
 			addClass(droppedItem, ClassItemFolderOpen)
+			removeClass(droppedItem, ClassItemFolderClosed)
+
 		} else if draggedItem != nil && strings.HasPrefix(draggedItemID, "bookmark") {
 
 			if resp = sendRequest("/moveBookmark/", []arg{{key: "bookmarkId", val: draggedItemIDDigit}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
@@ -637,7 +640,9 @@ func dropFolder(e dom.Event) {
 			} else {
 				draggedItem.ParentNode().RemoveChild(draggedItem)
 			}
+
 		} else {
+
 			var dataBkm newBookmarkStruct
 			if resp = sendRequest("/addBookmark/", []arg{{key: "bookmarkUrl", val: url}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
 				fmt.Println("dropFolder response code error")

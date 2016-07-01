@@ -40,9 +40,9 @@ div.rename-over, div.delete-over {
 
 div#action-box {
     position: fixed;
-    width: 242px;
+    width: 252px;
     background-color: white;
-    padding: 15px;
+    padding: 10px;
     border: 1px solid black;
     border-radius: 2px;
 
@@ -96,14 +96,17 @@ div#rename-box {
 }
 div#delete-box {
     padding-left: 5px;
-    padding-right: 52px;
 }
 div#export-box {
-    padding-left: 52px;
+    position: absolute;
+    right: 30px;
+    top: 41px;
     cursor :pointer;
 }
 div#import-box {
-    padding-left: 5px;
+    position: absolute;
+    right: 2px;
+    top: 43px;
     cursor :pointer;
 }
 
@@ -114,11 +117,11 @@ div#add-folder-box, div#rename-input-box, div#import-input-box{
 }
 
 input#add-folder, input#rename-input-box-form {
-    width: 100px;
+    width: 132px;
 }
 
 div#starred-list {
-    margin-top: 140px;
+    margin-top: 120px;
     float: left;
     width: 100%;
 }
