@@ -160,7 +160,6 @@ func showRenameBox() {
 	disableItem("add-folder-button")
 }
 func hideRenameBox() {
-	removeClass(d.GetElementByID("rename-box").(*dom.HTMLDivElement), ClassRenameOver)
 	hideItem("rename-input-box")
 	resetItemValue("rename-input-box-form")
 	resetItemValue("rename-hidden-input-box-form")
@@ -169,6 +168,7 @@ func hideRenameBox() {
 }
 func setRenameFormValue(val string) {
 	setItemValue("rename-input-box-form", val)
+	d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Call("focus")
 	d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Call("select")
 }
 func setRenameHiddenFormValue(val string) {
@@ -213,7 +213,18 @@ func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string
 //
 // drag/over/leave folder/bookmark listeners
 //
-func overItem(e dom.Event) {
+func keyDownItem(e dom.Event) {
+	e.PreventDefault()
+	id := e.Target().(dom.HTMLElement).ID()
+	dropRename(string(id))
+}
+
+func mouseOverItem(e dom.Event) {
+	e.PreventDefault()
+	e.Target().(dom.HTMLElement).Focus()
+}
+
+func dragOverItem(e dom.Event) {
 	e.PreventDefault()
 	addClass(e.Target().(dom.HTMLElement), ClassItemOver)
 }
@@ -252,27 +263,31 @@ func dragStartItem(e dom.Event) {
 }
 
 func dragItem(e dom.Event) {
-	e.Target().Class().Add(ClassDraggedItem)
+	class := e.Target().Class()
+	if class != nil {
+		class.Add(ClassDraggedItem)
+	}
 }
 
-func dropRename(e dom.Event) {
+func dropRename(elementId string) {
 
-	draggedItemID := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "draggedItemID").String()
-	draggedItemIDDigit := strings.Split(draggedItemID, "-")[1]
+	hideImport()
 
+	sl := strings.Split(elementId, "-")
+	draggedItemIDDigit := sl[len(sl)-1]
+
+	fmt.Println(elementId)
 	fmt.Println(draggedItemIDDigit)
 
-	if strings.HasPrefix(draggedItemID, "folder") {
-		draggedFldName := d.GetElementByID(draggedItemID).TextContent()
+	showRenameBox()
+	if strings.HasPrefix(elementId, "folder") {
+		draggedFldName := d.GetElementByID(elementId).TextContent()
 		setRenameFormValue(draggedFldName)
-
 	} else {
 		draggedBkmName := d.GetElementByID("bookmark-link-" + draggedItemIDDigit).TextContent()
 		setRenameFormValue(draggedBkmName)
 	}
-	showRenameBox()
-	setRenameHiddenFormValue(draggedItemID)
-	removeClass(d.GetElementByID("rename-box").(dom.HTMLElement), ClassRenameOver)
+	setRenameHiddenFormValue(elementId)
 }
 
 //
@@ -282,7 +297,8 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 
 	// Link (actually a clickable div).
 	a := d.CreateElement("div").(*dom.HTMLDivElement)
-	a.SetTitle(bkmURL)
+	a.SetTitle(bkmURL + " - type \"r\" to rename")
+	a.SetAttribute("tabindex", "0")
 	a.AppendChild(d.CreateTextNode(bkmTitle))
 	a.AddEventListener("click", false, func(e dom.Event) { openInParent(bkmURL) })
 	// Main div.
@@ -316,7 +332,8 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 		}
 		md.AddEventListener("dragstart", false, dragStartItem)
 		md.AddEventListener("drag", false, dragItem)
-
+		a.AddEventListener("mouseover", false, func(e dom.Event) { mouseOverItem(e) })
+		a.AddEventListener("keydown", false, func(e dom.Event) { keyDownItem(e) })
 	}
 
 	md.AppendChild(str)
@@ -330,8 +347,9 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 
 	// Main div.
 	md := d.CreateElement("div").(*dom.HTMLDivElement)
-	md.SetTitle(fldTitle)
+	md.SetTitle(fldTitle + " - type \"r\" to rename")
 	md.SetClass(ClassItemFolder + " " + ClassItemFolderClosed)
+	md.SetAttribute("tabindex", "0")
 	md.SetID("folder-" + fldID)
 	md.SetDraggable(true)
 	// Subfolders.
@@ -342,7 +360,9 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 	md.AppendChild(ul)
 
 	md.AddEventListener("click", false, func(e dom.Event) { getChildrenItems(e, fldID) })
-	md.AddEventListener("dragover", false, func(e dom.Event) { overItem(e) })
+	md.AddEventListener("mouseover", false, func(e dom.Event) { mouseOverItem(e) })
+	md.AddEventListener("keydown", false, func(e dom.Event) { keyDownItem(e) })
+	md.AddEventListener("dragover", false, func(e dom.Event) { dragOverItem(e) })
 	md.AddEventListener("dragleave", false, func(e dom.Event) { leaveItem(e) })
 	md.AddEventListener("dragstart", false, func(e dom.Event) { dragStartItem(e) })
 	md.AddEventListener("drag", false, func(e dom.Event) { dragItem(e) })
@@ -502,6 +522,8 @@ func addFolder(e dom.Event) {
 
 func dropDelete(e dom.Event) {
 
+	hideImport()
+
 	e.PreventDefault()
 	draggedItemID := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "draggedItemID").String()
 
@@ -569,6 +591,8 @@ func dropFolder(e dom.Event) {
 
 		defer func() {
 			removeClass(droppedItem, ClassItemOver)
+			removeClass(droppedItem, ClassItemFolderClosed)
+			removeClass(draggedItem.(*dom.HTMLDivElement), ClassDraggedItem)
 		}()
 
 		if draggedItem != nil && strings.HasPrefix(draggedItemID, "folder") {
@@ -585,7 +609,6 @@ func dropFolder(e dom.Event) {
 			}
 
 			// Can not move a folder into one of its children.
-			//TODO
 			if getClosest(droppedItem, "#subfolders-"+draggedItemIDDigit) != nil {
 				fmt.Println("can not move a folder into one of its children")
 				return
@@ -599,8 +622,6 @@ func dropFolder(e dom.Event) {
 			droppedItemChildren.InsertBefore(draggedItemChildren, droppedItemChildren.FirstChild())
 			droppedItemChildren.InsertBefore(draggedItem, droppedItemChildren.FirstChild())
 			addClass(droppedItem, ClassItemFolderOpen)
-			removeClass(droppedItem, ClassItemFolderClosed)
-			removeClass(draggedItem.(*dom.HTMLDivElement), ClassDraggedItem)
 		} else if draggedItem != nil && strings.HasPrefix(draggedItemID, "bookmark") {
 
 			if resp = sendRequest("/moveBookmark/", []arg{{key: "bookmarkId", val: draggedItemIDDigit}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
@@ -649,7 +670,9 @@ func renameFolder(e dom.Event) {
 
 		fldID := d.GetElementByID("rename-hidden-input-box-form").(*dom.HTMLInputElement).Value
 		fldName := d.GetElementByID("rename-input-box-form").(*dom.HTMLInputElement).Value
-		fldIDDigit := strings.Split(fldID, "-")[1]
+
+		sl := strings.Split(fldID, "-")
+		fldIDDigit := sl[len(sl)-1]
 
 		if strings.HasPrefix(fldID, "folder") {
 
@@ -752,23 +775,15 @@ func main() {
 		getChildrenItems(e, "1")
 	})
 	fld.AddEventListener("dragover", false, func(e dom.Event) {
-		overItem(e)
+		dragOverItem(e)
 	})
 	fld.AddEventListener("dragleave", false, func(e dom.Event) {
 		leaveItem(e)
 	})
+	fld.AddEventListener("drop", false, func(e dom.Event) {
+		dropFolder(e)
+	})
 
-	// Rename and delete boxes listeners.
-	rb := d.GetElementByID("rename-box").(*dom.HTMLDivElement)
-	rb.AddEventListener("dragover", false, func(e dom.Event) {
-		overRename(e)
-	})
-	rb.AddEventListener("dragleave", false, func(e dom.Event) {
-		leaveRename(e)
-	})
-	rb.AddEventListener("drop", false, func(e dom.Event) {
-		dropRename(e)
-	})
 	db := d.GetElementByID("delete-box").(*dom.HTMLDivElement)
 	db.AddEventListener("dragover", false, func(e dom.Event) {
 		overDelete(e)

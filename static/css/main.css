@@ -107,7 +107,7 @@ div#import-box {
     cursor :pointer;
 }
 
-div#add-folder-box, div#rename-input-box {
+div#add-folder-box, div#rename-input-box, div#import-input-box{
     font-style: italic;
     font-size: 0.8em;
     margin-top: 5px;

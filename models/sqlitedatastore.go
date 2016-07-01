@@ -521,7 +521,7 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 }
 
 // GetChildrenFolders returns the children folders as an array of *Folder
-func (db *SQLiteDataStore) GetChildrenFolders(id int) []*types.Folder {
+func (db *SQLiteDataStore) GetFolderSubfolders(id int) []*types.Folder {
 
 	log.WithFields(log.Fields{
 		"id": id,

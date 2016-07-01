@@ -651,7 +651,7 @@ func (env *Env) GetChildrenFoldersHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// Getting the folder children folders.
-	flds := env.DB.GetChildrenFolders(folderId)
+	flds := env.DB.GetFolderSubfolders(folderId)
 	// Datastore error check.
 	if err = env.DB.FlushErrors(); err != nil {
 		failHTTP(w, "GetChildrenFoldersHandler", err.Error(), http.StatusInternalServerError)
@@ -869,7 +869,7 @@ func (env *Env) ExportTree(wr io.Writer, eb *exportBookmarksStruct, depth int) *
 	wr.Write([]byte("<DL><p>\n"))
 
 	// For each children folder recursively building the bookmars tree.
-	for _, child := range env.DB.GetChildrenFolders(eb.Fld.Id) {
+	for _, child := range env.DB.GetFolderSubfolders(eb.Fld.Id) {
 		eb.Sub = append(eb.Sub, env.ExportTree(wr, &exportBookmarksStruct{Fld: child}, depth))
 	}
 

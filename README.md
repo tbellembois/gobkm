@@ -34,7 +34,7 @@ Debug mode:
 
 ## GUI
 
-Drag and drop an URL from your Web browser address bar into a folder to bookmark it. Rename/delete folders and bookmarks by dragging them on the icons on the top.
+Drag and drop an URL from your Web browser address bar into a folder to bookmark it. Delete folders and bookmarks by dragging them on the icon on the top. Rename folders and bookmarks with the "r" key.
 
 ## Bookmarklet
 

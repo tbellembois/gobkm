@@ -18,7 +18,7 @@ type Datastore interface {
 	DeleteBookmark(*types.Bookmark)
 
 	GetFolder(int) *types.Folder
-	GetChildrenFolders(int) []*types.Folder
+	GetFolderSubfolders(int) []*types.Folder
 	GetRootFolders() []*types.Folder
 	SaveFolder(*types.Folder) int64
 	UpdateFolder(*types.Folder)
