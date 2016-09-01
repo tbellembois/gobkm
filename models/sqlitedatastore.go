@@ -54,6 +54,8 @@ func (db *SQLiteDataStore) FlushErrors() error {
 // CreateDatabase creates the database tables.
 func (db *SQLiteDataStore) CreateDatabase() {
 
+	log.Info("Creating database")
+
 	if db.err != nil {
 		return
 	}
@@ -91,6 +93,8 @@ func (db *SQLiteDataStore) CreateDatabase() {
 // PopulateDatabase populate the database with sample folders and bookmarks.
 func (db *SQLiteDataStore) PopulateDatabase() {
 
+	log.Info("Populating database")
+
 	var folders []*types.Folder
 	var bookmarks []*types.Bookmark
 
@@ -100,7 +104,8 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 
 	// Leaving if database already populated.
 	var count int
-	if db.err = db.QueryRow("SELECT COUNT(*) as count FROM folder").Scan(&count); db.err != nil || count > 0 {
+	if db.err = db.QueryRow("SELECT COUNT(*) as count FROM folder").Scan(&count); db.err != nil || count > 1 {
+		log.Info("Database not empty, leaving")
 		return
 	}
 

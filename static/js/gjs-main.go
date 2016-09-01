@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -406,7 +407,6 @@ func sendRequest(url string, args []arg) *http.Response {
 		fmt.Println("request error:", url)
 		return resp
 	}
-	defer resp.Body.Close()
 
 	return resp
 
@@ -465,6 +465,7 @@ func starBookmark(bkmID string, forceUnstar bool) {
 			fmt.Println("starBookmark response code error")
 			return
 		}
+		defer resp.Body.Close()
 
 		if starredBookmark {
 			if starBookmarkDiv != nil {
@@ -506,6 +507,7 @@ func addFolder(e dom.Event) {
 			fmt.Println("starBookmark response code error")
 			return
 		}
+		defer resp.Body.Close()
 
 		if err = json.NewDecoder(resp.Body).Decode(&data); err != nil {
 			fmt.Println("addFolder JSON decoder error")
@@ -545,6 +547,7 @@ func dropDelete(e dom.Event) {
 				fmt.Println("dropDelete response code error")
 				return
 			}
+			defer resp.Body.Close()
 
 			children := d.GetElementByID("subfolders-" + draggedItemIDDigit)
 			children.ParentNode().RemoveChild(children)
@@ -554,6 +557,7 @@ func dropDelete(e dom.Event) {
 				fmt.Println("dropDelete response code error")
 				return
 			}
+			defer resp.Body.Close()
 
 			draggedItem.ParentNode().RemoveChild(draggedItem)
 		}
@@ -567,8 +571,10 @@ func dropFolder(e dom.Event) {
 
 	e.PreventDefault()
 	// Putting the following instruction inside the go routine does not work. I don't know why.
-	url := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "URL").String()
+	u := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "URL").String()
 	draggedItemID := e.(*dom.DragEvent).Get("dataTransfer").Call("getData", "draggedItemID").String()
+
+	u = url.QueryEscape(u)
 
 	go func() {
 
@@ -591,7 +597,9 @@ func dropFolder(e dom.Event) {
 
 		defer func() {
 			removeClass(droppedItem, ClassItemOver)
-			removeClass(draggedItem.(*dom.HTMLDivElement), ClassDraggedItem)
+			if draggedItem != nil {
+				removeClass(draggedItem.(*dom.HTMLDivElement), ClassDraggedItem)
+			}
 		}()
 
 		if draggedItem != nil && strings.HasPrefix(draggedItemID, "folder") {
@@ -619,6 +627,7 @@ func dropFolder(e dom.Event) {
 				fmt.Println("dropFolder response code error")
 				return
 			}
+			defer resp.Body.Close()
 
 			droppedItemChildren.InsertBefore(draggedItemChildren, droppedItemChildren.FirstChild())
 			droppedItemChildren.InsertBefore(draggedItem, droppedItemChildren.FirstChild())
@@ -631,6 +640,7 @@ func dropFolder(e dom.Event) {
 				fmt.Println("dropFolder response code error")
 				return
 			}
+			defer resp.Body.Close()
 
 			if hasChildrenFolders(droppedItemIDDigit) {
 				droppedItemChildren.InsertBefore(draggedItem, droppedItemChildren.FirstChild())
@@ -644,10 +654,12 @@ func dropFolder(e dom.Event) {
 		} else {
 
 			var dataBkm newBookmarkStruct
-			if resp = sendRequest("/addBookmark/", []arg{{key: "bookmarkUrl", val: url}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
+			if resp = sendRequest("/addBookmark/", []arg{{key: "bookmarkUrl", val: u}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
 				fmt.Println("dropFolder response code error")
 				return
 			}
+			defer resp.Body.Close()
+
 			if err = json.NewDecoder(resp.Body).Decode(&dataBkm); err != nil {
 				fmt.Println("getChildrenFolders JSON decoder error")
 				return
@@ -685,6 +697,7 @@ func renameFolder(e dom.Event) {
 				fmt.Println("renameFolder response code error")
 				return
 			}
+			defer resp.Body.Close()
 
 			d.GetElementByID(fldID).SetInnerHTML(fldName)
 
@@ -694,6 +707,7 @@ func renameFolder(e dom.Event) {
 				fmt.Println("renameBookmark response code error")
 				return
 			}
+			defer resp.Body.Close()
 
 			d.GetElementByID("bookmark-link-" + fldIDDigit).SetInnerHTML(fldName)
 
@@ -732,8 +746,10 @@ func getChildrenItems(e dom.Event, fldIDDigit string) {
 			fmt.Println("getChildrenFolders response code error")
 			return
 		}
+		defer resp.Body.Close()
+
 		if err = json.NewDecoder(resp.Body).Decode(&dataFld); err != nil {
-			fmt.Println("getChildrenFolders JSON decoder error")
+			fmt.Println("getChildrenFolders JSON decoder error", err.Error())
 			return
 		}
 		for _, fld := range dataFld {
@@ -745,6 +761,8 @@ func getChildrenItems(e dom.Event, fldIDDigit string) {
 			fmt.Println("getChildrenFolders response code error")
 			return
 		}
+		defer resp.Body.Close()
+
 		if err = json.NewDecoder(resp.Body).Decode(&dataBkm); err != nil {
 			fmt.Println("getChildrenFolders JSON decoder error")
 			return

@@ -129,7 +129,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	var destinationFolderId int
 	var err error
-	var js []byte                 // the returned JSON
+	//var js []byte                 // the returned JSON
 	var bookmarkUrlDecoded string // the URL encoded string
 
 	// GET parameters retrieval.
@@ -172,17 +172,19 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Building the JSON result.
-	if js, err = json.Marshal(newBookmarkStruct{BookmarkId: bookmarkId, BookmarkURL: bookmarkUrlDecoded}); err != nil {
-		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//if js, err = json.Marshal(newBookmarkStruct{BookmarkId: bookmarkId, BookmarkURL: bookmarkUrlDecoded}); err != nil {
+	//	failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 
 	// Updating the bookmark favicon.
 	newBookmark.Id = int(bookmarkId)
 	go env.UpdateBookmarkFavicon(&newBookmark)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+
+	json.NewEncoder(w).Encode(newBookmarkStruct{BookmarkId: bookmarkId, BookmarkURL: bookmarkUrlDecoded})
+	//w.Write(js)
 
 }
 
@@ -190,7 +192,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 	var err error
-	var js []byte // the returned JSON
+	//var js []byte // the returned JSON
 
 	// GET parameters retrieval.
 	folderName := r.URL.Query()["folderName"]
@@ -221,13 +223,15 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Building the JSON result.
-	if js, err = json.Marshal(newFolderStruct{FolderId: folderId, FolderTitle: folderName[0]}); err != nil {
-		failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//if js, err = json.Marshal(newFolderStruct{FolderId: folderId, FolderTitle: folderName[0]}); err != nil {
+	//	failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+
+	json.NewEncoder(w).Encode(newFolderStruct{FolderId: folderId, FolderTitle: folderName[0]})
+	//w.Write(js)
 
 }
 
@@ -392,7 +396,7 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	var bookmarkId int
 	var err error
-	var js []byte // the returned JSON
+	//var js []byte // the returned JSON
 	star := true
 
 	// GET parameters retrieval.
@@ -445,13 +449,15 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	}).Debug("StarBookmarkHandler")
 
 	// Building the JSON result.
-	if js, err = json.Marshal(resultBookmarkStruct); err != nil {
-		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//if js, err = json.Marshal(resultBookmarkStruct); err != nil {
+	//	failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+
+	json.NewEncoder(w).Encode(resultBookmarkStruct)
+	//w.Write(js)
 
 }
 
@@ -578,7 +584,7 @@ func (env *Env) GetFolderBookmarksHandler(w http.ResponseWriter, r *http.Request
 
 	var folderId int
 	var err error
-	var js []byte // the returned JSON
+	//var js []byte // the returned JSON
 
 	// GET parameters retrieval.
 	folderIdParam := r.URL.Query()["folderId"]
@@ -614,13 +620,15 @@ func (env *Env) GetFolderBookmarksHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// Building the JSON result.
-	if js, err = json.Marshal(bookmarksMap); err != nil {
-		failHTTP(w, "GetFolderBookmarksHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//if js, err = json.Marshal(bookmarksMap); err != nil {
+	//	failHTTP(w, "GetFolderBookmarksHandler", err.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+
+	json.NewEncoder(w).Encode(bookmarksMap)
+	//w.Write(js)
 
 }
 
@@ -629,7 +637,7 @@ func (env *Env) GetChildrenFoldersHandler(w http.ResponseWriter, r *http.Request
 
 	var folderId int
 	var err error
-	var js []byte // the returned JSON
+	//var js []byte // the returned JSON
 
 	// GET parameters retrieval.
 	folderIdParam := r.URL.Query()["folderId"]
@@ -665,13 +673,15 @@ func (env *Env) GetChildrenFoldersHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	// Building the JSON result.
-	if js, err = json.Marshal(foldersMap); err != nil {
-		failHTTP(w, "GetChildrenFoldersHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//if js, err = json.Marshal(foldersMap); err != nil {
+	//	failHTTP(w, "GetChildrenFoldersHandler", err.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+
+	json.NewEncoder(w).Encode(foldersMap)
+	//w.Write(js)
 }
 
 // MainHandler handles the main application page.
