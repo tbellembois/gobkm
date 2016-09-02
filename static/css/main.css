@@ -25,10 +25,10 @@ ul#root ul {
 
 div.folder {
     cursor: pointer;
-    width: 200px;
     height: 20px;
     float: left;
     clear: left;
+    overflow: hidden;
 }
 
 div.folder-over {
@@ -75,7 +75,7 @@ div.bookmark > div {
 }
 
 div.bookmark:HOVER, div.folder:HOVER {
-    background-color: #efefef;
+    background-color: #ffffff;
 }
 
 div#logo {
