@@ -215,9 +215,12 @@ func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string
 // drag/over/leave folder/bookmark listeners
 //
 func keyDownItem(e dom.Event) {
-	e.PreventDefault()
-	id := e.Target().(dom.HTMLElement).ID()
-	dropRename(string(id))
+	ke := e.(*dom.KeyboardEvent)
+	if ke.KeyCode == 82 {
+		e.PreventDefault()
+		id := e.Target().(dom.HTMLElement).ID()
+		dropRename(string(id))
+	}
 }
 
 func mouseOverItem(e dom.Event) {
