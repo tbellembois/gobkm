@@ -15,17 +15,19 @@ import (
 
 // CSS classes.
 const (
-	ClassDraggedItem        = "dragged-item"
-	ClassItemOver           = "folder-over"
-	ClassRenameOver         = "rename-over"
-	ClassDeleteOver         = "delete-over"
-	ClassItemFolder         = "folder"
-	ClassItemFolderOpen     = "fa-folder-open-o"
-	ClassItemFolderClosed   = "fa-folder-o"
-	ClassItemBookmark       = "bookmark"
-	ClassBookmarkStarred    = "fa fa-star"
-	ClassBookmarkNotStarred = "fa fa-star-o"
-	DragImage               = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAQAAACROWYpAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwACKaQAAimkAScW8mcAAAAHdElNRQfgBhEMEhox+QS1AAAC70lEQVQ4y5WVTWicdRDGf+/uJmSlaRJ7qKI0ftWrTUQUtfQDlQakh1q0pPWj1QZWRVMhHqpCraRgDwEpNIhSixS82EsLGsTiIado9OBJqR7SJWHbmGS3bbLZ7O7787DvbrMxtduZ2zDPO/Of55l5A1YxgQAfJsU8Q8EsSEBDJgJuK6d/9Ge9GG6iUROA8FVnTtjkOk/pJbdX4w1Y+JbXj4qId/ipLtrTENy4b1jqj6AVP25B99/o6+bg13L21UERB7ymh25ZuThz5D9QxD79zfX1uYmV4PjEjjtzxFniNFeBFvpopcROyHK50nqwcsLGfbl4ORxzq78649y8nSJ2OBuaddoxd5d/Kl3xYN3bI14P5PzEMR0H8LGsGyJw5rpPAHjqe4+5qG+vkESYspgSD+kMgE8uA8+7BWz2wj7xFV2wt1I7AQHh3uD4QGIYiEPMLhIsV1WMR1wiydo4cIa1yRNfmw5GBXCL08eimb7jgjlzZr3kvSK2edFr5sy55J4o6zNL2gW4sTxxskZIuw9Efp8JEWN2RpEHXVPL+0rn7MKhCzatyuz/eczz+m2MxTW0crsW8hAUcJ1/f2Ey+mKL7ZG3GRMxsC2KdNhcqzyi6fB+wG7Tg1Gw3+lwcmEyP1n4w3uigf1upjCZn8xnyy+KmHBYM2F3levnLFTmfUTnfNxtvne1xvN03gGf8Xl/eV3Ew5bn3AxWhebORfvFj/QKgJvrRLIdTDpyQHxJ874QiSSoSP2cqY+Hc/TAX2Azybr5tJikialnKXO6yGBwFgKoLogE+D69ZDlJDxtoL3ZvZALoYKLcOs4/TJVH472sZyQ4XN2s+u26m0w4OvLUN8QpcJ55oJndtBKyg13fcRCCqVVuaXXJSnNHV5XFfh33rlucIlN590Yc3/A9uuRgA4fXd82/uQzY5Aea98MGDiCA+wyHauDPLc+6qyFoxPvWkl8aiD9oxqcbrFprvtvsOf/UdLjpNv4XNfijnvVM2Hlz6L/COmiuQg3JqwAAAABJRU5ErkJggg=="
+	ClassDraggedItem            = "dragged-item"
+	ClassItemOver               = "folder-over"
+	ClassRenameOver             = "rename-over"
+	ClassDeleteOver             = "delete-over"
+	ClassItemFolder             = "folder"
+	ClassItemFolderOpen         = "fa-folder-open-o"
+	ClassItemFolderClosed       = "fa-folder-o"
+	ClassItemBookmark           = "bookmark"
+	ClassItemBookmarkLink       = "bookmark-link"
+	ClassItemBookmarkLinkEdited = "bookmark-link-edited"
+	ClassBookmarkStarred        = "fa fa-star"
+	ClassBookmarkNotStarred     = "fa fa-star-o"
+	DragImage                   = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAQAAACROWYpAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwACKaQAAimkAScW8mcAAAAHdElNRQfgBhEMEhox+QS1AAAC70lEQVQ4y5WVTWicdRDGf+/uJmSlaRJ7qKI0ftWrTUQUtfQDlQakh1q0pPWj1QZWRVMhHqpCraRgDwEpNIhSixS82EsLGsTiIado9OBJqR7SJWHbmGS3bbLZ7O7787DvbrMxtduZ2zDPO/Of55l5A1YxgQAfJsU8Q8EsSEBDJgJuK6d/9Ge9GG6iUROA8FVnTtjkOk/pJbdX4w1Y+JbXj4qId/ipLtrTENy4b1jqj6AVP25B99/o6+bg13L21UERB7ymh25ZuThz5D9QxD79zfX1uYmV4PjEjjtzxFniNFeBFvpopcROyHK50nqwcsLGfbl4ORxzq78649y8nSJ2OBuaddoxd5d/Kl3xYN3bI14P5PzEMR0H8LGsGyJw5rpPAHjqe4+5qG+vkESYspgSD+kMgE8uA8+7BWz2wj7xFV2wt1I7AQHh3uD4QGIYiEPMLhIsV1WMR1wiydo4cIa1yRNfmw5GBXCL08eimb7jgjlzZr3kvSK2edFr5sy55J4o6zNL2gW4sTxxskZIuw9Efp8JEWN2RpEHXVPL+0rn7MKhCzatyuz/eczz+m2MxTW0crsW8hAUcJ1/f2Ey+mKL7ZG3GRMxsC2KdNhcqzyi6fB+wG7Tg1Gw3+lwcmEyP1n4w3uigf1upjCZn8xnyy+KmHBYM2F3levnLFTmfUTnfNxtvne1xvN03gGf8Xl/eV3Ew5bn3AxWhebORfvFj/QKgJvrRLIdTDpyQHxJ874QiSSoSP2cqY+Hc/TAX2Azybr5tJikialnKXO6yGBwFgKoLogE+D69ZDlJDxtoL3ZvZALoYKLcOs4/TJVH472sZyQ4XN2s+u26m0w4OvLUN8QpcJ55oJndtBKyg13fcRCCqVVuaXXJSnNHV5XFfh33rlucIlN590Yc3/A9uuRgA4fXd82/uQzY5Aea98MGDiCA+wyHauDPLc+6qyFoxPvWkl8aiD9oxqcbrFprvtvsOf/UdLjpNv4XNfijnvVM2Hlz6L/COmiuQg3JqwAAAABJRU5ErkJggg=="
 )
 
 var (
@@ -147,6 +149,18 @@ func setWait() {
 }
 func unsetWait() {
 	d.GetElementsByTagName("body")[0].Class().Remove("wait")
+}
+
+func resetAll() {
+	hideImport()
+	hideRenameBox()
+	enableItem("add-folder")
+	enableItem("add-folder-button")
+
+	for _, e := range d.GetElementsByClassName(ClassItemBookmarkLinkEdited) {
+		removeClass(e.(dom.HTMLElement), ClassItemBookmarkLinkEdited)
+		addClass(e.(dom.HTMLElement), ClassItemBookmarkLink)
+	}
 }
 
 func undisplayChildrenFolders(fldID string) {
@@ -275,7 +289,7 @@ func dragItem(e dom.Event) {
 
 func dropRename(elementId string) {
 
-	hideImport()
+	resetAll()
 
 	sl := strings.Split(elementId, "-")
 	draggedItemIDDigit := sl[len(sl)-1]
@@ -283,9 +297,16 @@ func dropRename(elementId string) {
 	fmt.Println(elementId)
 	fmt.Println(draggedItemIDDigit)
 
+	el := d.GetElementByID(elementId).(dom.HTMLElement)
+
+	removeClass(el, ClassItemBookmarkLink)
+	addClass(el, ClassItemBookmarkLinkEdited)
+
+	el.ParentNode().InsertBefore(d.GetElementByID("rename-input-box"), el.NextElementSibling())
+
 	showRenameBox()
 	if strings.HasPrefix(elementId, "folder") {
-		draggedFldName := d.GetElementByID(elementId).TextContent()
+		draggedFldName := el.TextContent()
 		setRenameFormValue(draggedFldName)
 	} else {
 		draggedBkmName := d.GetElementByID("bookmark-link-" + draggedItemIDDigit).TextContent()
@@ -712,7 +733,10 @@ func renameFolder(e dom.Event) {
 			}
 			defer resp.Body.Close()
 
-			d.GetElementByID("bookmark-link-" + fldIDDigit).SetInnerHTML(fldName)
+			el := d.GetElementByID("bookmark-link-" + fldIDDigit).(dom.HTMLElement)
+			el.SetInnerHTML(fldName)
+			removeClass(el, ClassItemBookmarkLinkEdited)
+			addClass(el, ClassItemBookmarkLink)
 
 		}
 
@@ -837,7 +861,7 @@ func main() {
 		importBookmarks(e)
 	})
 
-	// Enter key listener
+	// Enter and Esc key listeners
 	d.AddEventListener("keydown", false, func(e dom.Event) {
 		if e.(*dom.KeyboardEvent).KeyCode == 13 {
 			if isDisabled("add-folder") {
@@ -845,6 +869,8 @@ func main() {
 			} else {
 				addFolder(e)
 			}
+		} else if e.(*dom.KeyboardEvent).KeyCode == 27 {
+			resetAll()
 		}
 	})
 

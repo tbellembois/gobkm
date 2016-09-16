@@ -59,6 +59,7 @@ div.bookmark {
     min-height: 1.2em;
     line-height: 1.2em;
     min-width: 450px;
+    position: relative;
 }
 
 div.fa-star, div.fa-star-o {
@@ -71,7 +72,13 @@ div.bookmark > div {
     font-size: 0.8em;
     min-height: 22px;
     cursor: pointer;
+}
+
+div.bookmark > div.bookmark-link {
     color: blue;
+}
+div.bookmark > div.bookmark-link-edited {
+    margin-bottom: 25px;
 }
 
 div.bookmark:HOVER, div.folder:HOVER {
@@ -115,10 +122,20 @@ div#add-folder-box, div#rename-input-box, div#import-input-box{
     font-size: 0.8em;
     margin-top: 5px;
 }
+div#rename-input-box {
+    position: absolute;
+    top: 15px;
+}
 
-input#add-folder, input#rename-input-box-form {
+input#rename-input-box-form {
+    width: 200px;
+    margin-left: 30px;
+}
+
+input#add-folder {
     width: 132px;
 }
+
 
 div#starred-list {
     margin-top: 120px;
