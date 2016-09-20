@@ -322,7 +322,7 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 
 	// Link (actually a clickable div).
 	a := d.CreateElement("div").(*dom.HTMLDivElement)
-	a.SetTitle(bkmURL + " - type \"r\" to rename")
+	a.SetTitle(bkmURL)
 	a.SetAttribute("tabindex", "0")
 	a.AppendChild(d.CreateTextNode(bkmTitle))
 	a.AddEventListener("click", false, func(e dom.Event) { openInParent(bkmURL) })
@@ -372,7 +372,7 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 
 	// Main div.
 	md := d.CreateElement("div").(*dom.HTMLDivElement)
-	md.SetTitle(fldTitle + " - type \"r\" to rename")
+	md.SetTitle(fldTitle)
 	md.SetClass(ClassItemFolder + " " + ClassItemFolderClosed)
 	md.SetAttribute("tabindex", "0")
 	md.SetID("folder-" + fldID)

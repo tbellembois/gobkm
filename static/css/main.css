@@ -39,6 +39,7 @@ div.rename-over, div.delete-over {
 }
 
 div#action-box {
+    z-index: 99;
     position: fixed;
     width: 252px;
     background-color: white;
@@ -65,6 +66,9 @@ div.bookmark {
 div.fa-star, div.fa-star-o {
     width: 15px;
     float: left;
+}
+div.fa-star {
+    color: green;
 }
 
 div.bookmark > div {
