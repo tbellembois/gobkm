@@ -14,6 +14,12 @@ const (
 	dbURL = "./bkm.db"
 )
 
+var (
+	datastore   *models.SQLiteDataStore
+	templateBox *rice.Box
+	err         error
+)
+
 // A decorator to set custom HTTP headers.
 func decoratedHandler(h http.Handler) http.Handler {
 
@@ -36,6 +42,7 @@ func main() {
 	log.WithFields(log.Fields{
 		"listenPort": *listenPort,
 		"goBkmURL":   *goBkmProxyURL,
+		"debug":      *debug,
 	}).Debug("main:flags")
 
 	// Setting the log level.
@@ -46,8 +53,7 @@ func main() {
 	}
 
 	// Database initialization.
-	datastore, err := models.NewDBstore(dbURL)
-	if err != nil {
+	if datastore, err = models.NewDBstore(dbURL); err != nil {
 		log.Panic(err)
 	}
 
@@ -55,36 +61,23 @@ func main() {
 	datastore.CreateDatabase()
 	datastore.PopulateDatabase()
 
+	// Error check.
+	if datastore.FlushErrors() != nil {
+		log.Panic(err)
+	}
+
 	// Environment creation.
 	env := handlers.Env{DB: datastore, GoBkmProxyURL: *goBkmProxyURL}
 
 	// Building a rice box with the static directory.
-	templateBox, err := rice.FindBox("static")
-	if err != nil {
+	if templateBox, err = rice.FindBox("static"); err != nil {
 		log.Fatal(err)
 	}
 
 	// Getting the main template file content as a string.
-	env.TplMainData, err = templateBox.String("main.html")
-	if err != nil {
+	if env.TplMainData, err = templateBox.String("main.html"); err != nil {
 		log.Fatal(err)
 	}
-
-	// Getting the bookmarks with no favicon.
-	noIconBookmarks := env.DB.GetNoIconBookmarks()
-	if err := env.DB.FlushErrors(); err != nil {
-		panic(err)
-	}
-
-	log.WithFields(log.Fields{
-		"len(noIconBookmarks)": len(noIconBookmarks),
-	}).Debug("main")
-
-	// Updating them.
-	//for _, bkm := range noIconBookmarks {
-	//go env.UpdateBookmarkFavicon(bkm)
-	//env.UpdateBookmarkFavicon(bkm)
-	//}
 
 	// Handlers initialization.
 	http.HandleFunc("/getChildrenFolders/", env.GetChildrenFoldersHandler)
@@ -124,6 +117,8 @@ func main() {
 	manifestFileServer := http.StripPrefix("/manifest/", http.FileServer(manifestBox.HTTPBox()))
 	http.Handle("/manifest/", manifestFileServer)
 
-	http.ListenAndServe(":"+*listenPort, nil)
+	if err = http.ListenAndServe(":"+*listenPort, nil); err != nil {
+		log.Fatal(err)
+	}
 
 }

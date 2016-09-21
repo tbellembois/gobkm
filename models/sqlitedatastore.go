@@ -14,7 +14,7 @@ const (
 )
 
 // SQLiteDataStore implements the Datastore interface
-// to store the Bookmarks in SQLite3.
+// to store the folders and bookmarks in SQLite3.
 type SQLiteDataStore struct {
 	*sql.DB
 	err error
@@ -28,8 +28,10 @@ func NewDBstore(dataSourceName string) (*SQLiteDataStore, error) {
 		"dataSourceName": dataSourceName,
 	}).Debug("NewDBstore:params")
 
-	var db *sql.DB
-	var err error
+	var (
+		db  *sql.DB
+		err error
+	)
 
 	if db, err = sql.Open(dbdriver, dataSourceName); err != nil {
 		log.WithFields(log.Fields{
@@ -56,9 +58,7 @@ func (db *SQLiteDataStore) CreateDatabase() {
 
 	log.Info("Creating database")
 
-	if db.err != nil {
-		return
-	}
+	var count int
 
 	if _, db.err = db.Exec("PRAGMA foreign_keys = ON"); db.err != nil {
 		log.Error("CreateDatabase: error executing the PRAGMA request")
@@ -75,9 +75,10 @@ func (db *SQLiteDataStore) CreateDatabase() {
 		return
 	}
 
-	var count int
-
-	db.err = db.QueryRow("SELECT COUNT(*) as count FROM folder").Scan(&count)
+	if db.err = db.QueryRow("SELECT COUNT(*) as count FROM folder").Scan(&count); db.err != nil {
+		log.Error("CreateDatabase: error executing the SELECT COUNT(*) request for table folder")
+		return
+	}
 
 	if count > 0 {
 		return
@@ -95,15 +96,18 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 
 	log.Info("Populating database")
 
-	var folders []*types.Folder
-	var bookmarks []*types.Bookmark
-
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return
 	}
 
+	var (
+		folders   []*types.Folder
+		bookmarks []*types.Bookmark
+		count     int
+	)
+
 	// Leaving if database already populated.
-	var count int
 	if db.err = db.QueryRow("SELECT COUNT(*) as count FROM folder").Scan(&count); db.err != nil || count > 1 {
 		log.Info("Database not empty, leaving")
 		return
@@ -111,9 +115,11 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 
 	// Getting the root folder.
 	folderRoot := db.GetFolder(1)
+
 	// Creating new sample folders.
 	folder1 := types.Folder{Id: 1, Title: "IT", Parent: folderRoot}
 	folder2 := types.Folder{Id: 2, Title: "Development", Parent: &folder1}
+
 	// Creating new sample bookmark.
 	bookmark1 := types.Bookmark{Id: 1, Title: "GoLang", Starred: true, URL: "https://golang.org/", Favicon: "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAb9JREFUOI3tkj9oU1EUh797c3lgjA4xL61FX0yhMQqmW5QgFim4+GcyQ3Hp1MlBqFIyOGUobRScnYoQikNA0Ao6WJS2UIdiK7SUVGtfIZg0iMSA+Iy5Dg9fGnyLu2e6nHPu9zv3/K7QWuMXjfqebjQbOM5PIuEjHI6Ywq9P/TlUdm09+3KeNxtlAHbLWzTrNeTBQxjhHuLHohrgwqkBRi5dpO+4JQDEh80NfePOXaIDJ3FigximBUAyk+5SOvFphR/tNovvyzg769TKmxQLecS5a9d1dOQ2zp7N6bjF1PAZlJKMv1hFpVxIa+0t96+cBWD82TLr2zaGaVGbvYcEqLx+gmFajKZiqANBeo/2MZcb89RHUzEAeiNh5nJjGKZF9VUJAFks5FGVrc7IuuW7VH518slMGlHdpljII/sTSW+7j5ohEIrP9S9cnnxIaShOaSjOzNoOBNz81ceLHqg/kRRqv0ggGGLCdm3t+fqRmZtZ15HKEhN2Go1ABUO06VjfBdDSLQS0IFNd4fytSQAWHuR4B8gW7lWJP8B7rtA8zU7zfH4V8f0brew0ou37j/wBHigx2D2d/LvHJ/Vv8R8AvwHjjZMncK4ImgAAAABJRU5ErkJggg==", Folder: &folder2}
 
@@ -128,8 +134,6 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 		db.SaveBookmark(bkm)
 	}
 
-	return
-
 }
 
 // GetBookmark returns a Bookmark instance with the given id
@@ -139,16 +143,19 @@ func (db *SQLiteDataStore) GetBookmark(id int) *types.Bookmark {
 		"id": id,
 	}).Debug("GetBookmark")
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil
 	}
 
-	var folderId sql.NullInt64
-	var starred sql.NullInt64
+	var (
+		folderID sql.NullInt64
+		starred  sql.NullInt64
+	)
 
 	bkm := new(types.Bookmark)
 
-	db.err = db.QueryRow("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE id=?", id).Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &folderId)
+	db.err = db.QueryRow("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE id=?", id).Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &folderID)
 
 	switch {
 
@@ -168,7 +175,7 @@ func (db *SQLiteDataStore) GetBookmark(id int) *types.Bookmark {
 		log.WithFields(log.Fields{
 			"Id":       bkm.Id,
 			"Title":    bkm.Title,
-			"folderId": folderId,
+			"folderId": folderID,
 			"Favicon":  bkm.Favicon,
 		}).Debug("GetBookmark:bookmark found")
 
@@ -177,9 +184,9 @@ func (db *SQLiteDataStore) GetBookmark(id int) *types.Bookmark {
 		}
 
 		// retrieving the parent
-		if folderId.Int64 != 0 {
+		if folderID.Int64 != 0 {
 
-			bkm.Folder = db.GetFolder(int(folderId.Int64))
+			bkm.Folder = db.GetFolder(int(folderID.Int64))
 
 			if db.err != nil {
 				log.WithFields(log.Fields{
@@ -202,14 +209,15 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 		"id": id,
 	}).Debug("GetFolder")
 
+	// Leaving silently on past errors...
 	if db.err != nil || id == 0 {
 		return nil
 	}
 
-	var parentFldId sql.NullInt64
+	var parentFldID sql.NullInt64
 	fld := new(types.Folder)
 
-	db.err = db.QueryRow("SELECT id, title, parentFolderId FROM folder WHERE id=?", id).Scan(&fld.Id, &fld.Title, &parentFldId)
+	db.err = db.QueryRow("SELECT id, title, parentFolderId FROM folder WHERE id=?", id).Scan(&fld.Id, &fld.Title, &parentFldID)
 
 	switch {
 
@@ -229,13 +237,13 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 		log.WithFields(log.Fields{
 			"Id":          fld.Id,
 			"Title":       fld.Title,
-			"parentFldId": parentFldId,
+			"parentFldId": parentFldID,
 		}).Debug("GetFolder:folder found")
 
 		// recursively retrieving the parents
-		if parentFldId.Int64 != 0 {
+		if parentFldID.Int64 != 0 {
 
-			fld.Parent = db.GetFolder(int(parentFldId.Int64))
+			fld.Parent = db.GetFolder(int(parentFldID.Int64))
 
 		}
 	}
@@ -246,15 +254,25 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 // GetStarredBookmarks returns the starred bookmarks
 func (db *SQLiteDataStore) GetStarredBookmarks() []*types.Bookmark {
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil
 	}
 
-	var rows *sql.Rows
+	var (
+		rows *sql.Rows
+		bkms []*types.Bookmark
+	)
 
 	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE starred ORDER BY title")
 
-	defer rows.Close()
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetStarredBookmarks:error closing rows")
+		}
+	}()
 
 	switch {
 
@@ -270,14 +288,12 @@ func (db *SQLiteDataStore) GetStarredBookmarks() []*types.Bookmark {
 
 	default:
 
-		bkms := make([]*types.Bookmark, 0)
-
 		for rows.Next() {
 
 			bkm := new(types.Bookmark)
-			var fldId sql.NullInt64
+			var fldID sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &bkm.Starred, &fldId)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &bkm.Starred, &fldID)
 
 			if db.err != nil {
 
@@ -288,7 +304,7 @@ func (db *SQLiteDataStore) GetStarredBookmarks() []*types.Bookmark {
 
 			}
 
-			bkm.Folder = db.GetFolder(int(fldId.Int64))
+			bkm.Folder = db.GetFolder(int(fldID.Int64))
 
 			bkms = append(bkms, bkm)
 
@@ -312,15 +328,25 @@ func (db *SQLiteDataStore) GetStarredBookmarks() []*types.Bookmark {
 // GetNoIconBookmarks returns the bookmarks with no favicon
 func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil
 	}
 
-	var rows *sql.Rows
+	var (
+		rows *sql.Rows
+		bkms []*types.Bookmark
+	)
 
 	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE favicon='' ORDER BY title")
 
-	defer rows.Close()
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetNoIconBookmarks:error closing rows")
+		}
+	}()
 
 	switch {
 
@@ -336,15 +362,13 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 
 	default:
 
-		bkms := make([]*types.Bookmark, 0)
-
 		for rows.Next() {
 
 			bkm := new(types.Bookmark)
-			var fldId sql.NullInt64
+			var fldID sql.NullInt64
 			var starred sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &fldId)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &fldID)
 
 			if db.err != nil {
 
@@ -359,7 +383,7 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 				bkm.Starred = true
 			}
 
-			bkm.Folder = db.GetFolder(int(fldId.Int64))
+			bkm.Folder = db.GetFolder(int(fldID.Int64))
 
 			bkms = append(bkms, bkm)
 
@@ -383,15 +407,25 @@ func (db *SQLiteDataStore) GetNoIconBookmarks() []*types.Bookmark {
 // GetAllBookmarks returns all the bookmarks as an array of *Bookmark
 func (db *SQLiteDataStore) GetAllBookmarks() []*types.Bookmark {
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil
 	}
 
-	var rows *sql.Rows
+	var (
+		rows *sql.Rows
+		bkms []*types.Bookmark
+	)
 
 	rows, db.err = db.Query("SELECT * FROM bookmark ORDER BY title")
 
-	defer rows.Close()
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetAllBookmarks:error closing rows")
+		}
+	}()
 
 	switch {
 
@@ -407,15 +441,13 @@ func (db *SQLiteDataStore) GetAllBookmarks() []*types.Bookmark {
 
 	default:
 
-		bkms := make([]*types.Bookmark, 0)
-
 		for rows.Next() {
 
 			bkm := new(types.Bookmark)
-			var fldId sql.NullInt64
+			var fldID sql.NullInt64
 			var starred sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &fldId)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &fldID)
 
 			if db.err != nil {
 
@@ -430,7 +462,7 @@ func (db *SQLiteDataStore) GetAllBookmarks() []*types.Bookmark {
 				bkm.Starred = true
 			}
 
-			bkm.Folder = db.GetFolder(int(fldId.Int64))
+			bkm.Folder = db.GetFolder(int(fldID.Int64))
 
 			bkms = append(bkms, bkm)
 		}
@@ -455,15 +487,25 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 		"id": id,
 	}).Debug("GetFolderBookmarks")
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil
 	}
 
-	var rows *sql.Rows
+	var (
+		rows *sql.Rows
+		bkms []*types.Bookmark
+	)
 
 	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE folderId is ? ORDER BY title", id)
 
-	defer rows.Close()
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetFolderBookmarks:error closing rows")
+		}
+	}()
 
 	switch {
 
@@ -479,15 +521,13 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 
 	default:
 
-		bkms := make([]*types.Bookmark, 0)
-
 		for rows.Next() {
 
 			bkm := new(types.Bookmark)
-			var parentFldId sql.NullInt64
+			var parentFldID sql.NullInt64
 			var starred sql.NullInt64
 
-			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &parentFldId)
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &parentFldID)
 
 			if int(starred.Int64) != 0 {
 				bkm.Starred = true
@@ -525,22 +565,32 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 
 }
 
-// GetChildrenFolders returns the children folders as an array of *Folder
+// GetFolderSubfolders returns the children folders as an array of *Folder
 func (db *SQLiteDataStore) GetFolderSubfolders(id int) []*types.Folder {
 
 	log.WithFields(log.Fields{
 		"id": id,
 	}).Debug("GetChildrenFolders")
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil
 	}
 
-	var rows *sql.Rows
+	var (
+		rows *sql.Rows
+		flds []*types.Folder
+	)
 
 	rows, db.err = db.Query("SELECT id, title, parentFolderId, nbChildrenFolders FROM folder WHERE parentFolderId is ? ORDER BY title", id)
 
-	defer rows.Close()
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetFolderSubfolders:error closing rows")
+		}
+	}()
 
 	switch {
 
@@ -556,14 +606,12 @@ func (db *SQLiteDataStore) GetFolderSubfolders(id int) []*types.Folder {
 
 	default:
 
-		flds := make([]*types.Folder, 0)
-
 		for rows.Next() {
 
 			fld := new(types.Folder)
-			var parentFldId sql.NullInt64
+			var parentFldID sql.NullInt64
 
-			db.err = rows.Scan(&fld.Id, &fld.Title, &parentFldId, &fld.NbChildrenFolders)
+			db.err = rows.Scan(&fld.Id, &fld.Title, &parentFldID, &fld.NbChildrenFolders)
 
 			if db.err != nil {
 
@@ -596,15 +644,25 @@ func (db *SQLiteDataStore) GetFolderSubfolders(id int) []*types.Folder {
 // GetRootFolders returns the root folders as an array of *Folder
 func (db *SQLiteDataStore) GetRootFolders() []*types.Folder {
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil
 	}
 
-	var rows *sql.Rows
+	var (
+		rows *sql.Rows
+		flds []*types.Folder
+	)
 
 	rows, db.err = db.Query("SELECT id, title, parentFolderId, nbChildrenFolders FROM folder WHERE parentFolderId==1 ORDER BY title")
 
-	defer rows.Close()
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetNoIconBookmarks:error closing rows")
+		}
+	}()
 
 	switch {
 
@@ -620,15 +678,13 @@ func (db *SQLiteDataStore) GetRootFolders() []*types.Folder {
 
 	default:
 
-		flds := make([]*types.Folder, 0)
-
 		for rows.Next() {
 
 			fld := new(types.Folder)
 
-			var parentFldId sql.NullInt64
+			var parentFldID sql.NullInt64
 
-			db.err = rows.Scan(&fld.Id, &fld.Title, &parentFldId, &fld.NbChildrenFolders)
+			db.err = rows.Scan(&fld.Id, &fld.Title, &parentFldID, &fld.NbChildrenFolders)
 
 			if db.err != nil {
 
@@ -666,6 +722,7 @@ func (db *SQLiteDataStore) SaveFolder(f *types.Folder) int64 {
 		"f": f,
 	}).Debug("SaveFolder")
 
+	// Leaving silently on past errors...
 	if db.err != nil {
 		return 0
 	}
@@ -683,7 +740,13 @@ func (db *SQLiteDataStore) SaveFolder(f *types.Folder) int64 {
 
 	}
 
-	defer stmt.Close()
+	defer func() {
+		if db.err = stmt.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("SaveFolder:error closing stmt")
+		}
+	}()
 
 	var res sql.Result
 
@@ -713,6 +776,11 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 		"b": b,
 	}).Debug("UpdateBookmark")
 
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return
+	}
+
 	var stmt *sql.Stmt
 	var tx *sql.Tx
 
@@ -738,7 +806,13 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 		return
 	}
 
-	defer stmt.Close()
+	defer func() {
+		if db.err = stmt.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("UpdateBookmark:error closing stmt")
+		}
+	}()
 
 	if b.Folder != nil {
 		_, db.err = stmt.Exec(b.Title, b.URL, b.Folder.Id, b.Starred, b.Favicon, b.Id)
@@ -767,6 +841,11 @@ func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 	log.WithFields(log.Fields{
 		"b": b,
 	}).Debug("SaveBookmark")
+
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return 0
+	}
 
 	var stmt *sql.Stmt
 
@@ -805,11 +884,17 @@ func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 	return id
 }
 
+// DeleteBookmark delete the given Bookmark from the db
 func (db *SQLiteDataStore) DeleteBookmark(b *types.Bookmark) {
 
 	log.WithFields(log.Fields{
 		"b": b,
 	}).Debug("DeleteBookmark")
+
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return
+	}
 
 	_, db.err = db.Exec("DELETE from bookmark WHERE id=?", b.Id)
 
@@ -825,16 +910,22 @@ func (db *SQLiteDataStore) DeleteBookmark(b *types.Bookmark) {
 	return
 }
 
+// UpdateFolder updates the given folder
 func (db *SQLiteDataStore) UpdateFolder(f *types.Folder) {
 
 	log.WithFields(log.Fields{
 		"f": f,
 	}).Debug("UpdateFolder")
 
-	var oldParentFolderId sql.NullInt64
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return
+	}
+
+	var oldParentFolderID sql.NullInt64
 
 	// retrieving the parentFolderId of the folder to be updated
-	if db.err = db.QueryRow("SELECT parentFolderId from folder WHERE id=?", f.Id).Scan(&oldParentFolderId); db.err != nil {
+	if db.err = db.QueryRow("SELECT parentFolderId from folder WHERE id=?", f.Id).Scan(&oldParentFolderID); db.err != nil {
 
 		log.WithFields(log.Fields{
 			"err": db.err,
@@ -844,7 +935,7 @@ func (db *SQLiteDataStore) UpdateFolder(f *types.Folder) {
 	}
 
 	log.WithFields(log.Fields{
-		"oldParentFolderId": oldParentFolderId,
+		"oldParentFolderId": oldParentFolderID,
 		"f.Parent":          f.Parent,
 	}).Debug("UpdateFolder")
 
@@ -892,7 +983,7 @@ func (db *SQLiteDataStore) UpdateFolder(f *types.Folder) {
 
 	defer stmt.Close()
 
-	if _, db.err = stmt.Exec(oldParentFolderId, oldParentFolderId); db.err != nil {
+	if _, db.err = stmt.Exec(oldParentFolderID, oldParentFolderID); db.err != nil {
 
 		log.WithFields(log.Fields{
 			"err": db.err,
@@ -914,11 +1005,17 @@ func (db *SQLiteDataStore) UpdateFolder(f *types.Folder) {
 
 }
 
+// DeleteFolder delete the given Folder from the db
 func (db *SQLiteDataStore) DeleteFolder(f *types.Folder) {
 
 	log.WithFields(log.Fields{
 		"f": f,
 	}).Debug("DeleteFolder")
+
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return
+	}
 
 	_, db.err = db.Exec("DELETE from folder WHERE id=?", f.Id)
 
