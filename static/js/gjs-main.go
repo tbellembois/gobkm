@@ -33,7 +33,6 @@ const (
 var (
 	w dom.Window
 	d dom.Document
-	// The dragged element ID.
 )
 
 type folderStruct struct {
@@ -42,7 +41,7 @@ type folderStruct struct {
 }
 
 type newBookmarkStruct struct {
-	BookmarkId      int64
+	BookmarkID      int64
 	BookmarkTitle   string
 	BookmarkURL     string
 	BookmarkFavicon string
@@ -57,18 +56,14 @@ type newFolderStruct struct {
 func init() {
 	w = dom.GetWindow()
 	d = w.Document()
-
 }
 
 //
 // Utils functions.
 //
 func getClosest(elem dom.Node, selector string) dom.Node {
-
 	firstChar := string(selector[0])
-
 	for ; elem.NodeName() != d.NodeName(); elem = elem.ParentNode() {
-
 		// class selector
 		if firstChar == "." {
 			if elem.(dom.HTMLElement).Class().Contains(selector[1:]) {
@@ -201,7 +196,6 @@ func toogleDisplayImport() {
 }
 
 func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFolders int) {
-
 	if d.GetElementByID("folder-"+fldID) != nil {
 		return
 	}
@@ -210,11 +204,9 @@ func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFo
 
 	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.fld)
 	d.GetElementByID("subfolders-" + pFldID).AppendChild(newFld.subFlds)
-
 }
 
 func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool) {
-
 	if d.GetElementByID("bookmark-"+bkmID) != nil {
 		return
 	}
@@ -222,7 +214,6 @@ func displayBookmark(pFldID string, bkmID string, bkmTitle string, bkmURL string
 	newBkm := createBookmark(bkmID, bkmTitle, bkmURL, bkmFavicon, bkmStarred, false)
 
 	d.GetElementByID("subfolders-" + pFldID).AppendChild(newBkm)
-
 }
 
 //
@@ -319,7 +310,6 @@ func dropRename(elementId string) {
 // HTML elements creation helpers
 //
 func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool, starred bool) dom.HTMLElement {
-
 	// Link (actually a clickable div).
 	a := d.CreateElement("div").(*dom.HTMLDivElement)
 	a.SetTitle(bkmURL)
@@ -369,7 +359,6 @@ func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon str
 }
 
 func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderStruct {
-
 	// Main div.
 	md := d.CreateElement("div").(*dom.HTMLDivElement)
 	md.SetTitle(fldTitle)
@@ -407,10 +396,11 @@ type arg struct {
 
 // sendRequest performs a GET request to url with args
 func sendRequest(url string, args []arg) *http.Response {
-
-	var err error
-	var req *http.Request
-	var resp *http.Response
+	var (
+		err  error
+		req  *http.Request
+		resp *http.Response
+	)
 
 	url = strings.Join([]string{url, "?"}, "")
 	for i, arg := range args {
@@ -433,15 +423,11 @@ func sendRequest(url string, args []arg) *http.Response {
 	}
 
 	return resp
-
 }
 
 func importBookmarks(e dom.Event) {
-
 	e.PreventDefault()
-
 	go func() {
-
 		setWait()
 		setItemValue("import-button", "importing...")
 
@@ -462,9 +448,7 @@ func importBookmarks(e dom.Event) {
 }
 
 func starBookmark(bkmID string, forceUnstar bool) {
-
 	go func() {
-
 		var (
 			star, starredBookmark bool
 			starBookmarkDiv       dom.HTMLElement
@@ -689,7 +673,7 @@ func dropFolder(e dom.Event) {
 				return
 			}
 
-			newBkm := createBookmark(strconv.Itoa(int(dataBkm.BookmarkId)), dataBkm.BookmarkURL, dataBkm.BookmarkURL, "", dataBkm.BookmarkStarred, false)
+			newBkm := createBookmark(strconv.Itoa(int(dataBkm.BookmarkID)), dataBkm.BookmarkURL, dataBkm.BookmarkURL, "", dataBkm.BookmarkStarred, false)
 
 			droppedItemChildren.InsertBefore(newBkm, droppedItemChildren.FirstChild())
 			addClass(droppedItem, ClassItemFolderOpen)
