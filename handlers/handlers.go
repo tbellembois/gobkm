@@ -15,6 +15,7 @@ import (
 
 	"golang.org/x/net/html"
 
+	"github.com/gorilla/websocket"
 	"github.com/tbellembois/gobkm/models"
 	"github.com/tbellembois/gobkm/types"
 
@@ -22,6 +23,14 @@ import (
 )
 
 const faviconRequestBaseURL = "http://www.google.com/s2/favicons?domain_url="
+
+var (
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+	wsconn *websocket.Conn
+)
 
 // Env is a structure used to pass objects throughout the application.
 type Env struct {
@@ -84,6 +93,22 @@ func insertIndent(wr io.Writer, depth int) {
 				"err": err,
 			}).Error("insertIdent")
 		}
+	}
+}
+
+// SocketHandler handles the websocket communications
+func (env *Env) SocketHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debug("SocketHandler called")
+	wsconn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("SocketHandler")
+		return
+	}
+	for i := 0; i < 10; i++ {
+		wsconn.WriteMessage(websocket.BinaryMessage, []byte("Message from server:"+strconv.Itoa(i)))
+		time.Sleep(3000 * time.Millisecond)
 	}
 }
 

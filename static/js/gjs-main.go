@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/websocket"
 	"github.com/tbellembois/gobkm/types"
 	"honnef.co/go/js/dom"
 	"honnef.co/go/js/xhr"
@@ -279,7 +281,6 @@ func dragItem(e dom.Event) {
 }
 
 func dropRename(elementId string) {
-
 	resetAll()
 
 	sl := strings.Split(elementId, "-")
@@ -789,7 +790,52 @@ func getChildrenItems(e dom.Event, fldIDDigit string) {
 
 }
 
+func getWSBaseURL() string {
+	document := js.Global.Get("window").Get("document")
+	location := document.Get("location")
+
+	wsProtocol := "ws"
+	if location.Get("protocol").String() == "https:" {
+		wsProtocol = "wss"
+	}
+
+	return fmt.Sprintf("%s://%s:%s/", wsProtocol, location.Get("hostname"), location.Get("port"))
+}
+
 func main() {
+
+	// Websocket connection
+	wsURL := getWSBaseURL() + "socket/"
+	//	ws, err := websocket.New(wsURL)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	fmt.Print("websocket URL:" + wsURL)
+	//	ws.AddEventListener("open", false, func(ev *js.Object) {
+	//		fmt.Println("Websocket opened")
+	//	})
+	//	ws.AddEventListener("close", false, func(ev *js.Object) {
+	//		fmt.Println("Websocket closed")
+	//	})
+	//	ws.AddEventListener("message", false, func(ev *js.Object) {
+	//		fmt.Println("Websocket message")
+	//	})
+
+	c, err := websocket.Dial(wsURL) // Blocks until connection is established
+	if err != nil {
+		panic(err)
+	}
+
+	go func() {
+		for {
+			buf := make([]byte, 1024)
+			n, err := c.Read(buf) // Blocks until a WebSocket frame is received
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(string(buf[:n]))
+		}
+	}()
 
 	// Add/Rename folder button listener.
 	d.GetElementByID("add-folder-button").AddEventListener("click", false, addFolder)

@@ -93,6 +93,7 @@ func main() {
 	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/import/", env.ImportHandler)
+	http.HandleFunc("/socket/", env.SocketHandler)
 	http.HandleFunc("/", env.MainHandler)
 
 	// Rice boxes initialization.
