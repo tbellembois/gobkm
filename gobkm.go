@@ -22,17 +22,13 @@ var (
 
 // A decorator to set custom HTTP headers.
 func decoratedHandler(h http.Handler) http.Handler {
-
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Header().Set("Access-Control-Allow-Origin", "*")
-
 		h.ServeHTTP(rw, req)
 	})
-
 }
 
 func main() {
-
 	// Getting the program parameters.
 	listenPort := flag.String("port", "8080", "the port to listen")
 	goBkmProxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
@@ -93,7 +89,10 @@ func main() {
 	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/import/", env.ImportHandler)
+	// websocket handler
 	http.HandleFunc("/socket/", env.SocketHandler)
+	// bookmarklet handler
+	http.HandleFunc("/bookmarkThis/", env.BookmarkThisHandler)
 	http.HandleFunc("/", env.MainHandler)
 
 	// Rice boxes initialization.
@@ -121,5 +120,4 @@ func main() {
 	if err = http.ListenAndServe(":"+*listenPort, nil); err != nil {
 		log.Fatal(err)
 	}
-
 }

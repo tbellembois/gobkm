@@ -156,16 +156,17 @@ div#folder-list {
 div#bookmarklet {
     background: white;
     position: fixed;
-    bottom: 0px;
-    left: 175px;
-    width: 50px;
-    height: 50px;
+    bottom: 65px;
+}
+
+div#bookmarklet > a {
     font-size: 0.6em;
-    border: 4px dotted grey;
+    border: 2px dotted grey;
+    padding: 5px;
     border-radius: 8px;
-    line-height: 50px;
     vertical-align: middle;
     text-align: center;
+    text-decoration: none;
 }
 
 div#bookmarklet a {

@@ -30,6 +30,7 @@ var (
 		WriteBufferSize: 1024,
 	}
 	wsconn *websocket.Conn
+	wserr  error
 )
 
 // Env is a structure used to pass objects throughout the application.
@@ -99,22 +100,22 @@ func insertIndent(wr io.Writer, depth int) {
 // SocketHandler handles the websocket communications
 func (env *Env) SocketHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug("SocketHandler called")
-	wsconn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
+	wsconn, wserr = upgrader.Upgrade(w, r, nil)
+	if wserr != nil {
 		log.WithFields(log.Fields{
-			"err": err,
+			"wserr": wserr,
 		}).Error("SocketHandler")
-		return
+		failHTTP(w, "SocketHandler", "error opening socket", http.StatusInternalServerError)
 	}
-	for i := 0; i < 10; i++ {
-		wsconn.WriteMessage(websocket.BinaryMessage, []byte("Message from server:"+strconv.Itoa(i)))
-		time.Sleep(3000 * time.Millisecond)
-	}
+	// TESTS
+	//for i := 0; i < 10; i++ {
+	//	wsconn.WriteMessage(websocket.BinaryMessage, []byte("Message from server:"+strconv.Itoa(i)))
+	//	time.Sleep(3000 * time.Millisecond)
+	//}
 }
 
 // UpdateBookmarkFavicon retrieves and updates the favicon for the given bookmark.
 func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
-
 	if u, err := url.Parse(bkm.URL); err == nil {
 		// Building the favicon request URL.
 		bkmDomain := u.Scheme + "://" + u.Host
@@ -126,7 +127,6 @@ func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
 
 		// Getting the favicon.
 		if response, err := http.Get(faviconRequestURL); err == nil {
-
 			defer func() {
 				if err := response.Body.Close(); err != nil {
 					log.WithFields(log.Fields{
@@ -158,6 +158,15 @@ func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
 			}
 		}
 	}
+}
+
+func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debug("BookmarkThisHandler called")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Request-Method", "*")
+	//w.Header().Set("Access-Control-Allow-Methods", "POST")
+	//w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	//w.Header().Set("Content-Security-Policy", "default-src 'none'; img-src 'self'; script-src 'self'; connect-src 'self'")
 }
 
 // AddBookmarkHandler handles the bookmarks creation.
@@ -391,6 +400,7 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "RenameBookmarkHandler", err.Error(), http.StatusInternalServerError)
 		return
 	}
+	_ = wsconn.WriteMessage(websocket.TextMessage, []byte("Bookmark renamed."))
 }
 
 // StarBookmarkHandler handles the bookmark starring/unstarring.
@@ -647,6 +657,7 @@ func (env *Env) GetChildrenFoldersHandler(w http.ResponseWriter, r *http.Request
 
 // MainHandler handles the main application page.
 func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debug("MainHandler called")
 	var (
 		folderAndBookmark = new(staticDataStruct)
 		err               error
