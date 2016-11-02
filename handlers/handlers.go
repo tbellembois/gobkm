@@ -160,13 +160,34 @@ func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
 	}
 }
 
+type bookmarkThisStruct struct {
+	Url   string `json:"url"`
+	Title string `json:"title"`
+}
+
 func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug("BookmarkThisHandler called")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Request-Method", "*")
-	//w.Header().Set("Access-Control-Allow-Methods", "POST")
-	//w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	//w.Header().Set("Content-Security-Policy", "default-src 'none'; img-src 'self'; script-src 'self'; connect-src 'self'")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	body, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		log.Error("Could not read body:", err)
+		return
+	}
+	var b bookmarkThisStruct
+	err = json.Unmarshal(body, &b)
+	if err != nil {
+		log.Error("Could not unmarshall body:", err)
+		return
+	}
+	log.WithFields(log.Fields{
+		"url":   b.Url,
+		"title": b.Title,
+	}).Debug("BookmarkThisHandler:Query parameter")
+
+	w.Write([]byte("ok"))
 }
 
 // AddBookmarkHandler handles the bookmarks creation.
