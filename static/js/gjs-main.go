@@ -806,21 +806,6 @@ func main() {
 
 	// Websocket connection
 	wsURL := getWSBaseURL() + "socket/"
-	//	ws, err := websocket.New(wsURL)
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	fmt.Print("websocket URL:" + wsURL)
-	//	ws.AddEventListener("open", false, func(ev *js.Object) {
-	//		fmt.Println("Websocket opened")
-	//	})
-	//	ws.AddEventListener("close", false, func(ev *js.Object) {
-	//		fmt.Println("Websocket closed")
-	//	})
-	//	ws.AddEventListener("message", false, func(ev *js.Object) {
-	//		fmt.Println("Websocket message")
-	//	})
-
 	c, err := websocket.Dial(wsURL) // Blocks until connection is established
 	if err != nil {
 		panic(err)
@@ -834,6 +819,16 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(string(buf[:n]))
+
+			var bkm types.Bookmark
+			if err := json.Unmarshal(buf[:n], &bkm); err != nil {
+				fmt.Println(err)
+				return
+			}
+			newBkm := createBookmark(strconv.Itoa(bkm.Id), bkm.Title, bkm.URL, bkm.Favicon, false, false)
+
+			rootChildrens := d.GetElementByID("subfolders-1")
+			rootChildrens.InsertBefore(newBkm, rootChildrens.FirstChild())
 		}
 	}()
 

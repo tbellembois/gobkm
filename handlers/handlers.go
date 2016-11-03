@@ -43,7 +43,7 @@ type Env struct {
 	JsData              []byte // js data
 }
 
-// staticDataStruct is used  to pass data to the Main template.
+// staticDataStruct is used to pass static data to the Main template.
 type staticDataStruct struct {
 	Bkms                []*types.Bookmark
 	CSSMainData         string
@@ -161,17 +161,25 @@ func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
 }
 
 type bookmarkThisStruct struct {
-	Url   string `json:"url"`
+	URL   string `json:"url"`
 	Title string `json:"title"`
 }
 
+// BookmarkThisHandler handles the bookmarks creation with the bookmarklet.
 func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug("BookmarkThisHandler called")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	body, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Error("BookmarkThisHandler:error closing response Body")
+		}
+	}()
+
 	if err != nil {
 		log.Error("Could not read body:", err)
 		return
@@ -183,14 +191,37 @@ func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.WithFields(log.Fields{
-		"url":   b.Url,
+		"url":   b.URL,
 		"title": b.Title,
 	}).Debug("BookmarkThisHandler:Query parameter")
 
-	w.Write([]byte("ok"))
+	// Getting the destination folder = root folder.
+	dstFld := env.DB.GetFolder(0)
+	// Creating a new Bookmark.
+	newBookmark := types.Bookmark{Title: b.Title, URL: b.URL, Folder: dstFld}
+	// Saving the bookmark into the DB, getting its id.
+	bookmarkID := env.DB.SaveBookmark(&newBookmark)
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Updating the bookmark favicon.
+	newBookmark.Id = int(bookmarkID)
+	go env.UpdateBookmarkFavicon(&newBookmark)
+
+	var jsonResp []byte
+	if jsonResp, err = json.Marshal(newBookmark); err != nil {
+		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+		return
+
+	}
+	wsconn.WriteMessage(websocket.TextMessage, jsonResp)
+
 }
 
-// AddBookmarkHandler handles the bookmarks creation.
+// AddBookmarkHandler handles the bookmarks creation with drag and drop.
 func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var (
 		destinationFolderID int
