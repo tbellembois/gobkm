@@ -816,9 +816,9 @@ func main() {
 			buf := make([]byte, 1024)
 			n, err := c.Read(buf) // Blocks until a WebSocket frame is received
 			if err != nil {
-				panic(err)
+				fmt.Println(err)
 			}
-			fmt.Println(string(buf[:n]))
+			//fmt.Println(string(buf[:n]))
 
 			var bkm types.Bookmark
 			if err := json.Unmarshal(buf[:n], &bkm); err != nil {

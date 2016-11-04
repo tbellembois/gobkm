@@ -28,6 +28,7 @@ var (
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
+		CheckOrigin:     func(r *http.Request) bool { return true },
 	}
 	wsconn *websocket.Conn
 	wserr  error
@@ -217,7 +218,10 @@ func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
-	wsconn.WriteMessage(websocket.TextMessage, jsonResp)
+	if err = wsconn.WriteMessage(websocket.TextMessage, jsonResp); err != nil {
+		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 }
 
