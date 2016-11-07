@@ -294,15 +294,18 @@ func dropRename(elementId string) {
 
 	el := d.GetElementByID(elementId).(dom.HTMLElement)
 
-	removeClass(el, ClassItemBookmarkLink)
-	addClass(el, ClassItemBookmarkLinkEdited)
+	if strings.HasPrefix(elementId, "folder") {
+	} else {
+		removeClass(el, ClassItemBookmarkLink)
+		addClass(el, ClassItemBookmarkLinkEdited)
+	}
 
 	el.ParentNode().InsertBefore(d.GetElementByID("rename-input-box"), el.NextElementSibling())
 
 	showRenameBox()
 	if strings.HasPrefix(elementId, "folder") {
 		draggedFldName := el.TextContent()
-		setRenameFormValue(draggedFldName)
+		setRenameFormValue(strings.Trim(draggedFldName, " "))
 	} else {
 		draggedBkmName := d.GetElementByID("bookmark-link-" + draggedItemIDDigit).TextContent()
 		setRenameFormValue(draggedBkmName)
@@ -374,7 +377,7 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 	ul := d.CreateElement("ul").(*dom.HTMLUListElement)
 	ul.SetID("subfolders-" + fldID)
 
-	md.AppendChild(d.CreateTextNode(fldTitle))
+	md.AppendChild(d.CreateTextNode(" " + fldTitle))
 	md.AppendChild(ul)
 
 	md.AddEventListener("click", false, func(e dom.Event) { getChildrenItems(e, fldID) })
@@ -711,7 +714,7 @@ func renameFolder(e dom.Event) {
 			}
 			defer resp.Body.Close()
 
-			d.GetElementByID(fldID).SetInnerHTML(fldName)
+			d.GetElementByID(fldID).SetInnerHTML(" " + fldName)
 
 		} else {
 

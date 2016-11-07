@@ -30,7 +30,9 @@ div.folder {
     clear: left;
     overflow: hidden;
 }
-
+span.folder-txt {
+    margin-left: 4px;
+}
 div.folder-over {
     color: green;
 }
@@ -75,9 +77,9 @@ div.bookmark > div {
 
 div.bookmark > div.bookmark-link {
     color: blue;
+    margin-left: 4px;
 }
 div.bookmark > div.bookmark-link-edited {
-    margin-bottom: 25px;
 }
 
 div.bookmark:HOVER, div.folder:HOVER {
@@ -132,13 +134,13 @@ div#add-folder-box, div#rename-input-box, div#import-input-box{
     margin-top: 5px;
 }
 div#rename-input-box {
-    position: absolute;
-    top: 15px;
+    float: left;
+    width: 100%;
 }
 
 input#rename-input-box-form {
     width: 200px;
-    margin-left: 30px;
+    margin-left: 15px;
 }
 
 input#add-folder {
