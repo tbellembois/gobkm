@@ -41,8 +41,11 @@
 
 <div id="action-box">
 
-    <div id="logo">
-        <img title="GoBKM-logo" src="/img/favicon-16x16.png" alt=""/>
+    <div id="import-input-box" style="display:none">
+        <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
+            <input type="file" name="importFile" id="import-file" accept=".html">
+            <input type="submit" value="import" name="submit" id="import-button">
+        </form>
     </div>
 
     <div id="add-folder-box">
@@ -50,20 +53,8 @@
         <button id="add-folder-button">ok</button>
     </div>
 
-    <div id="delete-box" title="drag and drop a folder/bookmark to delete here" class="fa fa-trash-o">
-    </div>
-
-    <div id="export-box" title="export in HTML" class="fa fa-upload">
-    </div>
-    <div id="import-box" title="import from HTML" class="fa fa-download">
-    </div>
-
-    <div id="import-input-box" style="display:none">
-        <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
-            <input type="file" name="importFile" id="import-file" accept=".html">
-            <input type="submit" value="import" name="submit" id="import-button">
-        </form>
-    </div>
+	<div id="delete-box" title="drag and drop a folder/bookmark to delete here" class="fa fa-trash-o">
+	</div>
 
 </div>
 
@@ -108,15 +99,23 @@
 
 </div>
 
+<div id="footer">
 <div id="bookmarklet">
     <a title="GoBkm" href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
     <a title="GoBkm+" href="javascript:var xhr = new XMLHttpRequest(); xhr.withCredentials = true; xhr.open('POST', '{{.GoBkmProxyURL}}/bookmarkThis/', true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'); xhr.send(JSON.stringify({ 'url': location.href, 'title': document.title}));">GoBkm bookmark page</a>
 </div>
 
     <div id="copyright">
-        GoBkm - Copyright (C) 2006-2016 Thomas Bellembois.<br/>
-        Licensed under the GNU GPL, Version 3.0.
+        <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
     </div>
+	<div id="import-export">
+    	<div id="export-box" title="export in HTML" class="fa fa-upload">
+    	</div>
+    	<div id="import-box" title="import from HTML" class="fa fa-download">
+    	</div>
+	</div>
+</div>
+
 </div>
 
   <script type="text/javascript" src="/js/gjs-main.js"> </script>
