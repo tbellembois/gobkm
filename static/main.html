@@ -110,7 +110,7 @@
 
 <div id="bookmarklet">
     <a title="GoBkm" href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
-    <a title="GoBkm+" href="javascript:var xhr = new XMLHttpRequest(); xhr.open('POST', '{{.GoBkmProxyURL}}/bookmarkThis/', true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'); xhr.send(JSON.stringify({ 'url': location.href, 'title': document.title}));">GoBkm bookmark page</a>
+    <a title="GoBkm+" href="javascript:var xhr = new XMLHttpRequest(); xhr.withCredentials = true; xhr.open('POST', '{{.GoBkmProxyURL}}/bookmarkThis/', true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'); xhr.send(JSON.stringify({ 'url': location.href, 'title': document.title}));">GoBkm bookmark page</a>
 </div>
 
     <div id="copyright">

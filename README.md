@@ -83,19 +83,61 @@ Click it to open the GoBkm bar, resize and place it wherever you want.
           
         root          /usr/local/gobkm;  
         charset utf-8;
-       
+    
+        # uncomment and change to enable HTTPS
+        #ssl on;
+        #ssl_certificate /etc/nginx/ssl2/my-gobkm.crt;
+        #ssl_certificate_key /etc/nginx/ssl2/my-gobkm.key;
+
         # uncomment to enable authentication
         # details at: http://nginx.org/en/docs/http/ngx_http_auth_basic_module.html
         #auth_basic "GoBkm";
         #auth_basic_user_file /usr/local/gobkm/gobkm.htpasswd;
 
         location / {
+
+		  	# preflight OPTIONS requests response
+			if ($request_method = 'OPTIONS') {
+				add_header 'Access-Control-Allow-Credentials' 'true';
+				add_header 'Access-Control-Allow-Origin' '*';
+				add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+				#
+				# Custom headers and headers various browsers *should* be OK with but aren't
+				#
+				add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+				#
+				# Tell client that this pre-flight info is valid for 20 days
+				#
+				add_header 'Access-Control-Max-Age' 1728000;
+				add_header 'Content-Type' 'text/plain charset=UTF-8';
+				add_header 'Content-Length' 0;
+				return 204;
+			}
+
             # change the port if needed
-            proxy_pass http://127.0.0.1:8080;
+        	proxy_set_header Upgrade $http_upgrade;
+        	proxy_set_header Connection 'upgrade';
+        	proxy_pass http://127.0.0.1:8080;
         }
 
     }
     ```
+
+## SSL self-signed certificate generation
+
+```bash
+	# generate a root CA key
+	openssl genrsa -out rootCA.key 2048
+	# the a root CA
+	openssl req -x509 -new -nodes -key rootCA.key -days 3650 -out rootCA.crt
+	# generate a server key  
+    openssl genrsa -out my-gobkm.key 2048
+	# then a CSR (certificate signing request)
+	openssl req -new -key my-gobkm.key  -out my-gobkm.csr
+	# and finally auto signing the server certificate with the root CA
+    openssl x509 -req -in my-gobkm.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out my-gobkm.crt -days 3650
+```
+To avoid security exceptions just import your `rootCA.crt` into your browser.
 
 ## Thanks
 

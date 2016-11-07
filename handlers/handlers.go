@@ -169,8 +169,9 @@ type bookmarkThisStruct struct {
 // BookmarkThisHandler handles the bookmarks creation with the bookmarklet.
 func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug("BookmarkThisHandler called")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	body, err := ioutil.ReadAll(r.Body)
 	defer func() {
