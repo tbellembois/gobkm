@@ -41,7 +41,7 @@ div.rename-over, div.delete-over {
 div#action-box {
     z-index: 99;
     position: fixed;
-    width: 252px;
+    /*width: 272px;*/
     background-color: white;
     padding: 10px;
     border: 1px solid black;
@@ -156,7 +156,7 @@ div#folder-list {
 div#bookmarklet {
     background: white;
     position: fixed;
-    bottom: 65px;
+    bottom: 76px;
 }
 
 div#bookmarklet > a {

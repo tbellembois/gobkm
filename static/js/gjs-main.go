@@ -17,19 +17,22 @@ import (
 
 // CSS classes.
 const (
-	ClassDraggedItem            = "dragged-item"
-	ClassItemOver               = "folder-over"
-	ClassRenameOver             = "rename-over"
-	ClassDeleteOver             = "delete-over"
-	ClassItemFolder             = "folder"
-	ClassItemFolderOpen         = "fa-folder-open-o"
-	ClassItemFolderClosed       = "fa-folder-o"
-	ClassItemBookmark           = "bookmark"
-	ClassItemBookmarkLink       = "bookmark-link"
-	ClassItemBookmarkLinkEdited = "bookmark-link-edited"
-	ClassBookmarkStarred        = "fa fa-star"
-	ClassBookmarkNotStarred     = "fa fa-star-o"
-	DragImage                   = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAQAAACROWYpAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwACKaQAAimkAScW8mcAAAAHdElNRQfgBhEMEhox+QS1AAAC70lEQVQ4y5WVTWicdRDGf+/uJmSlaRJ7qKI0ftWrTUQUtfQDlQakh1q0pPWj1QZWRVMhHqpCraRgDwEpNIhSixS82EsLGsTiIado9OBJqR7SJWHbmGS3bbLZ7O7787DvbrMxtduZ2zDPO/Of55l5A1YxgQAfJsU8Q8EsSEBDJgJuK6d/9Ge9GG6iUROA8FVnTtjkOk/pJbdX4w1Y+JbXj4qId/ipLtrTENy4b1jqj6AVP25B99/o6+bg13L21UERB7ymh25ZuThz5D9QxD79zfX1uYmV4PjEjjtzxFniNFeBFvpopcROyHK50nqwcsLGfbl4ORxzq78649y8nSJ2OBuaddoxd5d/Kl3xYN3bI14P5PzEMR0H8LGsGyJw5rpPAHjqe4+5qG+vkESYspgSD+kMgE8uA8+7BWz2wj7xFV2wt1I7AQHh3uD4QGIYiEPMLhIsV1WMR1wiydo4cIa1yRNfmw5GBXCL08eimb7jgjlzZr3kvSK2edFr5sy55J4o6zNL2gW4sTxxskZIuw9Efp8JEWN2RpEHXVPL+0rn7MKhCzatyuz/eczz+m2MxTW0crsW8hAUcJ1/f2Ey+mKL7ZG3GRMxsC2KdNhcqzyi6fB+wG7Tg1Gw3+lwcmEyP1n4w3uigf1upjCZn8xnyy+KmHBYM2F3levnLFTmfUTnfNxtvne1xvN03gGf8Xl/eV3Ew5bn3AxWhebORfvFj/QKgJvrRLIdTDpyQHxJ874QiSSoSP2cqY+Hc/TAX2Azybr5tJikialnKXO6yGBwFgKoLogE+D69ZDlJDxtoL3ZvZALoYKLcOs4/TJVH472sZyQ4XN2s+u26m0w4OvLUN8QpcJ55oJndtBKyg13fcRCCqVVuaXXJSnNHV5XFfh33rlucIlN590Yc3/A9uuRgA4fXd82/uQzY5Aea98MGDiCA+wyHauDPLc+6qyFoxPvWkl8aiD9oxqcbrFprvtvsOf/UdLjpNv4XNfijnvVM2Hlz6L/COmiuQg3JqwAAAABJRU5ErkJggg=="
+	ClassDraggedItem             = "dragged-item"
+	ClassItemOver                = "folder-over"
+	ClassRenameOver              = "rename-over"
+	ClassDeleteOver              = "delete-over"
+	ClassItemFolder              = "folder"
+	ClassItemFolderAwesome       = "fa"
+	ClassItemFolderAwesomeOpen   = "fa-folder-open-o"
+	ClassItemFolderAwesomeClosed = "fa-folder-o"
+	ClassItemFolderOpen          = ClassItemFolderAwesome + " " + ClassItemFolderAwesomeOpen
+	ClassItemFolderClosed        = ClassItemFolderAwesome + " " + ClassItemFolderAwesomeClosed
+	ClassItemBookmark            = "bookmark"
+	ClassItemBookmarkLink        = "bookmark-link"
+	ClassItemBookmarkLinkEdited  = "bookmark-link-edited"
+	ClassBookmarkStarred         = "fa fa-star"
+	ClassBookmarkNotStarred      = "fa fa-star-o"
+	DragImage                    = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAQAAACROWYpAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwACKaQAAimkAScW8mcAAAAHdElNRQfgBhEMEhox+QS1AAAC70lEQVQ4y5WVTWicdRDGf+/uJmSlaRJ7qKI0ftWrTUQUtfQDlQakh1q0pPWj1QZWRVMhHqpCraRgDwEpNIhSixS82EsLGsTiIado9OBJqR7SJWHbmGS3bbLZ7O7787DvbrMxtduZ2zDPO/Of55l5A1YxgQAfJsU8Q8EsSEBDJgJuK6d/9Ge9GG6iUROA8FVnTtjkOk/pJbdX4w1Y+JbXj4qId/ipLtrTENy4b1jqj6AVP25B99/o6+bg13L21UERB7ymh25ZuThz5D9QxD79zfX1uYmV4PjEjjtzxFniNFeBFvpopcROyHK50nqwcsLGfbl4ORxzq78649y8nSJ2OBuaddoxd5d/Kl3xYN3bI14P5PzEMR0H8LGsGyJw5rpPAHjqe4+5qG+vkESYspgSD+kMgE8uA8+7BWz2wj7xFV2wt1I7AQHh3uD4QGIYiEPMLhIsV1WMR1wiydo4cIa1yRNfmw5GBXCL08eimb7jgjlzZr3kvSK2edFr5sy55J4o6zNL2gW4sTxxskZIuw9Efp8JEWN2RpEHXVPL+0rn7MKhCzatyuz/eczz+m2MxTW0crsW8hAUcJ1/f2Ey+mKL7ZG3GRMxsC2KdNhcqzyi6fB+wG7Tg1Gw3+lwcmEyP1n4w3uigf1upjCZn8xnyy+KmHBYM2F3levnLFTmfUTnfNxtvne1xvN03gGf8Xl/eV3Ew5bn3AxWhebORfvFj/QKgJvrRLIdTDpyQHxJ874QiSSoSP2cqY+Hc/TAX2Azybr5tJikialnKXO6yGBwFgKoLogE+D69ZDlJDxtoL3ZvZALoYKLcOs4/TJVH472sZyQ4XN2s+u26m0w4OvLUN8QpcJ55oJndtBKyg13fcRCCqVVuaXXJSnNHV5XFfh33rlucIlN590Yc3/A9uuRgA4fXd82/uQzY5Aea98MGDiCA+wyHauDPLc+6qyFoxPvWkl8aiD9oxqcbrFprvtvsOf/UdLjpNv4XNfijnvVM2Hlz6L/COmiuQg3JqwAAAABJRU5ErkJggg=="
 )
 
 var (
@@ -138,7 +141,7 @@ func isStarredBookmark(bkmID string) bool {
 	return d.GetElementByID("bookmark-starred-link-"+bkmID) != nil
 }
 func hasChildrenFolders(fldID string) bool {
-	return hasClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolderOpen)
+	return hasClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolderAwesomeOpen)
 }
 
 func setWait() {
