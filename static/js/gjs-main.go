@@ -271,7 +271,8 @@ func leaveDelete(e dom.Event) {
 func dragStartItem(e dom.Event) {
 	draggedItemID := e.Target().ID()
 	img := d.CreateElement("img").(*dom.HTMLImageElement)
-	img.Src = DragImage
+	//img.Src = DragImage
+	img.Src = "/img/ghost.png"
 	e.(*dom.DragEvent).Get("dataTransfer").Call("setDragImage", img, -5, -5)
 	e.(*dom.DragEvent).Get("dataTransfer").Call("setData", "draggedItemID", draggedItemID)
 }
@@ -318,7 +319,8 @@ func dropRename(elementId string) {
 //
 func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool, starred bool) dom.HTMLElement {
 	// Link (actually a clickable div).
-	a := d.CreateElement("div").(*dom.HTMLDivElement)
+	//a := d.CreateElement("div").(*dom.HTMLDivElement)
+	a := d.CreateElement("span").(*dom.HTMLSpanElement)
 	a.SetTitle(bkmURL)
 	a.SetAttribute("tabindex", "0")
 	a.AppendChild(d.CreateTextNode(bkmTitle))
@@ -731,7 +733,7 @@ func renameFolder(e dom.Event) {
 
 		}
 
-		removeClass(d.GetElementByID(fldID).(*dom.HTMLDivElement), ClassDraggedItem)
+		removeClass(d.GetElementByID(fldID).(*dom.HTMLSpanElement), ClassDraggedItem)
 		hideRenameBox()
 	}()
 

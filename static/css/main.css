@@ -1,5 +1,5 @@
 body {
-    font-family: sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 body.wait, body.wait *{
@@ -30,11 +30,8 @@ div.folder {
     clear: left;
     overflow: hidden;
 }
-span.folder-txt {
-    margin-left: 4px;
-}
 div.folder-over {
-    color: green;
+    background-color: #EFEFEF;
 }
 div.rename-over, div.delete-over {
     color: green;
@@ -46,18 +43,17 @@ div#action-box {
     width: 100%;
     z-index: 99;
     background-color: white;
-    border-bottom: 1px solid grey;
+    border-bottom: 1px dotted grey;
     padding-bottom: 10px;
 }
 
 div.bookmark {
-    word-break: break-all;
     float: left;
     clear: left;
     min-height: 1.2em;
     line-height: 1.2em;
-    min-width: 450px;
     position: relative;
+    white-space: nowrap;
 }
 
 div.fa-star, div.fa-star-o {
@@ -65,7 +61,7 @@ div.fa-star, div.fa-star-o {
     float: left;
 }
 div.fa-star {
-    color: green;
+    color: lightgreen;
 }
 
 div.bookmark > div {
@@ -73,11 +69,15 @@ div.bookmark > div {
     font-size: 0.8em;
     min-height: 22px;
     cursor: pointer;
+    white-space: nowrap;
 }
 
-div.bookmark > div.bookmark-link {
+div.bookmark > span.bookmark-link, div.bookmark > span.bookmark-starred-link {
     color: blue;
     margin-left: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    white-space: nowrap;
 }
 div.bookmark > div.bookmark-link-edited {
 }
@@ -102,16 +102,18 @@ div#footer {
     position: fixed;
     bottom: 0px;
     background-color: white;
+    border-top: 1px dotted grey;
+    padding-top: 10px;
 }
 div#copyright {
     float: left;
     background: white;
-    width: 50%;
+    width: 20%;
     font-size: 0.6em;
 }
 div#import-export {
     float: left;
-    width: 50%;
+    width: 40%;
     font-size: 2em;
 }
 div#export-box {
@@ -161,23 +163,28 @@ div#folder-list {
 }
 
 div#bookmarklet {
+    float: left;
     background: white;
-    width: 100%;
+    width: 40%;
     margin-bottom: 5px;
 }
-
-div#bookmarklet > a {
-    font-size: 0.6em;
-    border: 2px dotted grey;
-    padding: 5px;
-    border-radius: 8px;
-    vertical-align: middle;
-    text-align: center;
+div#bookmarklet a {
+    color: white;
     text-decoration: none;
+    font-weight: bold;
+    line-height: 35px;
+    cursor: move;
 }
 
-div#bookmarklet a {
-    color: grey;
+div#bookmarklet-app, div#bookmarklet-add {
+    float: left;
+    background-color: black;
+    padding: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 35px;
+    vertical-align: middle;
+    text-align: center;
 }
 
 img.favicon {
