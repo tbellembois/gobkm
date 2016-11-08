@@ -733,7 +733,7 @@ func renameFolder(e dom.Event) {
 
 		}
 
-		removeClass(d.GetElementByID(fldID).(*dom.HTMLSpanElement), ClassDraggedItem)
+		removeClass(d.GetElementByID(fldID).(*dom.HTMLDivElement), ClassDraggedItem)
 		hideRenameBox()
 	}()
 
@@ -839,6 +839,14 @@ func main() {
 			rootChildrens.InsertBefore(newBkm, rootChildrens.FirstChild())
 		}
 	}()
+
+	// test
+	//go func() {
+	//	for {
+	//		fmt.Println("still alive...")
+	//		time.Sleep(3000 * time.Millisecond)
+	//	}
+	//}()
 
 	// Add/Rename folder button listener.
 	d.GetElementByID("add-folder-button").AddEventListener("click", false, addFolder)
