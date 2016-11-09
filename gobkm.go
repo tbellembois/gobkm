@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"os"
 
 	"github.com/GeertJohan/go.rice"
 	log "github.com/Sirupsen/logrus"
@@ -18,6 +19,7 @@ var (
 	datastore   *models.SQLiteDataStore
 	templateBox *rice.Box
 	err         error
+	logf        *os.File
 )
 
 // A decorator to set custom HTTP headers.
@@ -32,21 +34,31 @@ func main() {
 	// Getting the program parameters.
 	listenPort := flag.String("port", "8080", "the port to listen")
 	goBkmProxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
-	debug := flag.Bool("debug", false, "debug (verbose log)")
+	logfile := flag.String("logfile", "", "log to the given file")
+	debug := flag.Bool("debug", false, "debug (verbose log), default is error")
 	flag.Parse()
 
-	log.WithFields(log.Fields{
-		"listenPort": *listenPort,
-		"goBkmURL":   *goBkmProxyURL,
-		"debug":      *debug,
-	}).Debug("main:flags")
-
+	// Logging to file if logfile parameter specified.
+	if *logfile != "" {
+		if logf, err = os.OpenFile(*logfile, os.O_WRONLY|os.O_CREATE, 0755); err != nil {
+			log.Panic(err)
+		} else {
+			log.SetOutput(logf)
+		}
+	}
 	// Setting the log level.
 	if *debug {
 		log.SetLevel(log.DebugLevel)
 	} else {
 		log.SetLevel(log.ErrorLevel)
 	}
+
+	log.WithFields(log.Fields{
+		"listenPort": *listenPort,
+		"goBkmURL":   *goBkmProxyURL,
+		"logfile":    *logfile,
+		"debug":      *debug,
+	}).Debug("main:flags")
 
 	// Database initialization.
 	if datastore, err = models.NewDBstore(dbURL); err != nil {

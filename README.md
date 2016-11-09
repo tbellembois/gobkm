@@ -27,7 +27,12 @@ Using an HTTP proxy (Apache/Nginx), specify its URL with:
     ./gobkm -port [port_number] -proxy [proxy_url]
 ```
 
-Debug mode:
+Log to file
+```bash
+    ./gobkm -logfile /var/log/gobkm.log
+```
+
+Debug mode (by default only errors are shown):
 ```bash
     ./gobkm -debug
 ```
