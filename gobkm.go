@@ -52,7 +52,6 @@ func main() {
 	} else {
 		log.SetLevel(log.ErrorLevel)
 	}
-
 	log.WithFields(log.Fields{
 		"listenPort": *listenPort,
 		"goBkmURL":   *goBkmProxyURL,
@@ -64,11 +63,9 @@ func main() {
 	if datastore, err = models.NewDBstore(dbURL); err != nil {
 		log.Panic(err)
 	}
-
 	// Database creation.
 	datastore.CreateDatabase()
 	datastore.PopulateDatabase()
-
 	// Error check.
 	if datastore.FlushErrors() != nil {
 		log.Panic(err)
@@ -76,12 +73,10 @@ func main() {
 
 	// Environment creation.
 	env := handlers.Env{DB: datastore, GoBkmProxyURL: *goBkmProxyURL}
-
 	// Building a rice box with the static directory.
 	if templateBox, err = rice.FindBox("static"); err != nil {
 		log.Fatal(err)
 	}
-
 	// Getting the main template file content as a string.
 	if env.TplMainData, err = templateBox.String("main.html"); err != nil {
 		log.Fatal(err)
