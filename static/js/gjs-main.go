@@ -102,22 +102,34 @@ func isDisabled(id string) bool {
 	return d.GetElementByID(id).(dom.HTMLElement).HasAttribute("disabled")
 }
 func hideItem(id string) {
-	d.GetElementByID(id).(dom.HTMLElement).Style().SetProperty("display", "none", "")
+	if e := d.GetElementByID(id); e != nil {
+		e.(dom.HTMLElement).Style().SetProperty("display", "none", "")
+	}
 }
 func showItem(id string) {
-	d.GetElementByID(id).(dom.HTMLElement).Style().SetProperty("display", "block", "")
+	if e := d.GetElementByID(id); e != nil {
+		e.(dom.HTMLElement).Style().SetProperty("display", "block", "")
+	}
 }
 func enableItem(id string) {
-	d.GetElementByID(id).RemoveAttribute("disabled")
+	if e := d.GetElementByID(id); e != nil {
+		e.RemoveAttribute("disabled")
+	}
 }
 func disableItem(id string) {
-	d.GetElementByID(id).SetAttribute("disabled", "true")
+	if e := d.GetElementByID(id); e != nil {
+		e.SetAttribute("disabled", "true")
+	}
 }
 func resetItemValue(id string) {
-	d.GetElementByID(id).SetAttribute("value", "")
+	if e := d.GetElementByID(id); e != nil {
+		e.SetAttribute("value", "")
+	}
 }
 func setItemValue(id string, val string) {
-	d.GetElementByID(id).SetAttribute("value", val)
+	if e := d.GetElementByID(id); e != nil {
+		e.SetAttribute("value", val)
+	}
 }
 func setClass(el dom.HTMLElement, class string) {
 	el.Class().SetString(class)
@@ -718,6 +730,8 @@ func renameFolder(e dom.Event) {
 
 			d.GetElementByID(fldID).SetInnerHTML(" " + fldName)
 
+			removeClass(d.GetElementByID(fldID).(*dom.HTMLDivElement), ClassDraggedItem)
+
 		} else {
 
 			if resp = sendRequest("/renameBookmark/", []arg{{key: "bookmarkId", val: fldIDDigit}, {key: "bookmarkName", val: fldName}}); resp.StatusCode != http.StatusOK {
@@ -731,9 +745,10 @@ func renameFolder(e dom.Event) {
 			removeClass(el, ClassItemBookmarkLinkEdited)
 			addClass(el, ClassItemBookmarkLink)
 
+			removeClass(d.GetElementByID(fldID).(*dom.HTMLSpanElement), ClassDraggedItem)
+
 		}
 
-		removeClass(d.GetElementByID(fldID).(*dom.HTMLDivElement), ClassDraggedItem)
 		hideRenameBox()
 	}()
 
