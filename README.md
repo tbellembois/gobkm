@@ -3,7 +3,7 @@
 GoBkm is an *ultra minimalist single user online bookmark manager* inspired by <http://sitebar.org/> written in [Go](https://golang.org/) and [GopherJS](http://www.gopherjs.org/).  
 It is designed to run on a remote server (I run it on a [RaspberryPi](https://www.raspberrypi.org/)) and accessed remotely.
 
-The purpose of this project was to study the Go programming language in its different aspects (OOP, databases, HTML templates, learning curve).
+The purpose of this project was to study the Go programming language in its differents aspects (OOP, databases, HTML templates, learning curve).
 
 ![screenshot](screenshot.png)
 
@@ -41,17 +41,20 @@ Debug mode (by default only errors are shown):
 
 - drag and drop an URL from your Web browser address bar into a folder to bookmark it OR
 - use the bookmarklet to bookmark the current page
-- delete folders and bookmarks by dragging them on the icon on the top
-- rename folders and bookmarks with the "r" key.
-- star/unstar bookmark with the star icons
+- delete folders and bookmarks by dropping them on the bin icon
+- rename folders and bookmarks with the "r" key
+- star/unstar bookmarks with the star icons
 
-## Bookmarklet
+## Bookmarklets
 
-Drag the bookmarklet on your bookmark bar.
+The "B" bookmarklet open GoBkm.
+The "B+" bookmarklet bookmarks the current page (alternative to the drag and drop method).
 
-Click it to open the GoBkm bar, resize and place it wherever you want.
+## Nginx proxy (optional)
 
-## Nginx proxy with user authentication
+### GoBkm installation
+
+You can use Nginx in front of GoBkm to use authentication and HTTPS.
 
 - create a `gobkm` user and group, and a home for the app
 
@@ -77,7 +80,9 @@ Click it to open the GoBkm bar, resize and place it wherever you want.
         su - gobkm -c "/usr/local/gobkm/gobkm -proxy http://proxy_url" &
     ```
 
-- setup a Nginx server
+### Nginx configuration
+
+- setup a GoBkm server configuration file such as `/etc/nginx/servers-available/gobkm.conf`
 
     ```bash
     server {
@@ -128,7 +133,14 @@ Click it to open the GoBkm bar, resize and place it wherever you want.
     }
     ```
 
-## SSL self-signed certificate generation
+- enable the new site
+
+    ```bash
+        $ ln -s /etc/nginx/servers-available/gobkm.conf /etc/nginx/servers-enabled/
+        $ systemctl restart nginx
+    ```
+
+### SSL self-signed certificate generation (optional)
 
 ```bash
 	# generate a root CA key
@@ -161,11 +173,11 @@ Thanks to [Dmitri Shuralyov](https://github.com/shurcooL) for the help on Gopher
 - no user management
 - no authentication (relies on the HTTP proxy)
 - folders and bookmarks are sorted by title (currently not configurable)
-- supports only latest versions of Web browsers
+- the B+ bookmarklet will NOT work with sites with CSP restrictions
 
 ## Notes
 
-Cross compiled under Arch Linux with:
+Cross compiled for the RaspberryPi under Arch Linux with:
 ```bash
     # requires the package arm-linux-gnueabihf-gcc
     env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build .
@@ -180,7 +192,6 @@ Javascript generation:
 
 - sites favicon retrieved from [Google](http://www.google.com)
 - folders, bookmarks, rename and delete icons from the [FontAwesome](https://fontawesome.github.io/Font-Awesome/) library
-- drag ghost icon from the [OpenClipart](https://openclipart.org/)
 - GoBKM SVG favicon build with [Inkscape](http://www.inkscape-fr.org/) from <https://github.com/golang-samples/gopher-vector> and <https://commons.wikimedia.org/wiki/File:Bookmark_empty_font_awesome.svg>
 - favicon PNG generated from <https://realfavicongenerator.net>
 
