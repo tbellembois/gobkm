@@ -149,11 +149,20 @@ input#add-folder {
     width: 132px;
 }
 
-
+div#close-search-result {
+    width: 100%;
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+div#search-result {
+    margin-top: 5px;
+}
+div#search-box {
+    margin-top: 80px;
+}
 div#starred-list {
     float: left;
     width: 100%;
-    margin-top: 80px;
 }
 
 div#folder-list {

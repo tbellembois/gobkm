@@ -96,6 +96,7 @@ func main() {
 	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/import/", env.ImportHandler)
+	http.HandleFunc("/searchBookmarks/", env.SearchBookmarkHandler)
 	// websocket handler
 	http.HandleFunc("/socket/", env.SocketHandler)
 	// bookmarklet handler

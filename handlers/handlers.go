@@ -226,6 +226,38 @@ func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+	var (
+		err error
+	)
+	// GET parameters retrieval.
+	search := r.URL.Query()["search"]
+	log.WithFields(log.Fields{
+		"search": search,
+	}).Debug("SearchBookmarkHandler:Query parameter")
+
+	// Parameters check.
+	if len(search) == 0 {
+		failHTTP(w, "SearchBookmarkHandler", "search empty", http.StatusBadRequest)
+		return
+	}
+
+	// Searching the bookmarks.
+	bkms := env.DB.SearchBookmarks(search[0])
+
+	// Adding them into a map.
+	var bookmarksMap []*types.Bookmark
+	for _, bkm := range bkms {
+		bookmarksMap = append(bookmarksMap, bkm)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(bookmarksMap); err != nil {
+		failHTTP(w, "SearchBookmarkHandler", err.Error(), http.StatusInternalServerError)
+	}
+
+}
+
 // AddBookmarkHandler handles the bookmarks creation with drag and drop.
 func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var (
@@ -585,7 +617,7 @@ func (env *Env) MoveFolderHandler(w http.ResponseWriter, r *http.Request) {
 	log.WithFields(log.Fields{
 		"sourceFolderIdParam":      sourceFolderIDParam,
 		"destinationFolderIdParam": destinationFolderIDParam,
-	}).Debug("GetChildrenFoldersHandler:Query parameter")
+	}).Debug("MoveFolderHandler:Query parameter")
 
 	// Parameters check.
 	if len(sourceFolderIDParam) == 0 || len(destinationFolderIDParam) == 0 {

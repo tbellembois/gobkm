@@ -395,6 +395,70 @@ func (db *SQLiteDataStore) GetAllBookmarks() []*types.Bookmark {
 	}
 }
 
+// SearchBookmarks returns the bookmarks with the title containing the given string.
+func (db *SQLiteDataStore) SearchBookmarks(s string) []*types.Bookmark {
+	log.WithFields(log.Fields{
+		"s": s,
+	}).Debug("SearchBookmarks")
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return nil
+	}
+	var (
+		rows *sql.Rows
+		bkms []*types.Bookmark
+	)
+
+	// Querying the bookmarks.
+	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE title LIKE ? ORDER BY title", "%"+s+"%")
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("SearchBookmarks:error closing rows")
+		}
+	}()
+	switch {
+	case db.err == sql.ErrNoRows:
+		log.Debug("SearchBookmarks:no bookmarks")
+		return nil
+	case db.err != nil:
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("SearchBookmarks:SELECT query error")
+		return nil
+	default:
+		for rows.Next() {
+			// Building a new Bookmark instance with each row.
+			bkm := new(types.Bookmark)
+			var parentFldID sql.NullInt64
+			var starred sql.NullInt64
+			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &parentFldID)
+			// Starred bookmark ?
+			if int(starred.Int64) != 0 {
+				bkm.Starred = true
+			}
+			if db.err != nil {
+				log.WithFields(log.Fields{
+					"err": db.err,
+				}).Error("SearchBookmarks:error scanning the query result row")
+				return nil
+			}
+			log.WithFields(log.Fields{
+				"bkm": bkm,
+			}).Debug("SearchBookmarks:bookmark found")
+			bkms = append(bkms, bkm)
+		}
+		if db.err = rows.Err(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("SearchBookmarks:error looping rows")
+			return nil
+		}
+		return bkms
+	}
+}
+
 // GetFolderBookmarks returns the bookmarks of the given folder id.
 func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 	log.WithFields(log.Fields{

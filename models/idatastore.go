@@ -8,6 +8,7 @@ import (
 type Datastore interface {
 	FlushErrors() error
 
+	SearchBookmarks(string) []*types.Bookmark
 	GetAllBookmarks() []*types.Bookmark
 	GetBookmark(int) *types.Bookmark
 	GetFolderBookmarks(int) []*types.Bookmark

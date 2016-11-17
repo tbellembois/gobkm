@@ -36,8 +36,9 @@ const (
 )
 
 var (
-	w dom.Window
-	d dom.Document
+	w           dom.Window
+	d           dom.Document
+	changeTimer int
 )
 
 type folderStruct struct {
@@ -164,6 +165,7 @@ func unsetWait() {
 }
 
 func resetAll() {
+	clearSearchResults()
 	hideImport()
 	hideRenameBox()
 	enableItem("add-folder")
@@ -210,6 +212,10 @@ func toogleDisplayImport() {
 	} else {
 		hideItem("import-input-box")
 	}
+}
+
+func clearSearchResults() {
+	d.GetElementByID("search-result").SetInnerHTML("")
 }
 
 func displaySubfolder(pFldID string, fldID string, fldTitle string, nbChildrenFolders int) {
@@ -329,6 +335,14 @@ func dropRename(elementId string) {
 //
 // HTML elements creation helpers
 //
+func createCloseDivButton(divID string) dom.HTMLElement {
+	b := d.CreateElement("div").(*dom.HTMLDivElement)
+	b.SetID("close-" + divID)
+	b.SetClass("fa fa-times")
+	b.AddEventListener("click", false, func(e dom.Event) { d.GetElementByID(divID).SetInnerHTML("") })
+	return b
+}
+
 func createBookmark(bkmID string, bkmTitle string, bkmURL string, bkmFavicon string, bkmStarred bool, starred bool) dom.HTMLElement {
 	// Link (actually a clickable div).
 	//a := d.CreateElement("div").(*dom.HTMLDivElement)
@@ -465,6 +479,46 @@ func importBookmarks(e dom.Event) {
 		setItemValue("import-button", "import")
 		hideImport()
 		d.GetElementByID("folder-1").(*dom.HTMLDivElement).Click()
+	}()
+}
+
+func searchBookmark() {
+
+	go func() {
+
+		setWait()
+		hideRenameBox()
+		hideImport()
+		defer unsetWait()
+
+		var (
+			err     error
+			resp    *http.Response
+			dataBkm []types.Bookmark
+		)
+
+		s := d.GetElementByID("search-form-input").(*dom.HTMLInputElement).Value
+
+		// Searching the bookmarks.
+		if resp = sendRequest("/searchBookmarks/", []arg{{key: "search", val: s}}); resp.StatusCode != http.StatusOK {
+			fmt.Println("searchBookmarks response code error")
+			return
+		}
+		defer resp.Body.Close()
+
+		if err = json.NewDecoder(resp.Body).Decode(&dataBkm); err != nil {
+			fmt.Println("searchBookmarks JSON decoder error", err.Error())
+			return
+		}
+
+		b := createCloseDivButton("search-result")
+		d.GetElementByID("search-result").AppendChild(b)
+		for _, bkm := range dataBkm {
+			//displaySubfolder(fldIDDigit, strconv.Itoa(fld.Id), fld.Title, fld.NbChildrenFolders)
+			newBkm := createBookmark(strconv.Itoa(bkm.Id), bkm.Title, bkm.URL, bkm.Favicon, bkm.Starred, false)
+			d.GetElementByID("search-result").AppendChild(newBkm)
+		}
+		d.GetElementByID("search-form-input").(*dom.HTMLInputElement).Set("value", "")
 	}()
 }
 
@@ -915,6 +969,19 @@ func main() {
 	formImport := d.GetElementByID("import-file-form")
 	formImport.AddEventListener("submit", false, func(e dom.Event) {
 		importBookmarks(e)
+	})
+
+	// Search input listener.
+	searchInput := d.GetElementByID("search-form-input")
+	searchInput.AddEventListener("keyup", false, func(e dom.Event) {
+		if changeTimer >= 0 {
+			w.ClearTimeout(changeTimer)
+		}
+		changeTimer = w.SetTimeout(func() {
+			clearSearchResults()
+			searchBookmark()
+			changeTimer = 0
+		}, 400)
 	})
 
 	// Enter and Esc key listeners
