@@ -32,7 +32,6 @@ const (
 	ClassItemBookmarkLinkEdited  = "bookmark-link-edited"
 	ClassBookmarkStarred         = "fa fa-star"
 	ClassBookmarkNotStarred      = "fa fa-star-o"
-	DragImage                    = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAQAAACROWYpAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwACKaQAAimkAScW8mcAAAAHdElNRQfgBhEMEhox+QS1AAAC70lEQVQ4y5WVTWicdRDGf+/uJmSlaRJ7qKI0ftWrTUQUtfQDlQakh1q0pPWj1QZWRVMhHqpCraRgDwEpNIhSixS82EsLGsTiIado9OBJqR7SJWHbmGS3bbLZ7O7787DvbrMxtduZ2zDPO/Of55l5A1YxgQAfJsU8Q8EsSEBDJgJuK6d/9Ge9GG6iUROA8FVnTtjkOk/pJbdX4w1Y+JbXj4qId/ipLtrTENy4b1jqj6AVP25B99/o6+bg13L21UERB7ymh25ZuThz5D9QxD79zfX1uYmV4PjEjjtzxFniNFeBFvpopcROyHK50nqwcsLGfbl4ORxzq78649y8nSJ2OBuaddoxd5d/Kl3xYN3bI14P5PzEMR0H8LGsGyJw5rpPAHjqe4+5qG+vkESYspgSD+kMgE8uA8+7BWz2wj7xFV2wt1I7AQHh3uD4QGIYiEPMLhIsV1WMR1wiydo4cIa1yRNfmw5GBXCL08eimb7jgjlzZr3kvSK2edFr5sy55J4o6zNL2gW4sTxxskZIuw9Efp8JEWN2RpEHXVPL+0rn7MKhCzatyuz/eczz+m2MxTW0crsW8hAUcJ1/f2Ey+mKL7ZG3GRMxsC2KdNhcqzyi6fB+wG7Tg1Gw3+lwcmEyP1n4w3uigf1upjCZn8xnyy+KmHBYM2F3levnLFTmfUTnfNxtvne1xvN03gGf8Xl/eV3Ew5bn3AxWhebORfvFj/QKgJvrRLIdTDpyQHxJ874QiSSoSP2cqY+Hc/TAX2Azybr5tJikialnKXO6yGBwFgKoLogE+D69ZDlJDxtoL3ZvZALoYKLcOs4/TJVH472sZyQ4XN2s+u26m0w4OvLUN8QpcJ55oJndtBKyg13fcRCCqVVuaXXJSnNHV5XFfh33rlucIlN590Yc3/A9uuRgA4fXd82/uQzY5Aea98MGDiCA+wyHauDPLc+6qyFoxPvWkl8aiD9oxqcbrFprvtvsOf/UdLjpNv4XNfijnvVM2Hlz6L/COmiuQg3JqwAAAABJRU5ErkJggg=="
 )
 
 var (
@@ -44,19 +43,6 @@ var (
 type folderStruct struct {
 	fld     dom.HTMLDivElement
 	subFlds dom.HTMLUListElement
-}
-
-type newBookmarkStruct struct {
-	BookmarkID      int64
-	BookmarkTitle   string
-	BookmarkURL     string
-	BookmarkFavicon string
-	BookmarkStarred bool
-}
-
-type newFolderStruct struct {
-	FolderID    int64
-	FolderTitle string
 }
 
 func init() {
@@ -529,7 +515,7 @@ func starBookmark(bkmID string, forceUnstar bool) {
 			starBookmarkDiv       dom.HTMLElement
 			err                   error
 			resp                  *http.Response
-			data                  newBookmarkStruct // returned struct from server
+			data                  types.Bookmark // returned struct from server
 		)
 
 		if forceUnstar {
@@ -563,7 +549,7 @@ func starBookmark(bkmID string, forceUnstar bool) {
 				fmt.Println("starBookmark JSON decoder error")
 				return
 			}
-			newBkm := createBookmark(bkmID, data.BookmarkTitle, data.BookmarkURL, data.BookmarkFavicon, data.BookmarkStarred, true)
+			newBkm := createBookmark(bkmID, data.Title, data.URL, data.Favicon, data.Starred, true)
 
 			li := d.CreateElement("li").(*dom.HTMLLIElement)
 			li.AppendChild(newBkm)
@@ -581,7 +567,8 @@ func addFolder(e dom.Event) {
 		var (
 			err  error
 			resp *http.Response
-			data newFolderStruct // returned struct from server
+			//data newFolderStruct // returned struct from server
+			data types.Folder // returned struct from server
 		)
 
 		fldName := d.GetElementByID("add-folder").(*dom.HTMLInputElement).Value
@@ -597,7 +584,7 @@ func addFolder(e dom.Event) {
 			return
 		}
 
-		newFld := createFolder(strconv.Itoa(int(data.FolderID)), data.FolderTitle, 0)
+		newFld := createFolder(strconv.Itoa(int(data.Id)), data.Title, 0)
 
 		rootFld := d.GetElementByID("subfolders-1")
 		rootFld.InsertBefore(newFld.fld, rootFld.FirstChild())
@@ -736,7 +723,7 @@ func dropFolder(e dom.Event) {
 
 		} else {
 
-			var dataBkm newBookmarkStruct
+			var dataBkm types.Bookmark
 			if resp = sendRequest("/addBookmark/", []arg{{key: "bookmarkUrl", val: u}, {key: "destinationFolderId", val: droppedItemIDDigit}}); resp.StatusCode != http.StatusOK {
 				fmt.Println("dropFolder response code error")
 				return
@@ -748,7 +735,7 @@ func dropFolder(e dom.Event) {
 				return
 			}
 
-			newBkm := createBookmark(strconv.Itoa(int(dataBkm.BookmarkID)), dataBkm.BookmarkURL, dataBkm.BookmarkURL, "", dataBkm.BookmarkStarred, false)
+			newBkm := createBookmark(strconv.Itoa(dataBkm.Id), dataBkm.URL, dataBkm.URL, "", dataBkm.Starred, false)
 
 			droppedItemChildren.InsertBefore(newBkm, droppedItemChildren.FirstChild())
 			addClass(droppedItem, ClassItemFolderOpen)

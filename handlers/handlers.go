@@ -53,21 +53,6 @@ type staticDataStruct struct {
 	GoBkmProxyURL       string
 }
 
-// newFolderStruct is returned by the NewFolderHandler to pass the new folder id to the view.
-type newFolderStruct struct {
-	FolderID    int64
-	FolderTitle string
-}
-
-// newBookmarkStruct is returned by the NewBookmarkHandler to pass the new bookmark id to the view.
-type newBookmarkStruct struct {
-	BookmarkID      int64
-	BookmarkTitle   string
-	BookmarkURL     string
-	BookmarkFavicon string
-	BookmarkStarred bool
-}
-
 // exportBookmarksStruct is used to build the bookmarks and folders tree in the export operation.
 type exportBookmarksStruct struct {
 	Fld  *types.Folder
@@ -306,7 +291,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	go env.UpdateBookmarkFavicon(&newBookmark)
 
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(newBookmarkStruct{BookmarkID: bookmarkID, BookmarkURL: bookmarkURLDecoded}); err != nil {
+	if err = json.NewEncoder(w).Encode(types.Bookmark{Id: int(bookmarkID), URL: bookmarkURLDecoded}); err != nil {
 		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -342,7 +327,7 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(newFolderStruct{FolderID: folderID, FolderTitle: folderName[0]}); err != nil {
+	if err = json.NewEncoder(w).Encode(types.Folder{Id: int(folderID), Title: folderName[0]}); err != nil {
 		failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -538,7 +523,7 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Building the result struct.
-	resultBookmarkStruct := newBookmarkStruct{BookmarkID: int64(bookmarkID), BookmarkTitle: bkm.Title, BookmarkURL: bkm.URL, BookmarkFavicon: bkm.Favicon, BookmarkStarred: bkm.Starred}
+	resultBookmarkStruct := types.Bookmark{Id: bookmarkID, Title: bkm.Title, URL: bkm.URL, Favicon: bkm.Favicon, Starred: bkm.Starred}
 	log.WithFields(log.Fields{
 		"resultBookmarkStruct": resultBookmarkStruct,
 	}).Debug("StarBookmarkHandler")
