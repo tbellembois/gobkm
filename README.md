@@ -93,7 +93,27 @@ You can use Nginx in front of GoBkm to use authentication and HTTPS.
           
         root          /usr/local/gobkm;  
         charset utf-8;
-    
+
+        gzip on;
+        gzip_disable "msie6";
+
+        gzip_comp_level 6;
+        gzip_min_length 1100;
+        gzip_buffers 16 8k;
+        gzip_proxied any;
+        gzip_types
+            text/plain
+            text/css
+            text/js
+            text/xml
+            text/javascript
+            application/javascript
+            application/x-javascript
+            application/json
+            application/xml
+            application/rss+xml
+            image/svg+xml;
+
         # uncomment and change to enable HTTPS
         #ssl on;
         #ssl_certificate /etc/nginx/ssl2/my-gobkm.crt;

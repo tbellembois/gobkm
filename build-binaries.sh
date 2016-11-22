@@ -12,7 +12,7 @@ BINARY_X86_NAME="gobkm-AMD64"
 PACKAGE_ARCHIVE_NAME="gobkm.zip"
 STATIC_RESOURCES_ARCHIVE_NAME="static.zip"
 
-BUILD_GOPHERJS_CMD="gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js"
+BUILD_GOPHERJS_CMD="gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js -m"
 BUILD_ARMV7_CMD="env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build -o $OUTPUT_DIR/$BINARY_ARMV7_NAME ."
 BUILD_X86_CMD="go build -o $OUTPUT_DIR/$BINARY_X86_NAME ."
 
