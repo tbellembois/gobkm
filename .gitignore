@@ -26,8 +26,6 @@ _testmain.go
 # Custom locations
 bindata.go
 bkm.db
-static/img
-static/manifest
 static/js/*.js*
 gobkm
 build

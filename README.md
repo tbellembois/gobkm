@@ -11,6 +11,13 @@ The purpose of this project was to study the Go programming language in its diff
 
 Download and uncompress the latest release from <https://github.com/tbellembois/gobkm/releases>.
 
+or
+
+```bash
+    $ go get -u github.com/tbellembois/gobkm
+    $ gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js -m
+```
+
 ## Usage
 
 ```bash
