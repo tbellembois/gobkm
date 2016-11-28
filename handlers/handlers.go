@@ -39,6 +39,7 @@ type Env struct {
 	DB                  models.Datastore
 	GoBkmProxyURL       string // the application URL
 	TplMainData         string // main template data
+	TplAddBookmarkData  string // add bookmark template data
 	CSSMainData         []byte // main css data
 	CSSAwesoneFontsData []byte // awesome fonts css data
 	JsData              []byte // js data
@@ -51,6 +52,8 @@ type staticDataStruct struct {
 	CSSAwesoneFontsData string
 	JsData              string
 	GoBkmProxyURL       string
+	NewBookmarkURL      string
+	NewBookmarkTitle    string
 }
 
 // exportBookmarksStruct is used to build the bookmarks and folders tree in the export operation.
@@ -152,63 +155,101 @@ type bookmarkThisStruct struct {
 }
 
 // BookmarkThisHandler handles the bookmarks creation with the bookmarklet.
+//func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
+//	log.Debug("BookmarkThisHandler called")
+//	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+//	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+//	w.Header().Set("Access-Control-Allow-Credentials", "true")
+//
+//	body, err := ioutil.ReadAll(r.Body)
+//	defer func() {
+//		if err := r.Body.Close(); err != nil {
+//			log.WithFields(log.Fields{
+//				"err": err,
+//			}).Error("BookmarkThisHandler:error closing response Body")
+//		}
+//	}()
+//
+//	if err != nil {
+//		log.Error("Could not read body:", err)
+//		return
+//	}
+//	var b bookmarkThisStruct
+//	err = json.Unmarshal(body, &b)
+//	if err != nil {
+//		log.Error("Could not unmarshall body:", err)
+//		return
+//	}
+//	log.WithFields(log.Fields{
+//		"url":   b.URL,
+//		"title": b.Title,
+//	}).Debug("BookmarkThisHandler:Query parameter")
+//
+//	// Getting the destination folder = root folder.
+//	dstFld := env.DB.GetFolder(0)
+//	// Creating a new Bookmark.
+//	newBookmark := types.Bookmark{Title: b.Title, URL: b.URL, Folder: dstFld}
+//	// Saving the bookmark into the DB, getting its id.
+//	bookmarkID := env.DB.SaveBookmark(&newBookmark)
+//	// Datastore error check.
+//	if err = env.DB.FlushErrors(); err != nil {
+//		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//	// Updating the bookmark favicon.
+//	newBookmark.Id = int(bookmarkID)
+//	go env.UpdateBookmarkFavicon(&newBookmark)
+//
+//	var jsonResp []byte
+//	if jsonResp, err = json.Marshal(newBookmark); err != nil {
+//		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+//		return
+//
+//	}
+//	if err = wsconn.WriteMessage(websocket.TextMessage, jsonResp); err != nil {
+//		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//}
+
 func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
-	log.Debug("BookmarkThisHandler called")
-	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-	body, err := ioutil.ReadAll(r.Body)
-	defer func() {
-		if err := r.Body.Close(); err != nil {
-			log.WithFields(log.Fields{
-				"err": err,
-			}).Error("BookmarkThisHandler:error closing response Body")
-		}
-	}()
-
-	if err != nil {
-		log.Error("Could not read body:", err)
-		return
-	}
-	var b bookmarkThisStruct
-	err = json.Unmarshal(body, &b)
-	if err != nil {
-		log.Error("Could not unmarshall body:", err)
-		return
-	}
+	var (
+		err   error
+		title string
+		url   []string
+	)
+	// GET parameters retrieval.
+	url = r.URL.Query()["url"]
+	t := r.URL.Query()["title"]
 	log.WithFields(log.Fields{
-		"url":   b.URL,
-		"title": b.Title,
+		"url": url,
+		"t":   t,
 	}).Debug("BookmarkThisHandler:Query parameter")
 
-	// Getting the destination folder = root folder.
-	dstFld := env.DB.GetFolder(0)
-	// Creating a new Bookmark.
-	newBookmark := types.Bookmark{Title: b.Title, URL: b.URL, Folder: dstFld}
-	// Saving the bookmark into the DB, getting its id.
-	bookmarkID := env.DB.SaveBookmark(&newBookmark)
-	// Datastore error check.
-	if err = env.DB.FlushErrors(); err != nil {
-		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+	// Parameters check.
+	if len(url) == 0 {
+		failHTTP(w, "BookmarkThisHandler", "url empty", http.StatusBadRequest)
 		return
 	}
-
-	// Updating the bookmark favicon.
-	newBookmark.Id = int(bookmarkID)
-	go env.UpdateBookmarkFavicon(&newBookmark)
-
-	var jsonResp []byte
-	if jsonResp, err = json.Marshal(newBookmark); err != nil {
-		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
-		return
-
-	}
-	if err = wsconn.WriteMessage(websocket.TextMessage, jsonResp); err != nil {
-		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
-		return
+	if len(t) == 0 {
+		title = url[0]
+	} else {
+		title = t[0]
 	}
 
+	// Building the HTML template.
+	htmlTpl := template.New("addBookmark")
+	if htmlTpl, err = htmlTpl.Parse(env.TplAddBookmarkData); err != nil {
+		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+		// TODO: should we exit the program ?
+	}
+
+	newBookmark := staticDataStruct{NewBookmarkURL: url[0], NewBookmarkTitle: title}
+	if err = htmlTpl.Execute(w, newBookmark); err != nil {
+		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
@@ -294,6 +335,57 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(types.Bookmark{Id: int(bookmarkID), URL: bookmarkURLDecoded}); err != nil {
 		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (env *Env) AddBookmarkBookmarkletHandler(w http.ResponseWriter, r *http.Request) {
+	var (
+		err   error
+		url   string
+		title string
+	)
+	r.ParseForm()
+	// Parameters check.
+	if url = r.FormValue("url"); url == "" {
+		failHTTP(w, "AddBookmarkBookmarkletHandler", "url empty", http.StatusBadRequest)
+		return
+	}
+	if title = r.FormValue("title"); title == "" {
+		failHTTP(w, "AddBookmarkBookmarkletHandler", "title empty", http.StatusBadRequest)
+		return
+	}
+	log.WithFields(log.Fields{
+		"url":   url,
+		"title": title,
+	}).Debug("AddBookmarkBookmarkletHandler:Query parameter")
+
+	// Getting the destination folder = root folder.
+	dstFld := env.DB.GetFolder(0)
+	// Creating a new Bookmark.
+	newBookmark := types.Bookmark{Title: title, URL: url, Folder: dstFld}
+	// Saving the bookmark into the DB, getting its id.
+	bookmarkID := env.DB.SaveBookmark(&newBookmark)
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "AddBookmarkBookmarkletHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Updating the bookmark favicon.
+	newBookmark.Id = int(bookmarkID)
+	go env.UpdateBookmarkFavicon(&newBookmark)
+
+	var jsonResp []byte
+	if jsonResp, err = json.Marshal(newBookmark); err != nil {
+		failHTTP(w, "AddBookmarkBookmarkletHandler", err.Error(), http.StatusInternalServerError)
+		return
+
+	}
+	if err = wsconn.WriteMessage(websocket.TextMessage, jsonResp); err != nil {
+		failHTTP(w, "AddBookmarkBookmarkletHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "<script>window.close();</script>")
 }
 
 // AddFolderHandler handles the folders creation.
@@ -749,7 +841,7 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 	folderAndBookmark.GoBkmProxyURL = env.GoBkmProxyURL
 	folderAndBookmark.Bkms = starredBookmarks
 
-	// Building the main template.
+	// Building the HTML template.
 	htmlTpl := template.New("main")
 	if htmlTpl, err = htmlTpl.Parse(env.TplMainData); err != nil {
 		failHTTP(w, "MainHandler", err.Error(), http.StatusInternalServerError)

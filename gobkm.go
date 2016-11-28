@@ -77,8 +77,11 @@ func main() {
 	if templateBox, err = rice.FindBox("static"); err != nil {
 		log.Fatal(err)
 	}
-	// Getting the main template file content as a string.
+	// Getting the HTML template files content as a string.
 	if env.TplMainData, err = templateBox.String("main.html"); err != nil {
+		log.Fatal(err)
+	}
+	if env.TplAddBookmarkData, err = templateBox.String("addBookmark.html"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -101,6 +104,8 @@ func main() {
 	http.HandleFunc("/socket/", env.SocketHandler)
 	// bookmarklet handler
 	http.HandleFunc("/bookmarkThis/", env.BookmarkThisHandler)
+	//http.HandleFunc("/bookmarkThis2/", env.BookmarkThis2Handler)
+	http.HandleFunc("/addBookmarkBookmarklet/", env.AddBookmarkBookmarkletHandler)
 	http.HandleFunc("/", env.MainHandler)
 
 	// Rice boxes initialization.
