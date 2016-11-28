@@ -47,9 +47,9 @@ Debug mode (by default only errors are shown):
 ## GUI
 
 - drag and drop an URL from your Web browser address bar into a folder to bookmark it OR
-- use the bookmarklet to bookmark the current page
+- use the B+ bookmarklet to bookmark the current page
 - delete folders and bookmarks by dropping them on the bin icon
-- rename folders and bookmarks with the "r" key
+- rename folders and bookmarks with the "r" key when the mouse is over
 - star/unstar bookmarks with the star icons
 
 ## Bookmarklets
@@ -200,7 +200,6 @@ Thanks to [Dmitri Shuralyov](https://github.com/shurcooL) for the help on Gopher
 - no user management
 - no authentication (relies on the HTTP proxy)
 - folders and bookmarks are sorted by title (currently not configurable)
-- the B+ bookmarklet will NOT work with sites with CSP restrictions
 
 ## Notes
 
