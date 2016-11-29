@@ -29,13 +29,18 @@
 <body>
 
     <div id="add-bookmark">
-        <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/><br/>
-        <form id="add-bookmark-form" name="addBookmarkForm" action="/addBookmarkBookmarklet/" method="post">
-            title: <input type="text" name="title" id="add-bookmark-title-input" value="{{.NewBookmarkTitle}}"><br/>
-            URL: <input type="text" name="url" id="add-bookmark-url-input" value="{{.NewBookmarkURL}}"><br/>
-            
-            <input type="submit" value="add">
-            <button type="button" onclick="window.close();">cancel</button>
+        <div id="logo"><img src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/></div>
+        <form action="/addBookmarkBookmarklet/" method="post">
+            <div class="input">
+                <div id="title-label">title</div><div id="title-input"><input type="text" name="title" value="{{.NewBookmarkTitle}}"></div>
+            </div>
+            <div class="input">
+                <div id="url-label">URL</div><div id="url-input"><input type="text" name="url" value="{{.NewBookmarkURL}}"></div>
+            </div> 
+            <div class="input">
+                <div id="submit"><input type="submit" value="add"></div>
+                <div id="cancel"><button type="button" onclick="window.close();">cancel</button></div>
+            </div>
         </form>   
     </div>
 
