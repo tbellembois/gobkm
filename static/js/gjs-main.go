@@ -587,8 +587,8 @@ func addFolder(e dom.Event) {
 		newFld := createFolder(strconv.Itoa(int(data.Id)), data.Title, 0)
 
 		rootFld := d.GetElementByID("subfolders-1")
-		rootFld.InsertBefore(newFld.fld, rootFld.FirstChild())
 		rootFld.InsertBefore(newFld.subFlds, rootFld.FirstChild())
+		rootFld.InsertBefore(newFld.fld, rootFld.FirstChild())
 	}()
 }
 
