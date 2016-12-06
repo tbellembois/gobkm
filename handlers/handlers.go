@@ -281,7 +281,6 @@ func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(bookmarksMap); err != nil {
 		failHTTP(w, "SearchBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
-
 }
 
 // AddBookmarkHandler handles the bookmarks creation with drag and drop.

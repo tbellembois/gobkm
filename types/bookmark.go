@@ -21,39 +21,43 @@ type Bookmark struct {
 }
 
 func (fd *Folder) String() string {
-
 	var out []byte
 	var err error
 
 	if out, err = json.Marshal(fd); err != nil {
 		return ""
 	}
-
 	return string(out)
 }
 
 func (bk *Bookmark) String() string {
-
 	var out []byte
 	var err error
 
 	if out, err = json.Marshal(bk); err != nil {
 		return ""
 	}
-
 	return string(out)
+}
+
+// PathString returns the bookmark full path as a string
+func (bk *Bookmark) PathString() string {
+	var (
+		p *Folder
+		r string
+	)
+	for p = bk.Folder; p != nil; p = p.Parent {
+		r += "/" + p.Title
+	}
+	return r
 }
 
 // IsRootFolder returns true if the given Folder has no parent
 func (fd *Folder) IsRootFolder() bool {
-
 	return fd.Parent == nil
-
 }
 
 // HasChildrenFolders returns true if the given Folder has children
 func (fd *Folder) HasChildrenFolders() bool {
-
 	return fd.NbChildrenFolders > 0
-
 }

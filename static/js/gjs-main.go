@@ -150,10 +150,14 @@ func unsetWait() {
 	d.GetElementsByTagName("body")[0].Class().Remove("wait")
 }
 
+func resetAddFolder() {
+	d.GetElementByID("add-folder").(*dom.HTMLInputElement).Set("value", "")
+}
 func resetAll() {
 	clearSearchResults()
 	hideImport()
 	hideRenameBox()
+	resetAddFolder()
 	enableItem("add-folder")
 	enableItem("add-folder-button")
 
@@ -500,7 +504,6 @@ func searchBookmark() {
 		b := createCloseDivButton("search-result")
 		d.GetElementByID("search-result").AppendChild(b)
 		for _, bkm := range dataBkm {
-			//displaySubfolder(fldIDDigit, strconv.Itoa(fld.Id), fld.Title, fld.NbChildrenFolders)
 			newBkm := createBookmark(strconv.Itoa(bkm.Id), bkm.Title, bkm.URL, bkm.Favicon, bkm.Starred, false)
 			d.GetElementByID("search-result").AppendChild(newBkm)
 		}
@@ -589,6 +592,8 @@ func addFolder(e dom.Event) {
 		rootFld := d.GetElementByID("subfolders-1")
 		rootFld.InsertBefore(newFld.subFlds, rootFld.FirstChild())
 		rootFld.InsertBefore(newFld.fld, rootFld.FirstChild())
+
+		resetAddFolder()
 	}()
 }
 
