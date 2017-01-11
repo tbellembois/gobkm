@@ -460,7 +460,7 @@ func (db *SQLiteDataStore) SearchBookmarks(s string) []*types.Bookmark {
 }
 
 // GetFolderBookmarks returns the bookmarks of the given folder id.
-func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
+func (db *SQLiteDataStore) GetFolderBookmarks(id int) types.Bookmarks {
 	log.WithFields(log.Fields{
 		"id": id,
 	}).Debug("GetFolderBookmarks")
@@ -470,7 +470,7 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) []*types.Bookmark {
 	}
 	var (
 		rows *sql.Rows
-		bkms []*types.Bookmark
+		bkms types.Bookmarks
 	)
 
 	// Querying the bookmarks.
