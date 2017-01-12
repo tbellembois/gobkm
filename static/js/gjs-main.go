@@ -168,6 +168,8 @@ func resetAll() {
 }
 
 func undisplayChildrenFolders(fldID string) {
+	// Moving the rename input box form to prevent its deletion.
+	d.GetElementsByTagName("body")[0].(*dom.HTMLBodyElement).AppendChild(d.GetElementByID("rename-input-box"))
 	// Removing folder content.
 	d.GetElementByID("subfolders-" + fldID).SetInnerHTML("")
 	// Changing folder icon.
