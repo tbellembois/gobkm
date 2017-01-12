@@ -300,8 +300,8 @@ func dropRename(elementId string) {
 	sl := strings.Split(elementId, "-")
 	draggedItemIDDigit := sl[len(sl)-1]
 
-	fmt.Println(elementId)
-	fmt.Println(draggedItemIDDigit)
+	//fmt.Println(elementId)
+	//fmt.Println(draggedItemIDDigit)
 
 	el := d.GetElementByID(elementId).(dom.HTMLElement)
 
@@ -887,13 +887,13 @@ func main() {
 			buf := make([]byte, 1024)
 			n, err := c.Read(buf) // Blocks until a WebSocket frame is received
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("error:" + err.Error())
 			}
 			//fmt.Println(string(buf[:n]))
 
 			var bkm types.Bookmark
 			if err := json.Unmarshal(buf[:n], &bkm); err != nil {
-				fmt.Println(err)
+				fmt.Println("error:" + err.Error())
 				return
 			}
 			newBkm := createBookmark(strconv.Itoa(bkm.Id), bkm.Title, bkm.URL, bkm.Favicon, false, false)

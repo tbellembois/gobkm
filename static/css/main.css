@@ -32,6 +32,8 @@ div.folder {
 }
 div.folder-over {
     background-color: #EFEFEF;
+    border: 1px solid grey;
+    padding: 8px;
 }
 div.rename-over, div.delete-over {
     color: green;
