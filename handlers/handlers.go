@@ -343,7 +343,10 @@ func (env *Env) AddBookmarkBookmarkletHandler(w http.ResponseWriter, r *http.Req
 		url   string
 		title string
 	)
-	r.ParseForm()
+	if err = r.ParseForm(); err != nil {
+		failHTTP(w, "AddBookmarkBookmarkletHandler", "form parsing error", http.StatusInternalServerError)
+		return
+	}
 	// Parameters check.
 	if url = r.FormValue("url"); url == "" {
 		failHTTP(w, "AddBookmarkBookmarkletHandler", "url empty", http.StatusBadRequest)
