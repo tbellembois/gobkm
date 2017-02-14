@@ -1,3 +1,17 @@
+@font-face{ 
+	font-family: 'MyWebFont';
+	src: url('../fonts/ArchivoNarrow-Regular.eot');
+	src: url('../fonts/ArchivoNarrow-Regular.eot?#iefix') format('embedded-opentype'),
+	     url('../fonts/ArchivoNarrow-Regular.woff') format('woff'),
+	     url('../fonts/ArchivoNarrow-Regular.ttf') format('truetype'),
+	     url('../fonts/ArchivoNarrow-Regular.svg#webfont') format('svg');
+}
+
+body {
+    font-family: "MyWebFont", sans-serif;
+    font-size: 1.5em;
+}
+
 body.wait, body.wait *{
      cursor: wait !important;   
 }
@@ -7,12 +21,12 @@ li {
 }
 
 ul {
-    padding-left: 20px;
+    padding-left: 15px;
 }
 
 ul#root {
     padding: 0px;
-    margin: 20px 2px 2px 2px;
+    margin: 5px 0px 0px 2px;
 }
 
 ul#root ul {
@@ -31,18 +45,14 @@ div.folder-over {
     border: 1px solid grey;
     padding: 8px;
 }
-div.rename-over, div.delete-over {
+span.folder-title {
+}
+div.rename-over {
     color: green;
 }
 
 div#action-box {
-    position: fixed;
-    top: 0px;
-    width: 100%;
-    z-index: 99;
-    background-color: white;
-    border-bottom: 1px dotted grey;
-    padding-bottom: 10px;
+    float: left;
 }
 
 div.bookmark {
@@ -91,23 +101,21 @@ div#rename-box, div#delete-box {
     width: 25px;
     height: 25px;
 }
+div#delete-box {
+    font-size: 2em;
+}
 
 div#footer {
     width: 100%;
     position: fixed;
     bottom: 0px;
     background-color: white;
-    border-top: 1px dotted grey;
-    padding-top: 10px;
 }
 div#copyright {
     float: left;
-    background: white;
-    width: 20%;
 }
 div#import-export {
     float: left;
-    width: 40%;
 }
 div#export-box {
     cursor :pointer;
@@ -133,8 +141,6 @@ div#rename-input-box {
 }
 
 input#rename-input-box-form {
-    width: 200px;
-    margin-left: 15px;
 }
 
 div#close-search-result {
@@ -145,7 +151,6 @@ div#search-result {
     margin-top: 5px;
 }
 div#search-box {
-    margin-top: 95px;
 }
 div#starred-list {
     float: left;
@@ -160,27 +165,6 @@ div#folder-list {
 
 div#bookmarklet {
     float: left;
-    background: white;
-    width: 40%;
-    margin-bottom: 5px;
-}
-div#bookmarklet a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    line-height: 35px;
-    cursor: move;
-}
-
-div#bookmarklet-app, div#bookmarklet-add {
-    float: left;
-    background-color: black;
-    padding: 5px;
-    width: 35px;
-    height: 35px;
-    border-radius: 35px;
-    vertical-align: middle;
-    text-align: center;
 }
 
 img.favicon {

@@ -17,21 +17,19 @@ import (
 
 // CSS classes.
 const (
-	ClassDraggedItem             = "dragged-item"
-	ClassItemOver                = "folder-over"
-	ClassRenameOver              = "rename-over"
-	ClassDeleteOver              = "delete-over"
-	ClassItemFolder              = "folder"
-	ClassItemFolderAwesome       = "fa"
-	ClassItemFolderAwesomeOpen   = "fa-folder-open-o"
-	ClassItemFolderAwesomeClosed = "fa-folder-o"
-	ClassItemFolderOpen          = ClassItemFolderAwesome + " " + ClassItemFolderAwesomeOpen
-	ClassItemFolderClosed        = ClassItemFolderAwesome + " " + ClassItemFolderAwesomeClosed
-	ClassItemBookmark            = "bookmark"
-	ClassItemBookmarkLink        = "bookmark-link"
-	ClassItemBookmarkLinkEdited  = "bookmark-link-edited"
-	ClassBookmarkStarred         = "fa fa-star"
-	ClassBookmarkNotStarred      = "fa fa-star-o"
+	ClassDraggedItem            = "dragged-item"
+	ClassItemOver               = "folder-over"
+	ClassRenameOver             = "rename-over"
+	ClassDeleteOver             = "fa fa-trash-o"
+	ClassDeleteLeave            = "fa fa-trash"
+	ClassItemFolder             = "folder"
+	ClassItemFolderOpen         = "glyphicon glyphicon-folder-open"
+	ClassItemFolderClosed       = "glyphicon glyphicon-folder-close"
+	ClassItemBookmark           = "bookmark"
+	ClassItemBookmarkLink       = "bookmark-link"
+	ClassItemBookmarkLinkEdited = "bookmark-link-edited"
+	ClassBookmarkStarred        = "fa fa-star"
+	ClassBookmarkNotStarred     = "fa fa-star-o"
 )
 
 var (
@@ -140,7 +138,7 @@ func isStarredBookmark(bkmID string) bool {
 	return d.GetElementByID("bookmark-starred-link-"+bkmID) != nil
 }
 func hasChildrenFolders(fldID string) bool {
-	return hasClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolderAwesomeOpen)
+	return hasClass(d.GetElementByID("folder-icon-"+fldID).(dom.HTMLElement), "glyphicon-folder-open")
 }
 
 func setWait() {
@@ -173,7 +171,7 @@ func undisplayChildrenFolders(fldID string) {
 	// Removing folder content.
 	d.GetElementByID("subfolders-" + fldID).SetInnerHTML("")
 	// Changing folder icon.
-	setClass(d.GetElementByID("folder-"+fldID).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderClosed)
+	setClass(d.GetElementByID("folder-icon-"+fldID).(dom.HTMLElement), ClassItemFolderClosed)
 }
 func showRenameBox() {
 	showItem("rename-input-box")
@@ -270,12 +268,12 @@ func leaveRename(e dom.Event) {
 
 func overDelete(e dom.Event) {
 	e.PreventDefault()
-	addClass(e.Target().(dom.HTMLElement), ClassDeleteOver)
+	setClass(e.Target().(dom.HTMLElement), ClassDeleteOver)
 }
 
 func leaveDelete(e dom.Event) {
 	e.PreventDefault()
-	removeClass(e.Target().(dom.HTMLElement), ClassDeleteOver)
+	setClass(e.Target().(dom.HTMLElement), ClassDeleteLeave)
 }
 
 func dragStartItem(e dom.Event) {
@@ -389,15 +387,25 @@ func createFolder(fldID string, fldTitle string, nbChildrenFolders int) folderSt
 	// Main div.
 	md := d.CreateElement("div").(*dom.HTMLDivElement)
 	md.SetTitle(fldTitle)
-	md.SetClass(ClassItemFolder + " " + ClassItemFolderClosed)
+	md.SetClass("folder")
 	md.SetAttribute("tabindex", "0")
 	md.SetID("folder-" + fldID)
 	md.SetDraggable(true)
+	// Icon.
+	ic := d.CreateElement("span").(*dom.HTMLSpanElement)
+	ic.SetID("folder-icon-" + fldID)
+	ic.SetClass(ClassItemFolderClosed)
+	// Folder title.
+	title := d.CreateElement("span").(*dom.HTMLSpanElement)
+	title.SetID("folder-title-" + fldID)
+	title.SetClass("folder-title")
+	title.AppendChild(d.CreateTextNode(" " + fldTitle))
 	// Subfolders.
 	ul := d.CreateElement("ul").(*dom.HTMLUListElement)
 	ul.SetID("subfolders-" + fldID)
 
-	md.AppendChild(d.CreateTextNode(" " + fldTitle))
+	md.AppendChild(ic)
+	md.AppendChild(title)
 	md.AppendChild(ul)
 
 	md.AddEventListener("click", false, func(e dom.Event) { getChildrenItems(e, fldID) })
@@ -776,7 +784,7 @@ func renameFolder(e dom.Event) {
 			}
 			defer resp.Body.Close()
 
-			d.GetElementByID(fldID).SetInnerHTML(" " + fldName)
+			d.GetElementByID("folder-title-" + fldIDDigit).SetInnerHTML(" " + fldName)
 
 			removeClass(d.GetElementByID(fldID).(*dom.HTMLDivElement), ClassDraggedItem)
 
@@ -855,7 +863,7 @@ func getChildrenItems(e dom.Event, fldIDDigit string) {
 		}
 
 		// Changing the folder icon.
-		setClass(d.GetElementByID("folder-"+fldIDDigit).(dom.HTMLElement), ClassItemFolder+" "+ClassItemFolderOpen)
+		setClass(d.GetElementByID("folder-icon-"+fldIDDigit).(dom.HTMLElement), ClassItemFolderOpen)
 
 	}()
 
@@ -950,11 +958,11 @@ func main() {
 	})
 
 	// Import export links listeners.
-	importLink := d.GetElementByID("import-box").(*dom.HTMLDivElement)
+	importLink := d.GetElementByID("import-box").(*dom.HTMLButtonElement)
 	importLink.AddEventListener("click", false, func(e dom.Event) {
 		toogleDisplayImport()
 	})
-	exportLink := d.GetElementByID("export-box").(*dom.HTMLDivElement)
+	exportLink := d.GetElementByID("export-box").(*dom.HTMLButtonElement)
 	exportLink.AddEventListener("click", false, func(e dom.Event) {
 		openInParent("/export/")
 	})
@@ -975,7 +983,7 @@ func main() {
 			clearSearchResults()
 			searchBookmark()
 			changeTimer = 0
-		}, 400)
+		}, 600)
 	})
 
 	// Enter and Esc key listeners

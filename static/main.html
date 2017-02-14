@@ -21,60 +21,38 @@
     var GoBkmProxyURL="{{.GoBkmProxyURL}}"
   </script>
 
-  <link rel="stylesheet" type="text/css" href="/css/main.css">
   <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="/css/main.css">
 
 </head>
 
 <body>
 
     <div id="rename-input-box" style="display: none">
-
-        <input id="rename-input-box-form" type="text" />
+            <div class="row">
+              <div class="col-lg-6">        
+                <div class="input-group">
+                  <input id="rename-input-box-form" type="text" class="form-control" placeholder="New name">
+                  <span class="input-group-btn">
+                    <button id="rename-folder-button" class="btn btn-default" type="button"><span class="glyphicon glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                  </span>
+                </div>
+              </div>
+            </div>
         <input id="rename-hidden-input-box-form" type="hidden" name="folderId" />
-        
-        <button id="rename-folder-button">ok</button>
-
     </div>
 
 <div id="container">
 
-<div id="action-box">
-
-    <div id="import-input-box" style="display:none">
-        <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
-            <input type="file" name="importFile" id="import-file" accept=".html">
-            <input type="submit" value="import" name="submit" id="import-button">
-        </form>
-    </div>
-
-    <div id="add-folder-box">
-        <div class="row">
-          <div class="col-lg-6">        
-            <div class="input-group">
-              <input type="text" id="add-folder" class="form-control" placeholder="Add folder...">
-              <span class="input-group-btn">
-                <button id="add-folder-button" class="btn btn-default" type="button"><span class="glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-              </span>
-            </div>
-          </div>
-        </div>
-    </div>
-
-	<div id="delete-box" title="drag and drop a folder/bookmark to delete here" class="fa fa-trash-o">
-	</div>
-
-</div>
 
 
 <div id="starred-list">
 
 <div class="panel panel-default">
-  <div class="panel-heading">
-    <h6 class="panel-title"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></h6>
-  </div>
+  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+  
   <div class="panel-body">
     <ul id="starred">
         {{with .Bkms}}
@@ -83,9 +61,6 @@
         <li>
            <div id="bookmark-starred-{{.Id}}" class="bookmark">
 
-                <div class="fa fa-star"
-                     id="bookmark-starred-star-{{.Id}}">
-                </div>
                 <img src="{{.Favicon}}" alt="" class="favicon">
                 <span id="bookmark-starred-link-{{.Id}}" 
                      class="bookmark-starred-link" 
@@ -118,8 +93,12 @@
     <ul id="root">
         <li>
                <div id="folder-1"
-                     class="folder fa fa-folder-o"
-                     draggable="false"/>&nbsp;/
+                     class="folder"
+                     draggable="false">
+                   <span id="folder-icon-1" class="glyphicon glyphicon-folder-close"></span>
+                   <span class="folder-title">
+                     &nbsp;/
+                   </span>
                 </div>
                 <ul id="subfolders-1"></ul>
         </li>
@@ -129,34 +108,93 @@
 </div>
 
 <div id="footer">
+
+    <div id="action-box">
+
+        <div id="delete-box" title="drag and drop a folder/bookmark to delete here" class="fa fa-trash">
+        </div>
+
+        <div id="import-input-box" style="display:none">
+
+            <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-lg-6">        
+                <div class="input-group">
+                  <input type="file" name="importFile" accept=".html" id="import-file" class="form-control">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-download" aria-hidden="true" onclick="document.getElementById('import-file-form').submit();"></span></button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            </form>
+
+        </div>
+
+        <div id="add-folder-box">
+            <div class="row">
+              <div class="col-lg-6">        
+                <div class="input-group">
+                  <input type="text" id="add-folder" class="form-control" placeholder="Add folder...">
+                  <span class="input-group-btn">
+                    <button id="add-folder-button" class="btn btn-default" type="button"><span class="glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                  </span>
+                </div>
+              </div>
+            </div>
+        </div>
+
+    </div>
+
+
     <div id="copyright">
-        <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
-    </div>
-    <div id="bookmarklet">
-        <div id="bookmarklet-app">
-            <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">B</a>
-        </div>
         <!--
-        <div id="bookmarklet-add">
-            <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:var xhr = new XMLHttpRequest(); xhr.withCredentials = true; xhr.open('POST', '{{.GoBkmProxyURL}}/bookmarkThis/', true); xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'); xhr.send(JSON.stringify({ 'url': location.href, 'title': document.title}));">B+</a>
-        </div>
+        <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
         -->
-        <div id="bookmarklet-add">
-            <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">B+</a>
-        </div>
     </div>
+
+    <div id="bookmarklet" style="display: none;">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">bookmarklets</h3>
+          </div>
+          <div class="panel-body">
+
+            <div id="bookmarklet-app">
+                <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
+            </div>
+            <div id="bookmarklet-add">
+                <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm bookmark current page</a>
+            </div>
+
+          </div>
+        </div>
+
+    </div>
+
 	<div id="import-export">
-    	<div id="export-box" title="export in HTML" class="fa fa-floppy-o">
-    	</div>
-    	<div id="import-box" title="import from HTML" class="fa fa-arrow-circle-down">
-    	</div>
-	</div>
-</div>
+        <div class="btn-group" role="group" aria-label="...">
+          <button type="button" title="export bookmarks" class="btn btn-default" id="export-box"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span></button>
+          <button type="button" title="import bookmarks" class="btn btn-default" id="import-box"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></button>
+          <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
+        </div>        
+    </div>
 
 </div>
 
+</div>
+
+  <script type="text/javascript" src="/js/jquery-3.1.1.min.js"> </script>
   <script type="text/javascript" src="/js/bootstrap.min.js"> </script>
   <script type="text/javascript" src="/js/gjs-main.js"> </script>
+
+    <script>
+        function toggleElement(id) {
+            var el = document.getElementById(id);
+            el.style.display = el.style.display == "none" ? "block" : "none";
+        }
+    </script>
 </body>
 
 </html>
