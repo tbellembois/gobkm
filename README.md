@@ -47,15 +47,16 @@ Debug mode (by default only errors are shown):
 ## GUI
 
 - drag and drop an URL from your Web browser address bar into a folder to bookmark it OR
-- use the B+ bookmarklet to bookmark the current page
+- use the "GoBkm bookmark current page" bookmarklet to bookmark the current page
 - delete folders and bookmarks by dropping them on the bin icon
 - rename folders and bookmarks with the "r" key when the mouse is over
 - star/unstar bookmarks with the star icons
 
 ## Bookmarklets
 
-The "B" bookmarklet open GoBkm.
-The "B+" bookmarklet bookmarks the current page (alternative to the drag and drop method).
+Click the little "earth" icon at the bottom of the application and drag and drop the 2 bookmarklets in your bokmark bar.
+The "GoBkm application" bookmarklet open GoBkm.
+The "GoBkm bookmark current page" bookmarklet bookmarks the current page (alternative to the drag and drop method).
 
 ## Nginx proxy (optional)
 
@@ -168,6 +169,10 @@ You can use Nginx in front of GoBkm to use authentication and HTTPS.
     ```
 
 ### SSL self-signed certificate generation (optional)
+
+I strongly recommend [Let's Encrypt](https://letsencrypt.org/) for the certificates generation.
+
+The following method is just here for archive purposes.
 
 ```bash
 	# generate a root CA key
