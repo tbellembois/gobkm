@@ -677,8 +677,10 @@ func dropFolder(e dom.Event) {
 		}
 		droppedItem := e.Target().(dom.HTMLElement)
 		droppedItemID := droppedItem.GetAttribute("id")
-		droppedItemIDDigit := strings.Split(droppedItemID, "-")[1]
+		droppedItemIDSplitted := strings.Split(droppedItemID, "-")
+		droppedItemIDDigit := droppedItemIDSplitted[len(droppedItemIDSplitted)-1]
 		droppedItemChildren := d.GetElementByID("subfolders-" + droppedItemIDDigit)
+		fmt.Println("droppedItemID:" + droppedItemID)
 
 		defer func() {
 			removeClass(droppedItem, ClassItemOver)
