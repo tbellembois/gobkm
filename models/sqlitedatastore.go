@@ -3,6 +3,9 @@ package models
 import (
 	"database/sql"
 
+	"os"
+	"path"
+
 	log "github.com/Sirupsen/logrus"
 	_ "github.com/mattn/go-sqlite3" // register sqlite3 driver
 	"github.com/tbellembois/gobkm/types"
@@ -28,10 +31,19 @@ func NewDBstore(dataSourceName string) (*SQLiteDataStore, error) {
 
 	var (
 		db  *sql.DB
+		wd  string
 		err error
 	)
 
-	if db, err = sql.Open(dbdriver, dataSourceName); err != nil {
+	if wd, err = os.Getwd(); err != nil {
+		log.WithFields(log.Fields{}).Error("NewDBstore:error getting the current working directory")
+		return nil, err
+	}
+	log.WithFields(log.Fields{
+		"wd": wd,
+	}).Debug("NewDBstore")
+
+	if db, err = sql.Open(dbdriver, path.Join(wd, dataSourceName)); err != nil {
 		log.WithFields(log.Fields{
 			"dataSourceName": dataSourceName,
 		}).Error("NewDBstore:error opening the database")
@@ -55,7 +67,7 @@ func (db *SQLiteDataStore) CreateDatabase() {
 	log.Info("Creating database")
 	// Activate the foreign keys feature.
 	if _, db.err = db.Exec("PRAGMA foreign_keys = ON"); db.err != nil {
-		log.Error("CreateDatabase: error executing the PRAGMA request")
+		log.Error("CreateDatabase: error executing the PRAGMA request:" + db.err.Error())
 		return
 	}
 

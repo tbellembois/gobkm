@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	dbURL = "./bkm.db"
+	dbName = "bkm.db"
 )
 
 var (
@@ -60,7 +60,7 @@ func main() {
 	}).Debug("main:flags")
 
 	// Database initialization.
-	if datastore, err = models.NewDBstore(dbURL); err != nil {
+	if datastore, err = models.NewDBstore(dbName); err != nil {
 		log.Panic(err)
 	}
 	// Database creation.

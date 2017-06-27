@@ -188,6 +188,19 @@ The following method is just here for archive purposes.
 ```
 To avoid security exceptions just import your `rootCA.crt` into your browser.
 
+## systemd script (optional)
+
+If you want to start GoBkm at boot you can install the provided systemd `gobkm.service` script.
+
+```bash
+    # example for Arch Linux
+    cd /etc/systemd/system
+    wget https://raw.githubusercontent.com/tbellembois/gobkm/master/gobkm.service
+    vim gobkm.service
+    # change the ExecStart line and other parameters according to your configuration
+    systemctl enable gobkm.service
+```
+
 ## Thanks
 
 Thanks to [Sébastien Binet](https://github.com/sbinet) for the tutorial and help on Go.  

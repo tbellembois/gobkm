@@ -1,0 +1,12 @@
+[Unit]
+Description=GoBkm
+After=network.target
+
+[Service]
+ExecStart=/usr/local/gobkm/gobkm -proxy https://my-gobkm.foo.org 
+WorkingDirectory=/usr/local/gobkm 
+User=gobkm
+Group=gobkm
+
+[Install]
+WantedBy=multi-user.target

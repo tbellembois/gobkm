@@ -26,7 +26,7 @@ _testmain.go
 # Custom locations
 bindata.go
 bkm.db
-static/js/*.js*
+static/js/gjs-main.js*
 gobkm
 build
 bkm.db*
