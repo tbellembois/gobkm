@@ -78,7 +78,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// Getting the HTML template files content as a string.
-	if env.TplMainData, err = templateBox.String("main.html"); err != nil {
+	if env.TplMainData, err = templateBox.String("index.html"); err != nil {
 		log.Fatal(err)
 	}
 	if env.TplAddBookmarkData, err = templateBox.String("addBookmark.html"); err != nil {
@@ -87,6 +87,7 @@ func main() {
 
 	// Handlers initialization.
 	http.HandleFunc("/getChildrenFolders/", env.GetChildrenFoldersHandler)
+	http.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
 	http.HandleFunc("/getFolderBookmarks/", env.GetFolderBookmarksHandler)
 	http.HandleFunc("/moveFolder/", env.MoveFolderHandler)
 	http.HandleFunc("/moveBookmark/", env.MoveBookmarkHandler)

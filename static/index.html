@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="utf-8">
+    <title>GoBkm</title>
+    <meta name="description" content="A minimalist folder-based bookmark manager">
+    <meta name="author" content="Thomas Bellembois">
+
+    <!-- from https://realfavicongenerator.net/ -->
+    <link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/img/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/img/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest/manifest.json">
+    <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/img/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <script>
+        var GoBkmProxyURL = "{{.GoBkmProxyURL}}"
+    </script>
+
+    <!--
+  <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
+  -->
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+
+    <!-- Include jQuery -->
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Include Bootstrap -->
+    <script type="text/javascript" src="/js/bootstrap.min.js">
+    </script>
+
+    <!-- Include Fancytree skin and library -->
+    <link href="/css/ui.fancytree.min.css" rel="stylesheet">
+    <script src="/js/jquery.fancytree-all.min.js"></script>
+    <script src="/js/jquery.fancytree.edit.js"></script>
+    <script src="/js/jquery.fancytree.dnd.js"></script>
+
+    <!-- Initialize the tree when page is loaded -->
+    <script type="text/javascript">
+        $(function() {
+
+            // Hide the delete confirm button.
+            $("button#confirm-delete").hide();
+
+            // Create the tree inside the <div id="tree"> element.
+            $("#tree").fancytree({
+                extensions: ["edit", "dnd"],
+                filter: {
+                    counter: false,
+                    mode: "hide"
+                },
+                dnd: {
+                    dragStart: function(node, data) {
+                        return true;
+                    },
+                    dragEnter: function(node, data) {
+                        if (data.node.isFolder()) {
+                            return ["over"];
+                        }
+                        return false;
+                    },
+                    dragDrop: function(node, data) {
+                        fromNode = data.otherNode;
+                        toNode = data.node;
+
+                        if (fromNode.isFolder()) {
+                            ajaxUrl = "/moveFolder/"
+                        } else {
+                            ajaxUrl = "/moveBookmark/"
+                        }
+                        //console.log(data.otherNode.key);
+                        //console.log(data.node.key);
+                        $.ajax({
+                            url: ajaxUrl,
+                            data: {
+                                sourceItemId: fromNode.key,
+                                destinationItemId: toNode.key
+                            }
+
+                        }).done(function(result) {
+                            data.otherNode.moveTo(node, data.hitMode);
+                        }).fail(function(result) {}).always(function() {});
+                    }
+                },
+
+                edit: {
+                    triggerStart: ["f2", "shift+click"],
+                    save: function(event, data) {
+                        var node = data.node;
+
+                        if (node.isFolder()) {
+                            ajaxUrl = "/renameFolder/"
+                        } else {
+                            ajaxUrl = "/renameBookmark/"
+                        }
+                        // Save data.input.val() or return false to keep the editor open
+                        $.ajax({
+                            url: ajaxUrl,
+                            data: {
+                                itemId: node.key,
+                                itemName: data.input.val()
+                            }
+
+                        }).done(function(result) {
+                            // Server might return an error or a modified title
+                            node.setTitle(result.Title); // in case server modified it
+                            // Maybe also check for non-ajax errors, e.g. 'title invalid', ...
+
+                        }).fail(function(result) {
+                            // Ajax error: reset title (and maybe issue a warning)
+                            node.setTitle(data.orgTitle);
+
+                        }).always(function() {
+                            $(data.node.span).removeClass("pending");
+                        });
+                        // Optimistically assume that save will succeed. Accept the user input
+                        return true;
+                    },
+                    close: function(event, data) {
+                        // Editor was removed. If we started an async request, mark the node as pending
+                        if (data.save) {
+                            $(data.node.span).addClass("pending");
+                        }
+                    },
+                },
+                source: [{
+                    title: "/",
+                    key: "1",
+                    folder: true,
+                    lazy: true
+                }],
+                lazyLoad: function(event, data) {
+                    var node = data.node;
+                    // Issue an ajax request to load child nodes
+                    data.result = {
+                        url: "/getBranchNodes/",
+                        data: {
+                            key: node.key
+                        }
+                    }
+                },
+                icon: function(event, data) {
+                    return data.node.isFolder() ? true : data.node.icon;
+                },
+                tooltip: function(event, data) {
+                    return data.node.isFolder() ? "" : data.node.data.url;
+                },
+                click: function(event, data) {
+                    // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
+                    var node = data.node,
+                        orgEvent = data.originalEvent;
+
+                    if (node.isActive() && node.data.url) {
+                        window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+                    }
+                },
+
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+
+    <div id="container">
+
+<div id="starred-list">
+
+<div class="panel panel-default">
+  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+  
+  <div class="panel-body">
+    <ul id="starred">
+        {{with .Bkms}}
+
+        {{range .}}
+        <li>
+           <div id="bookmark-starred-{{.Id}}" class="bookmark">
+
+                <img src="{{.Favicon}}" alt="" class="favicon">
+                <span id="bookmark-starred-link-{{.Id}}" 
+                     class="bookmark-starred-link" 
+                     title="{{.URL}}" 
+                     onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
+                </span>
+
+            </div>
+           </li>
+        {{end}}
+
+        {{end}}
+    </ul>
+  </div>
+</div>
+
+</div>
+
+        <button type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>&nbsp;Bookmark</button>
+        <button type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
+        <button type="button" id="confirm-delete" class="btn btn-danger">...</button>
+
+        <div id="tree"></div>
+
+        <div class="input-group">
+            <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" aria-describedby="basic-addon2">
+
+            <span class="input-group-btn">
+                <button type="button" id="add-folder" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+            </span>
+
+        </div>
+
+        <div id="footer">
+
+            <div id="action-box">
+
+                <div id="import-input-box" style="display:none">
+
+                    <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="input-group">
+                                    <input type="file" name="importFile" accept=".html" id="import-file" class="form-control">
+                                    <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-download" aria-hidden="true" onclick="document.getElementById('import-file-form').submit();"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <div id="copyright">
+                <!--
+        <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
+        -->
+            </div>
+
+            <div id="bookmarklet" style="display: none;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">bookmarklets</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <div id="bookmarklet-app">
+                            <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
+                        </div>
+                        <div id="bookmarklet-add">
+                            <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm bookmark current page</a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="import-export">
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" title="export bookmarks" class="btn btn-default" id="export-box"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span></button>
+                    <button type="button" title="import bookmarks" class="btn btn-default" id="import-box"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></button>
+                    <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function toggleElement(id) {
+            var el = document.getElementById(id);
+            el.style.display = el.style.display == "none" ? "block" : "none";
+        }
+    </script>
+
+    <script>
+        $("button#bookmark").click(function() {
+            var tree = $("#tree").fancytree("getTree"),
+                activeNode = tree.getActiveNode();
+
+            if (!activeNode) {
+                return;
+            }
+            //console.log(activeNode.title);
+            //console.log(activeNode.isFolder());
+            if (activeNode.isFolder()) {
+                alert("You can not bookmark a folder");
+                return;
+            }
+            $.ajax({
+                url: "/starBookmark/",
+                data: {
+                    bookmarkId: activeNode.key,
+                    star: true
+                }
+            }).done(function(result) {
+            }).always(function() {
+            });
+        });
+        $("button#add-folder").click(function() {
+            var tree = $("#tree").fancytree("getTree"),
+                activeNode = tree.getActiveNode();
+
+            newFolderName = $("input#add-folder").val();
+            if (!activeNode) {
+                alert("Select the parent folder.");
+                return
+            } else if (activeNode.isFolder()) {
+                parentKey = activeNode.key
+            } else {
+                parentKey = activeNode.getParent().key;
+            }
+            //console.log(newFolderName);
+            //console.log(parentKey);
+            $.ajax({
+                url: "/addFolder/",
+                data: {
+                    folderName: newFolderName,
+                    parentId: parentKey
+                }
+            }).done(function(result) {
+                activeNode.load(forceReload=true).then(
+                    function() {
+                        if (! activeNode.isExpanded()) {
+                            activeNode.setExpanded(true);
+                        }
+                    }
+                );
+            }).always(function() {
+                $("input#add-folder").val("");
+            });
+        });
+        $("button#delete").click(function() {
+            var tree = $("#tree").fancytree("getTree"),
+                activeNode = tree.getActiveNode();
+
+            if (!activeNode) {
+                return;
+            }
+            //console.log(activeNode.title);
+            //console.log(activeNode.isFolder());
+            if (activeNode.isFolder()) {
+                confirmText = "Delete folder " + activeNode.title + "?";
+            } else {
+                confirmText = "Delete bookmark " + activeNode.title + "?";
+            }
+            $("button#confirm-delete").html(confirmText);
+            $("button#confirm-delete").fadeIn();
+            $("button#confirm-delete").delay(5000).fadeOut();
+        });
+        $("button#confirm-delete").click(function() {
+            var tree = $("#tree").fancytree("getTree"),
+                activeNode = tree.getActiveNode();
+
+            if (!activeNode) {
+                return;
+            }
+            if (activeNode.isFolder()) {
+                ajaxUrl = "/deleteFolder/"
+            } else {
+                ajaxUrl = "/deleteBookmark/"
+            }
+            // Save data.input.val() or return false to keep the editor open
+            $.ajax({
+                url: ajaxUrl,
+                data: {
+                    itemId: activeNode.key
+                }
+
+            }).done(function(result) {
+                activeNode.remove();
+            }).always(function() {
+                $("button#confirm-delete").hide();
+            });
+
+        });
+    </script>
+</body>
+
+</html>

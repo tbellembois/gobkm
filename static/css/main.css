@@ -191,3 +191,11 @@ div#add-bookmark div.input {
 div#add-bookmark div#submit {
     margin-right: 10px;
 }
+
+/* Editing pending */
+span.pending span.fancytree-title {
+  font-style: italic;
+}
+span.pending span.fancytree-title:after {
+  content: "\2026"; /* ellipsis */
+}

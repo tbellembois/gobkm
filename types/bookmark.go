@@ -23,6 +23,16 @@ type Bookmark struct {
 	Folder  *Folder
 }
 
+// Node
+type Node struct {
+	Key    int    `json:"key"`
+	Title  string `json:"title"`
+	URL    string `json:"url"`
+	Folder bool   `json:"folder"`
+	Lazy   bool   `json:"lazy"`
+	Icon   string `json:"icon"`
+}
+
 // Bookmarks implements the sort interface
 type Bookmarks []*Bookmark
 
