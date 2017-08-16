@@ -7,6 +7,12 @@
 	     url('../fonts/ArchivoNarrow-Regular.svg#webfont') format('svg');
 }
 
+/* Remove some Fancytree styles */
+ul.fancytree-container {
+    border: none;
+    outline:none !important;
+}
+
 body {
     font-family: "MyWebFont", sans-serif;
     font-size: 1.5em;
@@ -16,93 +22,8 @@ body.wait, body.wait *{
      cursor: wait !important;   
 }
 
-li {
-    list-style-type: none;
-}
-
-ul {
-    padding-left: 15px;
-}
-
-ul#root {
-    padding: 0px;
-    margin: 5px 0px 0px 2px;
-}
-
-ul#root ul {
-    border-left: 1px dotted grey;
-}
-
-div.folder {
-    cursor: pointer;
-    height: 20px;
-    float: left;
-    clear: left;
-    overflow: hidden;
-}
-div.folder-over {
-    background-color: #EFEFEF;
-    border: 1px solid grey;
-    padding: 8px;
-}
-span.folder-title {
-}
-div.rename-over {
-    color: green;
-}
-
 div#action-box {
     float: left;
-}
-
-div.bookmark {
-    float: left;
-    clear: left;
-    min-height: 1.2em;
-    line-height: 1.2em;
-    position: relative;
-    white-space: nowrap;
-}
-
-div.fa-star, div.fa-star-o {
-    width: 15px;
-    float: left;
-}
-div.fa-star {
-    color: lightgreen;
-}
-
-div.bookmark > div {
-    float: left;
-    min-height: 22px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-div.bookmark > span.bookmark-link, div.bookmark > span.bookmark-starred-link {
-    color: blue;
-    margin-left: 4px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-div.bookmark > div.bookmark-link-edited {
-}
-
-div.bookmark:HOVER, div.folder:HOVER {
-    background-color: #ffffff;
-}
-
-img#logo {
-    height: 40px;
-}
-
-div#rename-box, div#delete-box { 
-    padding-top: 15px;
-    width: 25px;
-    height: 25px;
-}
-div#delete-box {
-    font-size: 2em;
 }
 
 div#footer {
@@ -157,12 +78,6 @@ div#starred-list {
     width: 100%;
 }
 
-div#folder-list {
-    margin-bottom: 100px;
-    float: left;
-    width: 100%;
-}
-
 div#bookmarklet {
     float: left;
 }
@@ -171,25 +86,9 @@ img.favicon {
     float: left;
 }
 
-.dragged-item {
-    opacity: 0.4;
-    font-style: italic;
-}
-
-div#add-bookmark div {
-    float: left;
-}
-div#add-bookmark div#title-label,
-div#add-bookmark div#url-label {
-    margin-right: 5px;
-    font-weight: bold;
-}
-div#add-bookmark div.input {
-    width: 100%;
-    padding: 5px;
-}
-div#add-bookmark div#submit {
-    margin-right: 10px;
+/* Fancytree */
+div#tree {
+    margin-top: 20px;
 }
 
 /* Editing pending */
@@ -198,4 +97,16 @@ span.pending span.fancytree-title {
 }
 span.pending span.fancytree-title:after {
   content: "\2026"; /* ellipsis */
+}
+
+/* Drop zone */
+div#drop-zone {
+    position: fixed;
+    z-index: 2;
+    width: 100px;
+    height: 100px;
+    line-height: 52px;
+    text-align: center;
+    top: 2px;
+    right: 2px;
 }

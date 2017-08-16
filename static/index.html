@@ -24,9 +24,9 @@
 
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
     <link href="/css/ui.fancytree.min.css" type="text/css" rel="stylesheet">
     <link href="/css/jquery-ui.min.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
 
     <!-- Include jQuery -->
     <script src="/js/jquery.min.js"></script>
@@ -208,11 +208,8 @@
         <button type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
         <button type="button" id="confirm-delete" class="btn btn-danger" style="display: none;">...</button>
 
-        <div id=drop-zone ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" class="panel panel-default">
-            <div class="panel-body">
-                Select a destination folder and
-                drop a new bookmark here.
-            </div>
+        <div id=drop-zone ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" class="well well-lg" title="Select a destination folder and drop a new bookmark here.">
+            <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
         </div>
 
         <div id="tree"></div>
@@ -220,7 +217,7 @@
         <div id="footer">
 
             <div class="input-group">
-                <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" aria-describedby="basic-addon2">
+                <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" title="Select the parent folder first." aria-describedby="basic-addon2">
 
                 <span class="input-group-btn">
                     <button type="button" id="add-folder" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
