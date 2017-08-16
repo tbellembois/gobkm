@@ -22,9 +22,6 @@
         var GoBkmProxyURL = "{{.GoBkmProxyURL}}"
     </script>
 
-    <!--
-  <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
-  -->
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
@@ -46,9 +43,6 @@
     <!-- Initialize the tree when page is loaded -->
     <script type="text/javascript">
         $(function() {
-
-            // Hide the delete confirm button.
-            $("button#confirm-delete").hide();
 
             // Create the tree inside the <div id="tree"> element.
             $("#tree").fancytree({
@@ -76,8 +70,6 @@
                         } else {
                             ajaxUrl = "/moveBookmark/"
                         }
-                        //console.log(data.otherNode.key);
-                        //console.log(data.node.key);
                         $.ajax({
                             url: ajaxUrl,
                             data: {
@@ -134,6 +126,7 @@
                 source: [{
                     title: "/",
                     key: "1",
+                    active: true,
                     folder: true,
                     lazy: true
                 }],
@@ -154,6 +147,9 @@
                     return data.node.isFolder() ? "" : data.node.data.url;
                 },
                 click: function(event, data) {
+
+                    $("button#confirm-delete").fadeOut();
+                    
                     if( data.node.isFolder() ) {
                         $("button#bookmark").prop("disabled", true);    
                     } else {
@@ -210,7 +206,14 @@
 
         <button type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>&nbsp;Bookmark</button>
         <button type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
-        <button type="button" id="confirm-delete" class="btn btn-danger">...</button>
+        <button type="button" id="confirm-delete" class="btn btn-danger" style="display: none;">...</button>
+
+        <div id=drop-zone ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" class="panel panel-default">
+            <div class="panel-body">
+                Select a destination folder and
+                drop a new bookmark here.
+            </div>
+        </div>
 
         <div id="tree"></div>
 
@@ -286,6 +289,43 @@
     </div>
 
     <script>
+        function dzAllowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function dzDrop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            //console.log(data);
+            
+            activeNode = $("#tree").fancytree("getActiveNode");
+            if (! activeNode) {
+                activeNodeKey = 1;
+            } else {
+                activeNodeKey = activeNode.key;
+            }
+
+            $.ajax({
+                url: "/addBookmark/",
+                data: {
+                    destinationFolderId: activeNodeKey,
+                    bookmarkUrl: data
+                }
+            }).done(function(result) {
+                activeNode.load(forceReload=true).then(
+                    function() {
+                        if (! activeNode.isExpanded()) {
+                            activeNode.setExpanded(true);
+                        }
+                    }
+                );
+            }).always(function() {
+            });
+
+        }
+    </script>
+
+    <script>
         function unStar(id) {
             $.ajax({
                 url: "/starBookmark/",
@@ -308,6 +348,12 @@
     </script>
 
     <script>
+        $("button#export-box").click(function() {
+             window.open('/export/?target=_blank');
+        });
+        $("button#import-box").click(function() {
+            $("div#import-input-box").toggle(); 
+        });
         $("button#bookmark").click(function() {
             var tree = $("#tree").fancytree("getTree"),
                 activeNode = tree.getActiveNode();
@@ -324,15 +370,25 @@
                     star: true
                 }
             }).done(function(result) {
-                id = result.Id
-                favicon = result.Favicon
-                url = result.URL
-                title = result.Title
-                newBookmark = $("<img src='" + favicon + "' alt='' class='favicon'>")
-                    .append("<span class='bookmark-starred-link' title='" + url + "' onclick='window.open(\"" + url + "\", \"_blank\");'>" + title + "</span>")
-                    .appendTo("<div class='bookmark'>")
-                    .appendTo("<li id='bookmark-starred-' + id>")
-
+                newID = result.Id
+                newFavicon = result.Favicon
+                newURL = result.URL
+                newTitle = result.Title
+                newBookmark = " \
+                    <li id='bookmark-starred-ID'> \
+                        <div class='bookmark'> \
+                            <img src=\"SRC\" alt='' class='favicon'> \
+                            <span class='bookmark-starred-link' title=\"URL\" onclick='window.open(\"URL\", \"_blank\");'>TITLE</span> \
+                            <a href='#' onclick=\"unStar('ID');\" class='glyphicon glyphicon-remove' aria-hidden='true' title='Remove bookmark.'></a> \
+                        </div> \
+                    </li> \
+                "
+                newBookmark = newBookmark.replace("ID", newID);
+                newBookmark = newBookmark.replace("ID", newID);
+                newBookmark = newBookmark.replace("SRC", newFavicon);
+                newBookmark = newBookmark.replace("URL", newURL);
+                newBookmark = newBookmark.replace("URL", newURL);
+                newBookmark = newBookmark.replace("TITLE", newTitle);
                 $("ul#starred").append(newBookmark);
             }).always(function() {
             });
@@ -386,7 +442,6 @@
             }
             $("button#confirm-delete").html(confirmText);
             $("button#confirm-delete").fadeIn();
-            $("button#confirm-delete").delay(5000).fadeOut();
         });
         $("button#confirm-delete").click(function() {
             var tree = $("#tree").fancytree("getTree"),
@@ -410,7 +465,7 @@
             }).done(function(result) {
                 activeNode.remove();
             }).always(function() {
-                $("button#confirm-delete").hide();
+                $("button#confirm-delete").fadeOut();
             });
 
         });
