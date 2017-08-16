@@ -28,16 +28,17 @@
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link href="/css/ui.fancytree.min.css" type="text/css" rel="stylesheet">
+    <link href="/css/jquery-ui.min.css" type="text/css" rel="stylesheet">
 
     <!-- Include jQuery -->
-    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery-ui.min.js"></script>
     <!-- Include Bootstrap -->
     <script type="text/javascript" src="/js/bootstrap.min.js">
     </script>
 
     <!-- Include Fancytree skin and library -->
-    <link href="/css/ui.fancytree.min.css" rel="stylesheet">
     <script src="/js/jquery.fancytree-all.min.js"></script>
     <script src="/js/jquery.fancytree.edit.js"></script>
     <script src="/js/jquery.fancytree.dnd.js"></script>
@@ -153,6 +154,12 @@
                     return data.node.isFolder() ? "" : data.node.data.url;
                 },
                 click: function(event, data) {
+                    if( data.node.isFolder() ) {
+                        $("button#bookmark").prop("disabled", true);    
+                    } else {
+                        $("button#bookmark").prop("disabled", false);    
+                    }
+
                     // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
                     var node = data.node,
                         orgEvent = data.originalEvent;
@@ -170,38 +177,36 @@
 
 <body>
 
-    <div id="container">
+<div id="container">
 
-<div id="starred-list">
+    <div id="starred-list">
 
-<div class="panel panel-default">
-  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-  
-  <div class="panel-body">
-    <ul id="starred">
-        {{with .Bkms}}
+    <div class="panel panel-default">
+      <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+      
+      <div class="panel-body">
+        <ul id="starred">
+            {{with .Bkms}}
 
-        {{range .}}
-        <li>
-           <div id="bookmark-starred-{{.Id}}" class="bookmark">
+            {{range .}}
+            <li id="bookmark-starred-{{.Id}}">
+               <div class="bookmark">
+                    <img src="{{.Favicon}}" alt="" class="favicon">
+                    <span class="bookmark-starred-link" 
+                          title="{{.URL}}" 
+                          onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
+                    </span>
+                    <a href="#" onclick="unStar('{{.Id}}');" class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove bookmark."></a>
+                </div>
+            </li>
+            {{end}}
 
-                <img src="{{.Favicon}}" alt="" class="favicon">
-                <span id="bookmark-starred-link-{{.Id}}" 
-                     class="bookmark-starred-link" 
-                     title="{{.URL}}" 
-                     onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
-                </span>
+            {{end}}
+        </ul>
+      </div>
+    </div>
 
-            </div>
-           </li>
-        {{end}}
-
-        {{end}}
-    </ul>
-  </div>
-</div>
-
-</div>
+    </div>
 
         <button type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>&nbsp;Bookmark</button>
         <button type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
@@ -209,16 +214,16 @@
 
         <div id="tree"></div>
 
-        <div class="input-group">
-            <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" aria-describedby="basic-addon2">
-
-            <span class="input-group-btn">
-                <button type="button" id="add-folder" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-            </span>
-
-        </div>
-
         <div id="footer">
+
+            <div class="input-group">
+                <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" aria-describedby="basic-addon2">
+
+                <span class="input-group-btn">
+                    <button type="button" id="add-folder" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                </span>
+
+            </div>
 
             <div id="action-box">
 
@@ -281,6 +286,21 @@
     </div>
 
     <script>
+        function unStar(id) {
+            $.ajax({
+                url: "/starBookmark/",
+                data: {
+                    bookmarkId: id,
+                    star: false
+                }
+            }).done(function(result) {
+                $("li#bookmark-starred-" + id).remove();
+            }).always(function() {
+            });
+        }
+    </script>
+
+    <script>
         function toggleElement(id) {
             var el = document.getElementById(id);
             el.style.display = el.style.display == "none" ? "block" : "none";
@@ -297,10 +317,6 @@
             }
             //console.log(activeNode.title);
             //console.log(activeNode.isFolder());
-            if (activeNode.isFolder()) {
-                alert("You can not bookmark a folder");
-                return;
-            }
             $.ajax({
                 url: "/starBookmark/",
                 data: {
@@ -308,6 +324,16 @@
                     star: true
                 }
             }).done(function(result) {
+                id = result.Id
+                favicon = result.Favicon
+                url = result.URL
+                title = result.Title
+                newBookmark = $("<img src='" + favicon + "' alt='' class='favicon'>")
+                    .append("<span class='bookmark-starred-link' title='" + url + "' onclick='window.open(\"" + url + "\", \"_blank\");'>" + title + "</span>")
+                    .appendTo("<div class='bookmark'>")
+                    .appendTo("<li id='bookmark-starred-' + id>")
+
+                $("ul#starred").append(newBookmark);
             }).always(function() {
             });
         });
