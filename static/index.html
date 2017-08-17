@@ -18,15 +18,17 @@
     <meta name="msapplication-TileImage" content="/img/mstile-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
-    <script>
-        var GoBkmProxyURL = "{{.GoBkmProxyURL}}"
-    </script>
-
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
     <link href="/css/ui.fancytree.min.css" type="text/css" rel="stylesheet">
     <link href="/css/jquery-ui.min.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
+
+    <!-- Some variables passed by the handler -->
+    <script>
+        var GoBkmProxyURL = "{{.GoBkmProxyURL}}"
+        var GoBkmProxyHost = "{{.GoBkmProxyHost}}"
+    </script>
 
     <!-- Include jQuery -->
     <script src="/js/jquery.min.js"></script>
@@ -34,140 +36,10 @@
     <!-- Include Bootstrap -->
     <script type="text/javascript" src="/js/bootstrap.min.js">
     </script>
-
     <!-- Include Fancytree skin and library -->
     <script src="/js/jquery.fancytree-all.min.js"></script>
     <script src="/js/jquery.fancytree.edit.js"></script>
     <script src="/js/jquery.fancytree.dnd.js"></script>
-
-    <!-- Initialize the tree when page is loaded -->
-    <script type="text/javascript">
-        $(function() {
-
-            // Create the tree inside the <div id="tree"> element.
-            $("#tree").fancytree({
-                extensions: ["edit", "dnd"],
-                filter: {
-                    counter: false,
-                    mode: "hide"
-                },
-                dnd: {
-                    dragStart: function(node, data) {
-                        return true;
-                    },
-                    dragEnter: function(node, data) {
-                        if (data.node.isFolder()) {
-                            return ["over"];
-                        }
-                        return false;
-                    },
-                    dragDrop: function(node, data) {
-                        fromNode = data.otherNode;
-                        toNode = data.node;
-
-                        if (fromNode.isFolder()) {
-                            ajaxUrl = "/moveFolder/"
-                        } else {
-                            ajaxUrl = "/moveBookmark/"
-                        }
-                        $.ajax({
-                            url: ajaxUrl,
-                            data: {
-                                sourceItemId: fromNode.key,
-                                destinationItemId: toNode.key
-                            }
-
-                        }).done(function(result) {
-                            data.otherNode.moveTo(node, data.hitMode);
-                        }).fail(function(result) {}).always(function() {});
-                    }
-                },
-
-                edit: {
-                    triggerStart: ["f2", "shift+click"],
-                    save: function(event, data) {
-                        var node = data.node;
-
-                        if (node.isFolder()) {
-                            ajaxUrl = "/renameFolder/"
-                        } else {
-                            ajaxUrl = "/renameBookmark/"
-                        }
-                        // Save data.input.val() or return false to keep the editor open
-                        $.ajax({
-                            url: ajaxUrl,
-                            data: {
-                                itemId: node.key,
-                                itemName: data.input.val()
-                            }
-
-                        }).done(function(result) {
-                            // Server might return an error or a modified title
-                            node.setTitle(result.Title); // in case server modified it
-                            // Maybe also check for non-ajax errors, e.g. 'title invalid', ...
-
-                        }).fail(function(result) {
-                            // Ajax error: reset title (and maybe issue a warning)
-                            node.setTitle(data.orgTitle);
-
-                        }).always(function() {
-                            $(data.node.span).removeClass("pending");
-                        });
-                        // Optimistically assume that save will succeed. Accept the user input
-                        return true;
-                    },
-                    close: function(event, data) {
-                        // Editor was removed. If we started an async request, mark the node as pending
-                        if (data.save) {
-                            $(data.node.span).addClass("pending");
-                        }
-                    },
-                },
-                source: [{
-                    title: "/",
-                    key: "1",
-                    active: true,
-                    folder: true,
-                    lazy: true
-                }],
-                lazyLoad: function(event, data) {
-                    var node = data.node;
-                    // Issue an ajax request to load child nodes
-                    data.result = {
-                        url: "/getBranchNodes/",
-                        data: {
-                            key: node.key
-                        }
-                    }
-                },
-                icon: function(event, data) {
-                    return data.node.isFolder() ? true : data.node.icon;
-                },
-                tooltip: function(event, data) {
-                    return data.node.isFolder() ? "" : data.node.data.url;
-                },
-                click: function(event, data) {
-
-                    $("button#confirm-delete").fadeOut();
-                    
-                    if( data.node.isFolder() ) {
-                        $("button#bookmark").prop("disabled", true);    
-                    } else {
-                        $("button#bookmark").prop("disabled", false);    
-                    }
-
-                    // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
-                    var node = data.node,
-                        orgEvent = data.originalEvent;
-
-                    if (node.isActive() && node.data.url) {
-                        window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
-                    }
-                },
-
-            });
-        });
-    </script>
 
 </head>
 
@@ -175,298 +47,526 @@
 
 <div id="container">
 
+    <!--
+    Starred bookmarks
+    -->
     <div id="starred-list">
+        <div class="panel panel-default">
 
-    <div class="panel panel-default">
-      <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-      
-      <div class="panel-body">
-        <ul id="starred">
-            {{with .Bkms}}
+            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
 
-            {{range .}}
-            <li id="bookmark-starred-{{.Id}}">
-               <div class="bookmark">
-                    <img src="{{.Favicon}}" alt="" class="favicon">
-                    <span class="bookmark-starred-link" 
-                          title="{{.URL}}" 
-                          onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
-                    </span>
-                    <a href="#" onclick="unStar('{{.Id}}');" class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove bookmark."></a>
-                </div>
-            </li>
-            {{end}}
+            <div class="panel-body">
+                <ul id="starred">
+                {{with .Bkms}}
+                {{range .}}
+                    <li id="bookmark-starred-{{.Id}}">
+                       <div class="bookmark">
+                            <img src="{{.Favicon}}" alt="" class="favicon">
+                            <span class="bookmark-starred-link" 
+                                  title="{{.URL}}" 
+                                  onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
+                            </span>
+                            <a href="#" onclick="unStar('{{.Id}}');" class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove star."></a>
+                        </div>
+                    </li>
+                {{end}}
 
-            {{end}}
-        </ul>
-      </div>
+                {{end}}
+            </ul>
+          </div>
+
+        </div>
     </div>
 
-    </div>
-
-        <button type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>&nbsp;Bookmark</button>
-        <button type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
-        <button type="button" id="confirm-delete" class="btn btn-danger" style="display: none;">...</button>
-
-        <div id=drop-zone ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" class="well well-lg" title="Select a destination folder and drop a new bookmark here.">
-            <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
+    <!-- Search form -->
+    <div id="search-box">
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+    </span>
+          <input type="text" id="search-form-input" class="form-control" placeholder="Search a bookmark title..." aria-describedby="basic-addon1">
         </div>
 
-        <div id="tree"></div>
+        <div id="search-result">
+        </div>
+    </div>
 
-        <div id="footer">
+    <!-- Star and delete buttons -->
+    <button title="Star the selected bookmark." type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>&nbsp;Star</button>
+    <button title="Delete the selected forder or bookmark." type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
+    <button type="button" id="confirm-delete" class="btn btn-danger" style="display: none;">...</button>
 
-            <div class="input-group">
-                <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" title="Select the parent folder first." aria-describedby="basic-addon2">
+    <!-- Drop zone for new bookmarks -->
+    <div id=drop-zone ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" class="well well-lg" title="Select a destination folder and drop a new bookmark here.">
+        <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
+    </div>
 
-                <span class="input-group-btn">
-                    <button type="button" id="add-folder" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-                </span>
+    <!-- Main tree -->
+    <div id="tree"></div>
 
-            </div>
+    <!-- Footer -->
+    <div id="footer">
 
-            <div id="action-box">
+        <!-- Add folder input -->
+        <div class="input-group">
+            <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" title="Select the parent folder first." aria-describedby="basic-addon2">
+            <span class="input-group-btn">
+                <button type="button" id="add-folder" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+            </span>
+        </div>
 
-                <div id="import-input-box" style="display:none">
-
-                    <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="input-group">
-                                    <input type="file" name="importFile" accept=".html" id="import-file" class="form-control">
-                                    <span class="input-group-btn">
-                    <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-download" aria-hidden="true" onclick="document.getElementById('import-file-form').submit();"></span></button>
-                                    </span>
-                                </div>
+        <!-- Import form -->
+        <div id="action-box">
+            <div id="import-input-box" style="display:none">
+                <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <input type="file" name="importFile" accept=".html" id="import-file" class="form-control">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-download" aria-hidden="true" onclick="document.getElementById('import-file-form').submit();"></span></button>
+                                </span>
                             </div>
                         </div>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-
-            <div id="copyright">
-                <!--
-        <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
-        -->
-            </div>
-
-            <div id="bookmarklet" style="display: none;">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">bookmarklets</h3>
                     </div>
-                    <div class="panel-body">
+                </form>
+            </div>
+        </div>
 
-                        <div id="bookmarklet-app">
-                            <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
-                        </div>
-                        <div id="bookmarklet-add">
-                            <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm bookmark current page</a>
-                        </div>
+        <!-- Copyright -->
+        <div id="copyright">
+            <!--
+    <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
+    -->
+        </div>
 
+        <!-- Bookmarklets -->
+        <div id="bookmarklet" style="display: none;">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">bookmarklets</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="bookmarklet-app">
+                        <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
+                    </div>
+                    <div id="bookmarklet-add">
+                        <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm bookmark current page</a>
                     </div>
                 </div>
-
             </div>
+        </div>
 
-            <div id="import-export">
-                <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" title="export bookmarks" class="btn btn-default" id="export-box"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span></button>
-                    <button type="button" title="import bookmarks" class="btn btn-default" id="import-box"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></button>
-                    <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
-                </div>
+        <!-- Import and export buttons -->
+        <div id="import-export">
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" title="export bookmarks" class="btn btn-default" id="export-box"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span></button>
+                <button type="button" title="import bookmarks" class="btn btn-default" id="import-box"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></button>
+                <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
             </div>
-
         </div>
 
     </div>
 
-    <script>
-        function dzAllowDrop(ev) {
-            ev.preventDefault();
-        }
+</div>
 
-        function dzDrop(ev) {
-            ev.preventDefault();
-            var data = ev.dataTransfer.getData("text");
-            //console.log(data);
-            
-            activeNode = $("#tree").fancytree("getActiveNode");
-            if (! activeNode) {
-                activeNodeKey = 1;
-            } else {
-                activeNodeKey = activeNode.key;
-            }
+<!-- Initialize the tree when page is loaded -->
+<script type="text/javascript">
+    $(function() {
 
-            $.ajax({
-                url: "/addBookmark/",
-                data: {
-                    destinationFolderId: activeNodeKey,
-                    bookmarkUrl: data
-                }
-            }).done(function(result) {
-                activeNode.load(forceReload=true).then(
-                    function() {
-                        if (! activeNode.isExpanded()) {
-                            activeNode.setExpanded(true);
-                        }
+        // Create the tree inside the <div id="tree"> element.
+        $("#tree").fancytree({
+            extensions: ["edit", "dnd"],
+            filter: {
+                counter: false,
+                mode: "hide"
+            },
+            dnd: {
+                dragStart: function(node, data) {
+                    return true;
+                },
+                dragEnter: function(node, data) {
+                    if (data.node.isFolder()) {
+                        return ["over"];
                     }
-                );
-            }).always(function() {
-            });
+                    return false;
+                },
+                dragDrop: function(node, data) {
+                    fromNode = data.otherNode;
+                    toNode = data.node;
 
-        }
-    </script>
-
-    <script>
-        function unStar(id) {
-            $.ajax({
-                url: "/starBookmark/",
-                data: {
-                    bookmarkId: id,
-                    star: false
-                }
-            }).done(function(result) {
-                $("li#bookmark-starred-" + id).remove();
-            }).always(function() {
-            });
-        }
-    </script>
-
-    <script>
-        function toggleElement(id) {
-            var el = document.getElementById(id);
-            el.style.display = el.style.display == "none" ? "block" : "none";
-        }
-    </script>
-
-    <script>
-        $("button#export-box").click(function() {
-             window.open('/export/?target=_blank');
-        });
-        $("button#import-box").click(function() {
-            $("div#import-input-box").toggle(); 
-        });
-        $("button#bookmark").click(function() {
-            var tree = $("#tree").fancytree("getTree"),
-                activeNode = tree.getActiveNode();
-
-            if (!activeNode) {
-                return;
-            }
-            //console.log(activeNode.title);
-            //console.log(activeNode.isFolder());
-            $.ajax({
-                url: "/starBookmark/",
-                data: {
-                    bookmarkId: activeNode.key,
-                    star: true
-                }
-            }).done(function(result) {
-                newID = result.Id
-                newFavicon = result.Favicon
-                newURL = result.URL
-                newTitle = result.Title
-                newBookmark = " \
-                    <li id='bookmark-starred-ID'> \
-                        <div class='bookmark'> \
-                            <img src=\"SRC\" alt='' class='favicon'> \
-                            <span class='bookmark-starred-link' title=\"URL\" onclick='window.open(\"URL\", \"_blank\");'>TITLE</span> \
-                            <a href='#' onclick=\"unStar('ID');\" class='glyphicon glyphicon-remove' aria-hidden='true' title='Remove bookmark.'></a> \
-                        </div> \
-                    </li> \
-                "
-                newBookmark = newBookmark.replace("ID", newID);
-                newBookmark = newBookmark.replace("ID", newID);
-                newBookmark = newBookmark.replace("SRC", newFavicon);
-                newBookmark = newBookmark.replace("URL", newURL);
-                newBookmark = newBookmark.replace("URL", newURL);
-                newBookmark = newBookmark.replace("TITLE", newTitle);
-                $("ul#starred").append(newBookmark);
-            }).always(function() {
-            });
-        });
-        $("button#add-folder").click(function() {
-            var tree = $("#tree").fancytree("getTree"),
-                activeNode = tree.getActiveNode();
-
-            newFolderName = $("input#add-folder").val();
-            if (!activeNode) {
-                alert("Select the parent folder.");
-                return
-            } else if (activeNode.isFolder()) {
-                parentKey = activeNode.key
-            } else {
-                parentKey = activeNode.getParent().key;
-            }
-            //console.log(newFolderName);
-            //console.log(parentKey);
-            $.ajax({
-                url: "/addFolder/",
-                data: {
-                    folderName: newFolderName,
-                    parentId: parentKey
-                }
-            }).done(function(result) {
-                activeNode.load(forceReload=true).then(
-                    function() {
-                        if (! activeNode.isExpanded()) {
-                            activeNode.setExpanded(true);
-                        }
+                    if (fromNode.isFolder()) {
+                        ajaxUrl = "/moveFolder/"
+                    } else {
+                        ajaxUrl = "/moveBookmark/"
                     }
-                );
-            }).always(function() {
-                $("input#add-folder").val("");
-            });
-        });
-        $("button#delete").click(function() {
-            var tree = $("#tree").fancytree("getTree"),
-                activeNode = tree.getActiveNode();
+                    $.ajax({
+                        url: ajaxUrl,
+                        data: {
+                            sourceItemId: fromNode.key,
+                            destinationItemId: toNode.key
+                        }
 
-            if (!activeNode) {
-                return;
-            }
-            //console.log(activeNode.title);
-            //console.log(activeNode.isFolder());
-            if (activeNode.isFolder()) {
-                confirmText = "Delete folder " + activeNode.title + "?";
-            } else {
-                confirmText = "Delete bookmark " + activeNode.title + "?";
-            }
-            $("button#confirm-delete").html(confirmText);
-            $("button#confirm-delete").fadeIn();
-        });
-        $("button#confirm-delete").click(function() {
-            var tree = $("#tree").fancytree("getTree"),
-                activeNode = tree.getActiveNode();
-
-            if (!activeNode) {
-                return;
-            }
-            if (activeNode.isFolder()) {
-                ajaxUrl = "/deleteFolder/"
-            } else {
-                ajaxUrl = "/deleteBookmark/"
-            }
-            // Save data.input.val() or return false to keep the editor open
-            $.ajax({
-                url: ajaxUrl,
-                data: {
-                    itemId: activeNode.key
+                    }).done(function(result) {
+                        data.otherNode.moveTo(node, data.hitMode);
+                    }).fail(function(result) {}).always(function() {});
                 }
+            },
 
-            }).done(function(result) {
-                activeNode.remove();
-            }).always(function() {
+            edit: {
+                triggerStart: ["f2", "shift+click"],
+                save: function(event, data) {
+                    var node = data.node;
+
+                    if (node.isFolder()) {
+                        ajaxUrl = "/renameFolder/"
+                    } else {
+                        ajaxUrl = "/renameBookmark/"
+                    }
+                    $.ajax({
+                        url: ajaxUrl,
+                        data: {
+                            itemId: node.key,
+                            itemName: data.input.val()
+                        }
+
+                    }).done(function(result) {
+                        node.setTitle(result.Title); // in case server modified it
+                    }).fail(function(result) {
+                        node.setTitle(data.orgTitle);
+                    }).always(function() {
+                        $(data.node.span).removeClass("pending");
+                    });
+                    return true;
+                },
+                close: function(event, data) {
+                    // Editor was removed. If we started an async request, mark the node as pending
+                    if (data.save) {
+                        $(data.node.span).addClass("pending");
+                    }
+                },
+            },
+            source: [{
+                title: "/",
+                key: "1",
+                active: true,
+                folder: true,
+                lazy: true
+            }],
+            lazyLoad: function(event, data) {
+                var node = data.node;
+                data.result = {
+                    url: "/getBranchNodes/",
+                    data: {
+                        key: node.key
+                    }
+                }
+            },
+            icon: function(event, data) {
+                return data.node.isFolder() ? true : data.node.icon;
+            },
+            tooltip: function(event, data) {
+                return data.node.isFolder() ? "" : data.node.data.url;
+            },
+            click: function(event, data) {
+
+                $("div#search-result").html("");
+                $("input#search-form-input").val("");
+
                 $("button#confirm-delete").fadeOut();
-            });
+                
+                if( data.node.isFolder() ) {
+                    if (data.node.key == 1) {
+                        $("button#delete").prop("disabled", true);    
+                    } else {
+                        $("button#delete").prop("disabled", false);    
+                    }
+                    $("button#bookmark").prop("disabled", true);    
+                } else {
+                    $("button#bookmark").prop("disabled", false);    
+                    $("button#delete").prop("disabled", false);    
+                }
+
+                // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
+                var node = data.node,
+                    orgEvent = data.originalEvent;
+
+                if (node.isActive() && node.data.url) {
+                    window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+                }
+            },
 
         });
-    </script>
+    });
+</script>
+
+<script type="text/javascript">
+    $(function() {
+        var ws= new WebSocket("ws://{{.GoBkmProxyHost}}/socket/");
+
+        ws.onmessage = function(evt) {
+            //console.log( "Received Message: " + evt.data);
+            newBookmark = createBookmarkLi(evt.ID, evt.Title, evt.URL, "")
+
+            tree = $("#tree").fancytree("getTree");
+            activeNode = tree.getNodeByKey("1");
+            activeNodeKey = activeNode.key;
+
+            activeNode.load(forceReload=true).then(
+                function() {
+                    if (! activeNode.isExpanded()) {
+                        activeNode.setExpanded(true);
+                    }
+                }
+            );
+        };
+    });
+</script>
+
+<script>
+    function dzAllowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function dzDrop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        //console.log(data);
+        
+        tree = $("#tree").fancytree("getTree");
+        activeNode = tree.getActiveNode();
+        if (! activeNode) {
+            activeNode = tree.getNodeByKey("1");
+            activeNode = $("#tree").fancytree("getRootNode");
+        } 
+        if (!activeNode.isFolder()) {
+            activeNode = activeNode.getParent();
+        }
+        activeNodeKey = activeNode.key;
+
+        $.ajax({
+            url: "/addBookmark/",
+            data: {
+                destinationFolderId: activeNodeKey,
+                bookmarkUrl: data
+            }
+        }).done(function(result) {
+            activeNode.load(forceReload=true).then(
+                function() {
+                    if (! activeNode.isExpanded()) {
+                        activeNode.setExpanded(true);
+                    }
+                }
+            );
+        }).always(function() {
+        });
+
+    }
+</script>
+
+<script>
+    function unStar(id) {
+        $.ajax({
+            url: "/starBookmark/",
+            data: {
+                bookmarkId: id,
+                star: false
+            }
+        }).done(function(result) {
+            $("li#bookmark-starred-" + id).remove();
+        }).always(function() {
+        });
+    }
+</script>
+
+<script>
+    function toggleElement(id) {
+        var el = document.getElementById(id);
+        el.style.display = el.style.display == "none" ? "block" : "none";
+    }
+</script>
+
+<script>
+    function createStarredBookmarkLi(bID, bTitle, bURL, bFavicon) {
+        newBookmark = " \
+            <li id='bookmark-starred-ID'> \
+                <div class='bookmark'> \
+                    <img src=\"SRC\" alt='' class='favicon'> \
+                    <span class='bookmark-starred-link' title=\"URL\" onclick='window.open(\"URL\", \"_blank\");'>TITLE</span> \
+                    <a href='#' onclick=\"unStar('ID');\" class='glyphicon glyphicon-remove' aria-hidden='true' title='Remove bookmark.'></a> \
+                </div> \
+            </li> \
+        "
+        newBookmark = newBookmark.replace("ID", bID);
+        newBookmark = newBookmark.replace("ID", bID);
+        newBookmark = newBookmark.replace("SRC", bFavicon);
+        newBookmark = newBookmark.replace("URL", bURL);
+        newBookmark = newBookmark.replace("URL", bURL);
+        newBookmark = newBookmark.replace("TITLE", bTitle);
+        return newBookmark;
+    }
+
+    function createBookmarkLi(bID, bTitle, bURL, bFavicon) {
+        newBookmark = " \
+            <li id='bookmark-starred-ID'> \
+                <div class='bookmark'> \
+                    <img src=\"SRC\" alt='' class='favicon'> \
+                    <span class='bookmark-starred-link' title=\"URL\" onclick='window.open(\"URL\", \"_blank\");'>TITLE</span> \
+                </div> \
+            </li> \
+        "
+        newBookmark = newBookmark.replace("ID", bID);
+        newBookmark = newBookmark.replace("SRC", bFavicon);
+        newBookmark = newBookmark.replace("URL", bURL);
+        newBookmark = newBookmark.replace("URL", bURL);
+        newBookmark = newBookmark.replace("TITLE", bTitle);
+        return newBookmark;
+    }
+</script>
+
+<script>
+// https://schier.co/blog/2014/12/08/wait-for-user-to-stop-typing-using-javascript.html
+// Get the input box
+var searchInput = document.getElementById('search-form-input');
+
+// Init a timeout variable to be used below
+var timeout = null;
+
+// Listen for keystroke events
+searchInput.onkeyup = function (e) {
+
+    // Clear the timeout if it has already been set.
+    // This will prevent the previous task from executing
+    // if it has been less than <MILLISECONDS>
+    clearTimeout(timeout);
+
+    // Make a new timeout set to go off in 800ms
+    timeout = setTimeout(function () {
+        // console.log('Input Value:', searchInput.value);
+        $.ajax({
+            url: "/searchBookmarks/",
+            data: {
+                search: searchInput.value
+            }
+        }).done(function(result) {
+            //console.log(result);
+            $.each(result, function(key,value) {
+                //console.log(value);
+                $("div#search-result").html("");
+                $("div#search-result").append(createBookmarkLi(value.Id, value.Title, value.URL, value.Favicon));
+            });
+        });
+    }, 500);
+};
+</script>
+
+<script>
+    $("button#export-box").click(function() {
+         window.open('/export/?target=_blank');
+    });
+    $("button#import-box").click(function() {
+        $("div#import-input-box").toggle(); 
+    });
+    $("button#bookmark").click(function() {
+        var tree = $("#tree").fancytree("getTree"),
+            activeNode = tree.getActiveNode();
+
+        // We are sure that the activeNode is not null and is a bookmark.
+        // Look at the "click" event handler of the tree at the top of the file.
+
+        //console.log(activeNode.title);
+        //console.log(activeNode.isFolder());
+        $.ajax({
+            url: "/starBookmark/",
+            data: {
+                bookmarkId: activeNode.key,
+                star: true
+            }
+        }).done(function(result) {
+            newID = result.Id
+            newFavicon = result.Favicon
+            newURL = result.URL
+            newTitle = result.Title
+            $("ul#starred").append(createStarredBookmarkLi(newID, newTitle, newURL, newFavicon));
+        }).always(function() {
+        });
+    });
+    $("button#add-folder").click(function() {
+        var tree = $("#tree").fancytree("getTree"),
+            activeNode = tree.getActiveNode();
+
+        newFolderName = $("input#add-folder").val();
+        if (!activeNode) {
+            alert("Select the parent folder.");
+            return
+        } else if (activeNode.isFolder()) {
+            parentKey = activeNode.key
+        } else {
+            parentKey = activeNode.getParent().key;
+        }
+        //console.log(newFolderName);
+        //console.log(parentKey);
+        $.ajax({
+            url: "/addFolder/",
+            data: {
+                folderName: newFolderName,
+                parentId: parentKey
+            }
+        }).done(function(result) {
+            activeNode.load(forceReload=true).then(
+                function() {
+                    if (! activeNode.isExpanded()) {
+                        activeNode.setExpanded(true);
+                    }
+                }
+            );
+        }).always(function() {
+            $("input#add-folder").val("");
+        });
+    });
+    $("button#delete").click(function() {
+        var tree = $("#tree").fancytree("getTree"),
+            activeNode = tree.getActiveNode();
+
+        if (!activeNode) {
+            return;
+        }
+        //console.log(activeNode.title);
+        //console.log(activeNode.isFolder());
+        if (activeNode.isFolder()) {
+            confirmText = "Delete folder " + activeNode.title + "?";
+        } else {
+            confirmText = "Delete bookmark " + activeNode.title + "?";
+        }
+        $("button#confirm-delete").html(confirmText);
+        $("button#confirm-delete").fadeIn();
+    });
+    $("button#confirm-delete").click(function() {
+        var tree = $("#tree").fancytree("getTree"),
+            activeNode = tree.getActiveNode();
+
+        if (!activeNode) {
+            return;
+        }
+        if (activeNode.isFolder()) {
+            ajaxUrl = "/deleteFolder/"
+        } else {
+            ajaxUrl = "/deleteBookmark/"
+        }
+        // Save data.input.val() or return false to keep the editor open
+        $.ajax({
+            url: ajaxUrl,
+            data: {
+                itemId: activeNode.key
+            }
+
+        }).done(function(result) {
+            activeNode.remove();
+        }).always(function() {
+            $("button#confirm-delete").fadeOut();
+        });
+
+    });
+</script>
 </body>
 
 </html>

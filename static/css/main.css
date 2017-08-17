@@ -64,14 +64,11 @@ div#rename-input-box {
 input#rename-input-box-form {
 }
 
-div#close-search-result {
-    width: 100%;
-    margin-bottom: 5px;
-}
 div#search-result {
-    margin-top: 5px;
+    padding: 20px;
 }
-div#search-box {
+div#search-result li {
+    list-style-type: none;
 }
 div#starred-list {
     float: left;

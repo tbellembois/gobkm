@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/GeertJohan/go.rice"
@@ -71,8 +72,19 @@ func main() {
 		log.Panic(err)
 	}
 
+	// host from URL
+	u, err := url.Parse(*goBkmProxyURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Debug(u)
+
 	// Environment creation.
-	env := handlers.Env{DB: datastore, GoBkmProxyURL: *goBkmProxyURL}
+	env := handlers.Env{
+		DB:             datastore,
+		GoBkmProxyURL:  *goBkmProxyURL,
+		GoBkmProxyHost: u.Host,
+	}
 	// Building a rice box with the static directory.
 	if templateBox, err = rice.FindBox("static"); err != nil {
 		log.Fatal(err)

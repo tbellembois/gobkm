@@ -12,7 +12,7 @@ BINARY_X86_NAME="gobkm-AMD64"
 PACKAGE_ARCHIVE_NAME="gobkm.zip"
 STATIC_RESOURCES_ARCHIVE_NAME="static.zip"
 
-BUILD_GOPHERJS_CMD="gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js -m"
+#BUILD_GOPHERJS_CMD="gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js -m"
 BUILD_ARMV7_CMD="env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build -o $OUTPUT_DIR/$BINARY_ARMV7_NAME ."
 BUILD_X86_CMD="go build -o $OUTPUT_DIR/$BINARY_X86_NAME ."
 
@@ -22,8 +22,8 @@ RICE_X86_CMD="rice append --exec $OUTPUT_DIR/$BINARY_X86_NAME"
 echo "-cleaning $OUTPUT_DIR"
 rm -Rf $OUTPUT_DIR/*
 
-echo "-generating JS"
-$BUILD_GOPHERJS_CMD
+#echo "-generating JS"
+#$BUILD_GOPHERJS_CMD
 
 echo "-building $BINARY_X86_NAME"
 $BUILD_X86_CMD
