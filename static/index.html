@@ -194,21 +194,23 @@
                     fromNode = data.otherNode;
                     toNode = data.node;
 
-                    if (fromNode.isFolder()) {
-                        ajaxUrl = "/moveFolder/"
-                    } else {
-                        ajaxUrl = "/moveBookmark/"
-                    }
-                    $.ajax({
-                        url: ajaxUrl,
-                        data: {
-                            sourceItemId: fromNode.key,
-                            destinationItemId: toNode.key
+                    node.setExpanded(true).always(function(){
+                        if (fromNode.isFolder()) {
+                            ajaxUrl = "/moveFolder/"
+                        } else {
+                            ajaxUrl = "/moveBookmark/"
                         }
+                        $.ajax({
+                            url: ajaxUrl,
+                            data: {
+                                sourceItemId: fromNode.key,
+                                destinationItemId: toNode.key
+                            }
 
-                    }).done(function(result) {
-                        data.otherNode.moveTo(node, data.hitMode);
-                    }).fail(function(result) {}).always(function() {});
+                        }).done(function(result) {
+                            data.otherNode.moveTo(node, data.hitMode);
+                        }).fail(function(result) {}).always(function() {});
+                    });
                 }
             },
 
@@ -268,7 +270,6 @@
                 return data.node.isFolder() ? "" : data.node.data.url;
             },
             click: function(event, data) {
-
                 $("div#search-result").html("");
                 $("input#search-form-input").val("");
 
@@ -285,13 +286,16 @@
                     $("button#bookmark").prop("disabled", false);    
                     $("button#delete").prop("disabled", false);    
                 }
+            },
+            dblclick: function(event, data) {
+                if (! data.node.isFolder()) {
+                    // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
+                    var node = data.node,
+                        orgEvent = data.originalEvent;
 
-                // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
-                var node = data.node,
-                    orgEvent = data.originalEvent;
-
-                if (node.isActive() && node.data.url) {
-                    window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+                    if (node.isActive() && node.data.url) {
+                        window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+                    }
                 }
             },
 

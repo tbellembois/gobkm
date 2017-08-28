@@ -65,7 +65,10 @@ input#rename-input-box-form {
 }
 
 div#search-result {
-    padding: 20px;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 div#search-result li {
     list-style-type: none;
@@ -85,7 +88,7 @@ img.favicon {
 
 /* Fancytree */
 div#tree {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 /* Editing pending */
