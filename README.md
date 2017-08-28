@@ -15,7 +15,6 @@ or
 
 ```bash
     $ go get -u github.com/tbellembois/gobkm
-    $ gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js -m
 ```
 
 ## Usage
@@ -46,15 +45,13 @@ Debug mode (by default only errors are shown):
 
 ## GUI
 
-- drag and drop an URL from your Web browser address bar into a folder to bookmark it OR
+- drag and drop an URL from your Web browser address bar into the drop zone (top right corner) OR
 - use the "GoBkm bookmark current page" bookmarklet to bookmark the current page
-- delete folders and bookmarks by dropping them on the bin icon
-- rename folders and bookmarks with the "r" key when the mouse is over
-- star/unstar bookmarks with the star icons
+- rename folders and bookmarks with the F2 key when selected
 
 ## Bookmarklets
 
-Click the little "earth" icon at the bottom of the application and drag and drop the 2 bookmarklets in your bokmark bar.
+Click on the little "earth" icon at the bottom of the application and drag and drop the 2 bookmarklets in your bookmark bar.
 The "GoBkm application" bookmarklet open GoBkm.
 The "GoBkm bookmark current page" bookmarklet bookmarks the current page (alternative to the drag and drop method).
 
@@ -208,8 +205,8 @@ Thanks to [Dmitri Shuralyov](https://github.com/shurcooL) for the help on Gopher
 
 ## Roadmap
 
-- provide a systemd startup script
-- do not reload folder content from server at each click
+- ~~provide a systemd startup script~~
+- ~~do not reload folder content from server at each click~~
 - ~~translate the Javascript into gopherjs <https://github.com/gopherjs/gopherjs>~~
 - ~~import export feature (HTML?)~~
 
@@ -227,7 +224,7 @@ Cross compiled for the RaspberryPi under Arch Linux with:
     env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build .
 ```
 
-Javascript generation:
+Javascript generation (DEPRECATED):
 ```bash
     gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js
 ```
