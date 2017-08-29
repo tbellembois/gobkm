@@ -190,26 +190,36 @@
                     }
                     return false;
                 },
+                dragStop: function(node, data) {
+                    node.setExpanded(true);
+                },
                 dragDrop: function(node, data) {
-                    fromNode = data.otherNode;
-                    toNode = data.node;
+                    fromNode = data.otherNode; // dragged item
+                    toNode = node;
+                    console.log(fromNode.title);
+                    console.log(toNode.title);
 
-                    node.setExpanded(true).always(function(){
-                        if (fromNode.isFolder()) {
-                            ajaxUrl = "/moveFolder/"
-                        } else {
-                            ajaxUrl = "/moveBookmark/"
+                    if (fromNode.isFolder()) {
+                        ajaxUrl = "/moveFolder/"
+                    } else {
+                        ajaxUrl = "/moveBookmark/"
+                    }
+                    $.ajax({
+                        url: ajaxUrl,
+                        data: {
+                            sourceItemId: fromNode.key,
+                            destinationItemId: toNode.key
                         }
-                        $.ajax({
-                            url: ajaxUrl,
-                            data: {
-                                sourceItemId: fromNode.key,
-                                destinationItemId: toNode.key
-                            }
 
-                        }).done(function(result) {
-                            data.otherNode.moveTo(node, data.hitMode);
-                        }).fail(function(result) {}).always(function() {});
+                    }).done(function(result) {
+                        // the method explained here:
+                        // https://github.com/mar10/fancytree/wiki/ExtDnd#howto-drop-on-a-lazy-node
+                        // does not work because "always" is not call for new directories
+                        // TODO: to be improved
+                        fromNode.moveTo(toNode, data.hitMode);
+                        toNode.load(forceReload=true).always(function(){
+                            toNode.setExpanded(true);
+                        });
                     });
                 }
             },
