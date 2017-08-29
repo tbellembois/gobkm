@@ -305,7 +305,12 @@
 
 <script type="text/javascript">
     $(function() {
-        var ws= new WebSocket("ws://{{.GoBkmProxyHost}}/socket/");
+        if (window.location.protocol == "https:") {
+            wsproto = "wss";
+        } else {
+            wsproto = "ws";
+        }
+        var ws= new WebSocket(wsproto + "://{{.GoBkmProxyHost}}/socket/");
 
         ws.onmessage = function(evt) {
             //console.log( "Received Message: " + evt.data);
