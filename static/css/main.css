@@ -86,6 +86,11 @@ img.favicon {
     float: left;
 }
 
+span.arrow-link {
+    font-weight: bold;
+    cursor: pointer;
+}
+
 /* Fancytree */
 div#tree {
     margin-top: 10px;

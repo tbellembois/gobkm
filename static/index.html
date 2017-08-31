@@ -273,6 +273,15 @@
                     }
                 }
             },
+            renderNode: function (event, data) {
+                var node = data.node;
+                if (! node.isFolder()) {
+                    var $spanTitle = $(node.span).find('span.fancytree-title');
+                    var $link = $spanTitle.attr('title');
+                    console.log($link);
+                    $spanTitle.after('<span class="arrow-link" onclick=\'window.open(\"' + $link + '\");\'>&#10140;</span>');
+                }
+            },
             icon: function(event, data) {
                 return data.node.isFolder() ? true : data.node.icon;
             },
@@ -468,9 +477,9 @@ searchInput.onkeyup = function (e) {
             }
         }).done(function(result) {
             //console.log(result);
+            $("div#search-result").html("");
             $.each(result, function(key,value) {
                 //console.log(value);
-                $("div#search-result").html("");
                 $("div#search-result").append(createBookmarkLi(value.Id, value.Title, value.URL, value.Favicon));
             });
         });
@@ -479,6 +488,11 @@ searchInput.onkeyup = function (e) {
 </script>
 
 <script>
+    $("span.fancytree-title").bind("taphold", tapholdHandler);
+    function tapholdHandler( event ){
+        alert('tap holded!');
+    }
+
     $("button#export-box").click(function() {
          window.open('/export/?target=_blank');
     });
