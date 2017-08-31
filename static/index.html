@@ -275,7 +275,8 @@
             },
             renderNode: function (event, data) {
                 var node = data.node;
-                if (! node.isFolder()) {
+                var nbArrow = $(node.span).find('span.arrow-link').length;
+                if (! node.isFolder() && nbArrow == 0) {
                     var $spanTitle = $(node.span).find('span.fancytree-title');
                     var $link = $spanTitle.attr('title');
                     console.log($link);
