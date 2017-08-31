@@ -90,6 +90,13 @@ span.arrow-link {
     font-weight: bold;
     cursor: pointer;
 }
+span.bookmark-starred-link {
+    cursor: pointer;
+}
+span.bookmark-starred-link:HOVER {
+    background-color: #eff9fe;
+    border: 1px solid #70c0e7;
+}
 
 /* Fancytree */
 div#tree {
