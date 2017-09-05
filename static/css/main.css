@@ -11,6 +11,8 @@
 ul.fancytree-container {
     border: none;
     outline:none !important;
+    overflow: auto;
+    position: relative;
 }
 
 body {
