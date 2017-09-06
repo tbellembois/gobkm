@@ -291,7 +291,7 @@
                 return data.node.isFolder() ? "" : data.node.data.url;
             },
             click: function(event, data) {
-                $("div#search-result").html("");
+                clearSearchResults();
                 $("input#search-form-input").val("");
 
                 $("button#confirm-delete").fadeOut();
@@ -409,6 +409,9 @@
 </script>
 
 <script>
+    function clearSearchResults() {
+        $("div#search-result").html("");
+    }
     function toggleElement(id) {
         var el = document.getElementById(id);
         el.style.display = el.style.display == "none" ? "block" : "none";
@@ -479,7 +482,9 @@ searchInput.onkeyup = function (e) {
             }
         }).done(function(result) {
             //console.log(result);
-            $("div#search-result").html("");
+            clearSearchResults();
+            // Close button
+            $("div#search-result").append('<div id="close-search-results-button" title="close list" onclick="clearSearchResults();">&#x2716;</div>');
             $.each(result, function(key,value) {
                 //console.log(value);
                 $("div#search-result").append(createBookmarkLi(value.Id, value.Title, value.URL, value.Favicon));

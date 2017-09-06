@@ -75,6 +75,9 @@ div#search-result {
 div#search-result li {
     list-style-type: none;
 }
+div#close-search-results-button {
+    cursor: pointer;
+}
 div#starred-list {
     float: left;
     width: 100%;
