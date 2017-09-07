@@ -875,9 +875,10 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 		// Escaping HTML characters
 		bkm.Title = html.EscapeString(bkm.Title)
 		// If the bookmark is starred, adding a *
-		if bkm.Starred {
-			bkm.Title = "* " + bkm.Title
-		}
+		// NO: not there clean to do this here, better in the HTML
+		//if bkm.Starred {
+		//	bkm.Title = "&#x2605; " + bkm.Title
+		//}
 
 		newNode := types.Node{Key: bkm.Id, Title: bkm.Title, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL}
 		nodesMap = append(nodesMap, &newNode)

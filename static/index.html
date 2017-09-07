@@ -21,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
     <link href="/css/ui.fancytree.min.css" type="text/css" rel="stylesheet">
+    <link href="/css/jquery.contextMenu.min.css" type="text/css" rel="stylesheet">
     <link href="/css/jquery-ui.min.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
 
@@ -40,6 +41,9 @@
     <script src="/js/jquery.fancytree-all.min.js"></script>
     <script src="/js/jquery.fancytree.edit.js"></script>
     <script src="/js/jquery.fancytree.dnd.js"></script>
+    <script src="/js/jquery.fancytree.glyph.js"></script>
+    <script src="/js/jquery.contextMenu.min.js"></script>
+    <script src="/js/jquery.fancytree.contextMenu.js"></script>
 
 </head>
 
@@ -175,11 +179,61 @@
 
         // Create the tree inside the <div id="tree"> element.
         $("#tree").fancytree({
-            extensions: ["edit", "dnd"],
+            extensions: ["edit", "dnd", "glyph", "contextMenu"],
             autoScroll: true,
+              contextMenu: {
+                  menu: function(node){
+                  if (node.folder){                 
+                    return {
+                        "edit": { "name": "Edit" },
+                        "delete": { "name": "Delete" },
+                    };
+                   } else {
+                      return {
+                          "star": { "name": "Star" },
+                          "edit": { "name": "Edit" },
+                          "delete": { "name": "Delete" },
+                       };
+                   }
+                  },
+                actions: function(node, action, options) {
+                    //console.log("Selected action '" + action + "' on node " + node);
+                    switch (action) {
+                        case "star":
+                            //console.log("star");
+                            break;
+                        case "edit":
+                            //console.log("edit");
+                            node.editStart();
+                            break;
+                        case "delete":
+                            //console.log("delete");
+                            if (node.isFolder()) {
+                                ajaxUrl = "/deleteFolder/"
+                            } else {
+                                ajaxUrl = "/deleteBookmark/"
+                            }
+                            // Save data.input.val() or return false to keep the editor open
+                            $.ajax({
+                                url: ajaxUrl,
+                                data: {
+                                    itemId: node.key
+                                }
+
+                            }).done(function(result) {
+                                node.remove();
+                            });
+                            break;
+                    }
+                }
+              },
             filter: {
                 counter: false,
                 mode: "hide"
+            },
+            glyph: {
+                preset: "bootstrap3",
+                map: {}
             },
             dnd: {
                 dragStart: function(node, data) {
@@ -197,8 +251,8 @@
                 dragDrop: function(node, data) {
                     fromNode = data.otherNode; // dragged item
                     toNode = node;
-                    console.log(fromNode.title);
-                    console.log(toNode.title);
+                    //console.log(fromNode.title);
+                    //console.log(toNode.title);
 
                     if (fromNode.isFolder()) {
                         ajaxUrl = "/moveFolder/"
@@ -293,31 +347,38 @@
             click: function(event, data) {
 
                 clearSearchResults();
-                // stop prevent node been "started drag"
-                event.stopPropagation();
-                
                 $("input#search-form-input").val("");
 
-                $("button#confirm-delete").fadeOut();
-                
-                if( data.node.isFolder() ) {
-                    if (data.node.key == 1) {
-                        $("button#delete").prop("disabled", true);    
+                // Handle only left click
+                if (event.which == 1) {
+                    // stop prevent node been "started drag"
+                    event.stopPropagation();
+                    
+                    $("div#search-result").html("");
+                    $("input#search-form-input").val("");
+
+                    $("button#confirm-delete").fadeOut();
+                    
+                    if( data.node.isFolder() ) {
+                        if (data.node.key == 1) {
+                            $("button#delete").prop("disabled", true);    
+                        } else {
+                            $("button#delete").prop("disabled", false);    
+                        }
+                        $("button#bookmark").prop("disabled", true);    
+
                     } else {
+                        // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
+                        var node = data.node,
+                            orgEvent = data.originalEvent;
+
+                        if (node.isActive() && node.data.url) {
+                            window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+                        }
+
+                        $("button#bookmark").prop("disabled", false);    
                         $("button#delete").prop("disabled", false);    
                     }
-                    $("button#bookmark").prop("disabled", true);    
-                } else {
-                    // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
-                    var node = data.node,
-                        orgEvent = data.originalEvent;
-
-                    if (node.isActive() && node.data.url) {
-                        window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
-                    }
-
-                    $("button#bookmark").prop("disabled", false);    
-                    $("button#delete").prop("disabled", false);    
                 }
             },
 //            dblclick: function(event, data) {
