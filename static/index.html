@@ -103,14 +103,6 @@
     <!-- Footer -->
     <div id="footer">
 
-        <!-- Add folder input -->
-        <div class="input-group">
-            <input type="text" id="add-folder" class="form-control" placeholder="New folder name" aria-label="New folder name" title="Select the parent folder first." aria-describedby="basic-addon2">
-            <span class="input-group-btn">
-                <button type="button" id="add-folder" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-            </span>
-        </div>
-
         <!-- Import form -->
         <div id="action-box">
             <div id="import-input-box" style="display:none">
@@ -178,7 +170,25 @@
                       if (node.folder){                 
                         return {
                             "edit": { "name": "Edit", icon: "fa-edit" },
-                            "delete": { "name": "Delete", icon: "fa-trash" },
+                            "delete": { "name": "Delete", icon: "fa-trash-o" },
+                            "new": { "name": "New subfolder", icon: "fa-folder-o" },
+                            sep1: "-----",
+                            "fold1": {
+                                "name": "New bookmark from URL", 
+                                icon: "fa-globe",
+                                "items": {
+                                     newBkm: {
+                                                type: 'text', 
+                                                value: "", 
+                                                events: {
+                                                    keyup: function(e) {
+                                                        // add some fancy key handling here?
+                                                        window.console && console.log('key: '+ e.keyCode); 
+                                                    }
+                                                }
+                                            }
+                                }
+                            },
                         };
                       } else {
                         return {
@@ -198,6 +208,28 @@
                         case "edit":
                             //console.log("edit");
                             node.editStart();
+                            break;
+                        case "new":
+                            $.ajax({
+                                url: "/addFolder/",
+                                data: {
+                                    folderName: "new folder",
+                                    parentId: node.key
+                                }
+                            }).done(function(result) {
+                                node.load(forceReload=true).then(
+                                    function() {
+                                        node.setExpanded(true).then(
+                                            function() {
+                                                tree = $("#tree").fancytree("getTree");
+                                                newNode = tree.getNodeByKey(result.key.toString());
+
+                                                newNode.moveTo(node, 'firstChild');
+                                                newNode.setActive();
+                                                newNode.editStart();
+                                            });
+                                    });
+                            });                           
                             break;
                         case "delete":
                             //console.log("delete");
@@ -369,6 +401,7 @@
             },
         }).on("mouseenter", ".fancytree-title", function(event){
 			var node = $.ui.fancytree.getNode(event);
+            //console.log(node.key);
             setTimeout(
               function() 
               {
@@ -570,39 +603,6 @@ searchInput.onkeyup = function (e) {
     });
     $("button#import-box").click(function() {
         $("div#import-input-box").toggle(); 
-    });
-    $("button#add-folder").click(function() {
-        var tree = $("#tree").fancytree("getTree"),
-            activeNode = tree.getActiveNode();
-
-        newFolderName = $("input#add-folder").val();
-        if (!activeNode) {
-            alert("Select the parent folder.");
-            return
-        } else if (activeNode.isFolder()) {
-            parentKey = activeNode.key
-        } else {
-            parentKey = activeNode.getParent().key;
-        }
-        //console.log(newFolderName);
-        //console.log(parentKey);
-        $.ajax({
-            url: "/addFolder/",
-            data: {
-                folderName: newFolderName,
-                parentId: parentKey
-            }
-        }).done(function(result) {
-            activeNode.load(forceReload=true).then(
-                function() {
-                    if (! activeNode.isExpanded()) {
-                        activeNode.setExpanded(true);
-                    }
-                }
-            );
-        }).always(function() {
-            $("input#add-folder").val("");
-        });
     });
 </script>
 </body>

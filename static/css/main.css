@@ -38,7 +38,7 @@ div#copyright {
     float: left;
 }
 div#import-export {
-    float: left;
+    float: right;
 }
 div#export-box {
     cursor :pointer;

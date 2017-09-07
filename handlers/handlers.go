@@ -379,7 +379,8 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(types.Folder{Id: int(folderID), Title: folderName[0], Parent: parentFolder}); err != nil {
+	//if err = json.NewEncoder(w).Encode(types.Folder{Id: int(folderID), Title: folderName[0], Parent: parentFolder}); err != nil {
+	if err = json.NewEncoder(w).Encode(types.Node{Key: int(folderID), Title: folderName[0], Folder: true, Lazy: true}); err != nil {
 		failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
