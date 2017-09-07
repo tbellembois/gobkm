@@ -101,6 +101,7 @@ func main() {
 	http.HandleFunc("/getChildrenFolders/", env.GetChildrenFoldersHandler)
 	http.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
 	http.HandleFunc("/getFolderBookmarks/", env.GetFolderBookmarksHandler)
+	http.HandleFunc("/getBookmark/", env.GetBookmarkHandler)
 	http.HandleFunc("/moveFolder/", env.MoveFolderHandler)
 	http.HandleFunc("/moveBookmark/", env.MoveBookmarkHandler)
 	http.HandleFunc("/renameFolder/", env.RenameFolderHandler)

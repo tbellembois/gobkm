@@ -18,6 +18,7 @@
     <meta name="msapplication-TileImage" content="/img/mstile-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
+    <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
     <link href="/css/ui.fancytree.min.css" type="text/css" rel="stylesheet">
@@ -95,8 +96,8 @@
     </div>
 
     <!-- Star and delete buttons -->
-    <button title="Star the selected bookmark." type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>&nbsp;Star</button>
-    <button title="Delete the selected forder or bookmark." type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
+    <button style="display: none;" title="Star the selected bookmark." type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>&nbsp;Star</button>
+    <button style="display: none;" title="Delete the selected forder or bookmark." type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
     <button type="button" id="confirm-delete" class="btn btn-danger" style="display: none;">...</button>
 
     <!-- Drop zone for new bookmarks -->
@@ -183,24 +184,25 @@
             autoScroll: true,
               contextMenu: {
                   menu: function(node){
-                  if (node.folder){                 
-                    return {
-                        "edit": { "name": "Edit" },
-                        "delete": { "name": "Delete" },
-                    };
-                   } else {
-                      return {
-                          "star": { "name": "Star" },
-                          "edit": { "name": "Edit" },
-                          "delete": { "name": "Delete" },
-                       };
-                   }
-                  },
+                      if (node.folder){                 
+                        return {
+                            "edit": { "name": "Edit", icon: "fa-edit" },
+                            "delete": { "name": "Delete", icon: "fa-trash" },
+                        };
+                      } else {
+                        return {
+                            "star": { "name": "Star", icon: "fa-star" },
+                            "edit": { "name": "Edit", icon: "fa-edit" },
+                            "delete": { "name": "Delete", icon: "fa-trash" },
+                        };
+                       }
+                    },
                 actions: function(node, action, options) {
                     //console.log("Selected action '" + action + "' on node " + node);
                     switch (action) {
                         case "star":
                             //console.log("star");
+                            star(node.key);
                             break;
                         case "edit":
                             //console.log("edit");
@@ -474,6 +476,22 @@
 </script>
 
 <script>
+    function star(id) {
+         $.ajax({
+            url: "/starBookmark/",
+            data: {
+                bookmarkId: id,
+                star: true
+            }
+        }).done(function(result) {
+            newID = result.Id
+            newFavicon = result.Favicon
+            newURL = result.URL
+            newTitle = result.Title
+            $("ul#starred").append(createStarredBookmarkLi(newID, newTitle, newURL, newFavicon));
+        }).always(function() {
+        });
+    }
     function unStar(id) {
         $.ajax({
             url: "/starBookmark/",
