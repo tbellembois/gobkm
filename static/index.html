@@ -274,16 +274,16 @@
                     }
                 }
             },
-            renderNode: function (event, data) {
-                var node = data.node;
-                var nbArrow = $(node.span).find('span.arrow-link').length;
-                if (! node.isFolder() && nbArrow == 0) {
-                    var $spanTitle = $(node.span).find('span.fancytree-title');
-                    var $link = $spanTitle.attr('title');
-                    console.log($link);
-                    $spanTitle.after('<span class="arrow-link" onclick=\'window.open(\"' + $link + '\");\'>&#10140;</span>');
-                }
-            },
+//            renderNode: function (event, data) {
+//                var node = data.node;
+//                var nbArrow = $(node.span).find('span.arrow-link').length;
+//                if (! node.isFolder() && nbArrow == 0) {
+//                    var $spanTitle = $(node.span).find('span.fancytree-title');
+//                    var $link = $spanTitle.attr('title');
+//                    //console.log($link);
+//                    $spanTitle.after('<span class="arrow-link" onclick=\'window.open(\"' + $link + '\");\'>&#10140;</span>');
+//                }
+//            },
             icon: function(event, data) {
                 return data.node.isFolder() ? true : data.node.icon;
             },
@@ -291,7 +291,11 @@
                 return data.node.isFolder() ? "" : data.node.data.url;
             },
             click: function(event, data) {
+
                 clearSearchResults();
+                // stop prevent node been "started drag"
+                event.stopPropagation();
+                
                 $("input#search-form-input").val("");
 
                 $("button#confirm-delete").fadeOut();
@@ -304,12 +308,6 @@
                     }
                     $("button#bookmark").prop("disabled", true);    
                 } else {
-                    $("button#bookmark").prop("disabled", false);    
-                    $("button#delete").prop("disabled", false);    
-                }
-            },
-            dblclick: function(event, data) {
-                if (! data.node.isFolder()) {
                     // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
                     var node = data.node,
                         orgEvent = data.originalEvent;
@@ -317,9 +315,30 @@
                     if (node.isActive() && node.data.url) {
                         window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
                     }
+
+                    $("button#bookmark").prop("disabled", false);    
+                    $("button#delete").prop("disabled", false);    
                 }
             },
+//            dblclick: function(event, data) {
+//                if (! data.node.isFolder()) {
+//                    // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
+//                    var node = data.node,
+//                        orgEvent = data.originalEvent;
+//
+//                    if (node.isActive() && node.data.url) {
+//                        window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+//                    }
+//                }
+//            },
 
+        }).on("mouseenter", ".fancytree-title", function(event){
+			var node = $.ui.fancytree.getNode(event);
+            setTimeout(
+              function() 
+              {
+                node.setActive();
+              }, 300);
         });
     });
 </script>

@@ -120,9 +120,6 @@ span.pending span.fancytree-title:after {
 div#drop-zone {
     position: fixed;
     z-index: 2;
-    width: 100px;
-    height: 100px;
-    line-height: 52px;
     text-align: center;
     top: 2px;
     right: 2px;
