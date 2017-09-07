@@ -157,66 +157,6 @@ type bookmarkThisStruct struct {
 	Title string `json:"title"`
 }
 
-// BookmarkThisHandler handles the bookmarks creation with the bookmarklet.
-//func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
-//	log.Debug("BookmarkThisHandler called")
-//	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-//	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-//	w.Header().Set("Access-Control-Allow-Credentials", "true")
-//
-//	body, err := ioutil.ReadAll(r.Body)
-//	defer func() {
-//		if err := r.Body.Close(); err != nil {
-//			log.WithFields(log.Fields{
-//				"err": err,
-//			}).Error("BookmarkThisHandler:error closing response Body")
-//		}
-//	}()
-//
-//	if err != nil {
-//		log.Error("Could not read body:", err)
-//		return
-//	}
-//	var b bookmarkThisStruct
-//	err = json.Unmarshal(body, &b)
-//	if err != nil {
-//		log.Error("Could not unmarshall body:", err)
-//		return
-//	}
-//	log.WithFields(log.Fields{
-//		"url":   b.URL,
-//		"title": b.Title,
-//	}).Debug("BookmarkThisHandler:Query parameter")
-//
-//	// Getting the destination folder = root folder.
-//	dstFld := env.DB.GetFolder(0)
-//	// Creating a new Bookmark.
-//	newBookmark := types.Bookmark{Title: b.Title, URL: b.URL, Folder: dstFld}
-//	// Saving the bookmark into the DB, getting its id.
-//	bookmarkID := env.DB.SaveBookmark(&newBookmark)
-//	// Datastore error check.
-//	if err = env.DB.FlushErrors(); err != nil {
-//		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
-//		return
-//	}
-//
-//	// Updating the bookmark favicon.
-//	newBookmark.Id = int(bookmarkID)
-//	go env.UpdateBookmarkFavicon(&newBookmark)
-//
-//	var jsonResp []byte
-//	if jsonResp, err = json.Marshal(newBookmark); err != nil {
-//		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
-//		return
-//
-//	}
-//	if err = wsconn.WriteMessage(websocket.TextMessage, jsonResp); err != nil {
-//		failHTTP(w, "BookmarkThisHandler", err.Error(), http.StatusInternalServerError)
-//		return
-//	}
-//
-//}
-
 // BookmarkThisHandler returns the add bookmark page.
 func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 	var (
@@ -812,56 +752,6 @@ func (env *Env) GetBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// GetFolderBookmarksHandler retrieves the bookmarks for the given folder.
-func (env *Env) GetFolderBookmarksHandler(w http.ResponseWriter, r *http.Request) {
-	var (
-		folderID int
-		err      error
-	)
-	// GET parameters retrieval.
-	folderIDParam := r.URL.Query()["folderId"]
-	log.WithFields(log.Fields{
-		"folderIdParam": folderIDParam,
-	}).Debug("GetFolderBookmarksHandler:Query parameter")
-
-	// Parameters check.
-	if len(folderIDParam) == 0 {
-		failHTTP(w, "GetFolderBookmarksHandler", "folderIdParam empty", http.StatusBadRequest)
-		return
-	}
-	// folderId convertion.
-	if folderID, err = strconv.Atoi(folderIDParam[0]); err != nil {
-		failHTTP(w, "GetFolderBookmarksHandler", "folderId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
-	// Getting the folder bookmarks.
-	bkms := env.DB.GetFolderBookmarks(folderID)
-	sort.Sort(bkms)
-	// Datastore error check.
-	if err = env.DB.FlushErrors(); err != nil {
-		failHTTP(w, "GetFolderBookmarksHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Adding them into a map.
-	var bookmarksMap []*types.Bookmark
-	for _, bkm := range bkms {
-		// Returning a default favicon if needed
-		if bkm.Favicon == "" {
-			bkm.Favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAACiElEQVQ4EaVTzU8TURCf2tJuS7tQtlRb6UKBIkQwkRRSEzkQgyEc6lkOKgcOph78Y+CgjXjDs2i44FXY9AMTlQRUELZapVlouy3d7kKtb0Zr0MSLTvL2zb75eL838xtTvV6H/xELBptMJojeXLCXyobnyog4YhzXYvmCFi6qVSfaeRdXdrfaU1areV5KykmX06rcvzumjY/1ggkR3Jh+bNf1mr8v1D5bLuvR3qDgFbvbBJYIrE1mCIoCrKxsHuzK+Rzvsi29+6DEbTZz9unijEYI8ObBgXOzlcrx9OAlXyDYKUCzwwrDQx1wVDGg089Dt+gR3mxmhcUnaWeoxwMbm/vzDFzmDEKMMNhquRqduT1KwXiGt0vre6iSeAUHNDE0d26NBtAXY9BACQyjFusKuL2Ry+IPb/Y9ZglwuVscdHaknUChqLF/O4jn3V5dP4mhgRJgwSYm+gV0Oi3XrvYB30yvhGa7BS70eGFHPoTJyQHhMK+F0ZesRVVznvXw5Ixv7/C10moEo6OZXbWvlFAF9FVZDOqEABUMRIkMd8GnLwVWg9/RkJF9sA4oDfYQAuzzjqzwvnaRUFxn/X2ZlmGLXAE7AL52B4xHgqAUqrC1nSNuoJkQtLkdqReszz/9aRvq90NOKdOS1nch8TpL555WDp49f3uAMXhACRjD5j4ykuCtf5PP7Fm1b0DIsl/VHGezzP1KwOiZQobFF9YyjSRYQETRENSlVzI8iK9mWlzckpSSCQHVALmN9Az1euDho9Xo8vKGd2rqooA8yBcrwHgCqYR0kMkWci08t/R+W4ljDCanWTg9TJGwGNaNk3vYZ7VUdeKsYJGFNkfSzjXNrSX20s4/h6kB81/271ghG17l+rPTAAAAAElFTkSuQmCC"
-		}
-		// Escaping HTML characters
-		bkm.Title = html.EscapeString(bkm.Title)
-
-		bookmarksMap = append(bookmarksMap, bkm)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(bookmarksMap); err != nil {
-		failHTTP(w, "GetFolderBookmarksHandler", err.Error(), http.StatusInternalServerError)
-	}
-}
-
 // GetBranchNodesHandler retrieves the subfolders and bookmarks of the given folder.
 func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 	var (
@@ -933,49 +823,6 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
 	}
 
-}
-
-// GetChildrenFoldersHandler retrieves the subfolders for the given folder.
-func (env *Env) GetChildrenFoldersHandler(w http.ResponseWriter, r *http.Request) {
-	var (
-		folderID int
-		err      error
-	)
-	// GET parameters retrieval.
-	folderIDParam := r.URL.Query()["folderId"]
-	log.WithFields(log.Fields{
-		"folderIdParam": folderIDParam,
-	}).Debug("GetChildrenFoldersHandler:Query parameter")
-
-	// Parameters check.
-	if len(folderIDParam) == 0 {
-		failHTTP(w, "GetChildrenFoldersHandler", "folderIdParam empty", http.StatusBadRequest)
-		return
-	}
-	// folderId int convertion.
-	if folderID, err = strconv.Atoi(folderIDParam[0]); err != nil {
-		failHTTP(w, "GetChildrenFoldersHandler", "folderId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
-
-	// Getting the folder children folders.
-	flds := env.DB.GetFolderSubfolders(folderID)
-	// Datastore error check.
-	if err = env.DB.FlushErrors(); err != nil {
-		failHTTP(w, "GetChildrenFoldersHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Adding them into a map.
-	var foldersMap []*types.Folder
-	for _, fld := range flds {
-		foldersMap = append(foldersMap, fld)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(foldersMap); err != nil {
-		failHTTP(w, "GetChildrenFoldersHandler", err.Error(), http.StatusInternalServerError)
-	}
 }
 
 // MainHandler handles the main application page.

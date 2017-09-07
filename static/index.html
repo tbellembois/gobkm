@@ -21,9 +21,9 @@
     <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
-    <link href="/css/ui.fancytree.min.css" type="text/css" rel="stylesheet">
-    <link href="/css/jquery.contextMenu.min.css" type="text/css" rel="stylesheet">
-    <link href="/css/jquery-ui.min.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/ui.fancytree.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/jquery.contextMenu.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
 
     <!-- Some variables passed by the handler -->
@@ -57,9 +57,7 @@
     -->
     <div id="starred-list">
         <div class="panel panel-default">
-
             <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-
             <div class="panel-body">
                 <ul id="starred">
                 {{with .Bkms}}
@@ -75,7 +73,6 @@
                         </div>
                     </li>
                 {{end}}
-
                 {{end}}
             </ul>
           </div>
@@ -86,19 +83,14 @@
     <!-- Search form -->
     <div id="search-box">
         <div class="input-group">
-          <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-    </span>
-          <input type="text" id="search-form-input" class="form-control" placeholder="Search a bookmark title..." aria-describedby="basic-addon1">
+            <span class="input-group-addon" id="basic-addon1">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </span>
+            <input type="text" id="search-form-input" class="form-control" placeholder="Search a bookmark title..." aria-describedby="basic-addon1">
         </div>
-
         <div id="search-result">
         </div>
     </div>
-
-    <!-- Star and delete buttons -->
-    <button style="display: none;" title="Star the selected bookmark." type="button" id="bookmark" class="btn btn-primary"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>&nbsp;Star</button>
-    <button style="display: none;" title="Delete the selected forder or bookmark." type="button" id="delete" class="btn btn-primary"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;Delete</button>
-    <button type="button" id="confirm-delete" class="btn btn-danger" style="display: none;">...</button>
 
     <!-- Drop zone for new bookmarks -->
     <div id=drop-zone ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" class="well well-lg" title="Select a destination folder and drop a new bookmark here.">
@@ -140,7 +132,7 @@
         <!-- Copyright -->
         <div id="copyright">
             <!--
-    <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
+            <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
     -->
         </div>
 
@@ -169,7 +161,6 @@
                 <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
             </div>
         </div>
-
     </div>
 
 </div>
@@ -362,13 +353,6 @@
                     $("button#confirm-delete").fadeOut();
                     
                     if( data.node.isFolder() ) {
-                        if (data.node.key == 1) {
-                            $("button#delete").prop("disabled", true);    
-                        } else {
-                            $("button#delete").prop("disabled", false);    
-                        }
-                        $("button#bookmark").prop("disabled", true);    
-
                     } else {
                         // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
                         var node = data.node,
@@ -383,18 +367,6 @@
                     }
                 }
             },
-//            dblclick: function(event, data) {
-//                if (! data.node.isFolder()) {
-//                    // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
-//                    var node = data.node,
-//                        orgEvent = data.originalEvent;
-//
-//                    if (node.isActive() && node.data.url) {
-//                        window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
-//                    }
-//                }
-//            },
-
         }).on("mouseenter", ".fancytree-title", function(event){
 			var node = $.ui.fancytree.getNode(event);
             setTimeout(
@@ -593,40 +565,11 @@ searchInput.onkeyup = function (e) {
 </script>
 
 <script>
-    $("span.fancytree-title").bind("taphold", tapholdHandler);
-    function tapholdHandler( event ){
-        alert('tap holded!');
-    }
-
     $("button#export-box").click(function() {
          window.open('/export/?target=_blank');
     });
     $("button#import-box").click(function() {
         $("div#import-input-box").toggle(); 
-    });
-    $("button#bookmark").click(function() {
-        var tree = $("#tree").fancytree("getTree"),
-            activeNode = tree.getActiveNode();
-
-        // We are sure that the activeNode is not null and is a bookmark.
-        // Look at the "click" event handler of the tree at the top of the file.
-
-        //console.log(activeNode.title);
-        //console.log(activeNode.isFolder());
-        $.ajax({
-            url: "/starBookmark/",
-            data: {
-                bookmarkId: activeNode.key,
-                star: true
-            }
-        }).done(function(result) {
-            newID = result.Id
-            newFavicon = result.Favicon
-            newURL = result.URL
-            newTitle = result.Title
-            $("ul#starred").append(createStarredBookmarkLi(newID, newTitle, newURL, newFavicon));
-        }).always(function() {
-        });
     });
     $("button#add-folder").click(function() {
         var tree = $("#tree").fancytree("getTree"),
@@ -660,49 +603,6 @@ searchInput.onkeyup = function (e) {
         }).always(function() {
             $("input#add-folder").val("");
         });
-    });
-    $("button#delete").click(function() {
-        var tree = $("#tree").fancytree("getTree"),
-            activeNode = tree.getActiveNode();
-
-        if (!activeNode) {
-            return;
-        }
-        //console.log(activeNode.title);
-        //console.log(activeNode.isFolder());
-        if (activeNode.isFolder()) {
-            confirmText = "Delete folder " + activeNode.title + "?";
-        } else {
-            confirmText = "Delete bookmark " + activeNode.title + "?";
-        }
-        $("button#confirm-delete").html(confirmText);
-        $("button#confirm-delete").fadeIn();
-    });
-    $("button#confirm-delete").click(function() {
-        var tree = $("#tree").fancytree("getTree"),
-            activeNode = tree.getActiveNode();
-
-        if (!activeNode) {
-            return;
-        }
-        if (activeNode.isFolder()) {
-            ajaxUrl = "/deleteFolder/"
-        } else {
-            ajaxUrl = "/deleteBookmark/"
-        }
-        // Save data.input.val() or return false to keep the editor open
-        $.ajax({
-            url: ajaxUrl,
-            data: {
-                itemId: activeNode.key
-            }
-
-        }).done(function(result) {
-            activeNode.remove();
-        }).always(function() {
-            $("button#confirm-delete").fadeOut();
-        });
-
     });
 </script>
 </body>
