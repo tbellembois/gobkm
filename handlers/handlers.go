@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"sort"
 	"strconv"
 	"text/template"
 	"time"
@@ -794,7 +793,7 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Getting the folder bookmarks.
 	bkms := env.DB.GetFolderBookmarks(key)
-	sort.Sort(bkms)
+	//sort.Sort(bkms)
 	// Datastore error check.
 	if err = env.DB.FlushErrors(); err != nil {
 		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
