@@ -14,6 +14,10 @@ ul.fancytree-container {
     overflow: auto;
     position: relative;
 }
+/* Remove some Bootstrap styles */
+input[type="text"] {
+    font-weight: normal;
+}
 
 body {
     font-family: "MyWebFont", sans-serif;
@@ -29,8 +33,8 @@ div#action-box {
 }
 
 div#footer {
-    width: 100%;
     position: fixed;
+    right: 0px;
     bottom: 0px;
     background-color: white;
 }

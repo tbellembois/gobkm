@@ -182,8 +182,26 @@
                                                 value: "", 
                                                 events: {
                                                     keyup: function(e) {
-                                                        // add some fancy key handling here?
-                                                        window.console && console.log('key: '+ e.keyCode); 
+                                                        if (e.keyCode == 13) {
+                                                             $.ajax({
+                                                                url: "/addBookmark/",
+                                                                data: {
+                                                                    destinationFolderId: node.key,
+                                                                    bookmarkUrl: $("input[name=context-menu-input-newBkm]").val()
+                                                                }
+                                                            }).done(function(result) {
+                                                                node.load(forceReload=true).then(
+                                                                    function() {
+                                                                        if (! node.isExpanded()) {
+                                                                            node.setExpanded(true);
+                                                                        }
+                                                                    }
+                                                                );
+                                                            }).always(function() {
+                                                                $('.context-menu-root').first().trigger("contextmenu:hide");
+                                                            });
+                                                       
+                                                        } 
                                                     }
                                                 }
                                             }
