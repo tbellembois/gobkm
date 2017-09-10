@@ -36,8 +36,9 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery-ui.min.js"></script>
     <!-- Include Bootstrap -->
-    <script type="text/javascript" src="/js/bootstrap.min.js">
-    </script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <!-- Include Clipboard-->
+    <script type="text/javascript" src="/js/clipboard.min.js"></script>
     <!-- Include Fancytree skin and library -->
     <script src="/js/jquery.fancytree-all.min.js"></script>
     <script src="/js/jquery.fancytree.edit.js"></script>
@@ -160,6 +161,12 @@
 <!-- Initialize the tree when page is loaded -->
 <script type="text/javascript">
     $(function() {
+        // Instanciate clipboard.
+        new Clipboard('button', {
+            target: function(trigger) {
+                return trigger.nextElementSibling;
+            }
+        });
 
         // Create the tree inside the <div id="tree"> element.
         $("#tree").fancytree({
@@ -371,8 +378,16 @@
                     }
                 }
             },
-//            renderNode: function (event, data) {
-//                var node = data.node;
+            renderNode: function (event, data) {
+                var node = data.node;
+                var key = node.key;
+                var title = node.title;
+                // Sample: add attribute
+                //$(node.span).find('span.fancytree-title').attr("foo", "bar");
+                if (! node.isFolder() && title.startsWith("file")) {
+                    $(node.span).find('span.fancytree-title').attr("id", "file");
+                    $(node.span).before('<button class="copy-button" data-clipboard-target="#hidden-' + key + '"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
+                }
 //                var nbArrow = $(node.span).find('span.arrow-link').length;
 //                if (! node.isFolder() && nbArrow == 0) {
 //                    var $spanTitle = $(node.span).find('span.fancytree-title');
@@ -380,7 +395,7 @@
 //                    //console.log($link);
 //                    $spanTitle.after('<span class="arrow-link" onclick=\'window.open(\"' + $link + '\");\'>&#10140;</span>');
 //                }
-//            },
+            },
             icon: function(event, data) {
                 return data.node.isFolder() ? true : data.node.icon;
             },
@@ -428,14 +443,14 @@
                 node.setActive();
               }, 300);
         }).on("mouseup", ".fancytree-title", function(event){
-                console.log("mouseup:" + event.which);
+                //console.log("mouseup:" + event.which);
                 clearSearchResults();
                 $("input#search-form-input").val("");
 
                 var node = $.ui.fancytree.getNode(event);
 
                 // Handle only left click
-                if (event.which == 1) {
+                if (event.which == 1 && !node.title.startsWith("file")) {
                    
                    $("div#search-result").html("");
                    $("input#search-form-input").val("");

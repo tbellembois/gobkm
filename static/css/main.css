@@ -108,6 +108,15 @@ span.bookmark-starred-link:HOVER {
     border: 1px solid #70c0e7;
 }
 
+span#file {
+    padding-left: 10px;
+    font-style: italic;
+}
+
+button.copy-button {
+   position: absolute; 
+}
+
 /* Fancytree */
 div#tree {
 }
