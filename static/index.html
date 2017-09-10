@@ -387,36 +387,38 @@
             tooltip: function(event, data) {
                 return data.node.isFolder() ? "" : data.node.data.url;
             },
-            click: function(event, data) {
-
-                clearSearchResults();
-                $("input#search-form-input").val("");
-
-                // Handle only left click
-                if (event.which == 1) {
-                    // stop prevent node been "started drag"
-                    event.stopPropagation();
-                    
-                    $("div#search-result").html("");
-                    $("input#search-form-input").val("");
-
-                    $("button#confirm-delete").fadeOut();
-                    
-                    if( data.node.isFolder() ) {
-                    } else {
-                        // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
-                        var node = data.node,
-                            orgEvent = data.originalEvent;
-
-                        if (node.isActive() && node.data.url) {
-                            window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
-                        }
-
-                        $("button#bookmark").prop("disabled", false);    
-                        $("button#delete").prop("disabled", false);    
-                    }
-                }
-            },
+//            click: function(event, data) {
+//
+//                //console.log(event.type);
+//
+//                clearSearchResults();
+//                $("input#search-form-input").val("");
+//
+//                // Handle only left click
+//                if (event.which == 1) {
+//                    // stop prevent node been "started drag"
+//                    event.stopPropagation();
+//                    
+//                    $("div#search-result").html("");
+//                    $("input#search-form-input").val("");
+//
+//                    $("button#confirm-delete").fadeOut();
+//                    
+//                    if( data.node.isFolder() ) {
+//                    } else {
+//                        // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
+//                        var node = data.node,
+//                            orgEvent = data.originalEvent;
+//
+//                        if (node.isActive() && node.data.url) {
+//                            window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
+//                        }
+//
+//                        $("button#bookmark").prop("disabled", false);    
+//                        $("button#delete").prop("disabled", false);    
+//                    }
+//                }
+//            },
         }).on("mouseenter", ".fancytree-title", function(event){
 			var node = $.ui.fancytree.getNode(event);
             //console.log(node.key);
@@ -425,6 +427,33 @@
               {
                 node.setActive();
               }, 300);
+        }).on("mouseup", ".fancytree-title", function(event){
+                console.log("mouseup:" + event.which);
+                clearSearchResults();
+                $("input#search-form-input").val("");
+
+                var node = $.ui.fancytree.getNode(event);
+
+                // Handle only left click
+                if (event.which == 1) {
+                   
+                   $("div#search-result").html("");
+                   $("input#search-form-input").val("");
+
+                   $("button#confirm-delete").fadeOut();
+                   
+                   if( node.isFolder() ) {
+                   } else {
+
+                       if (node.isActive() && node.data.url) {
+                           window.open(node.data.url, "_blank");
+                       }
+
+                       $("button#bookmark").prop("disabled", false);    
+                       $("button#delete").prop("disabled", false);    
+                   }
+                }
+
         });
     });
 </script>
