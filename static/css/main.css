@@ -11,7 +11,8 @@
 ul.fancytree-container {
     border: none;
     outline:none !important;
-    overflow: auto;
+    overflow-y:: auto;
+    overflow-x: hidden;
     position: relative;
 }
 /* Remove some Bootstrap styles */
