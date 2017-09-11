@@ -54,6 +54,16 @@
 <div id="container">
 
     <!--
+    Copy to clipboard messages
+    -->
+    <div id="clipboard-message-ok" class="alert alert-success" role="alert">
+      Copied to clipboard
+    </div>
+    <div id="clipboard-message-nok" class="alert alert-danger" role="alert">
+      An error occured trying to copy to clipboard
+    </div>
+
+    <!--
     Starred bookmarks
     -->
     <div id="starred-list">
@@ -162,11 +172,25 @@
 <script type="text/javascript">
     $(function() {
         // Instanciate clipboard.
-        new Clipboard('button', {
+        var clipboard = new Clipboard('button', {
             target: function(trigger) {
                 return trigger.nextElementSibling;
             }
         });
+
+        clipboard.on('success', function(e) {
+            //console.log(e.text);
+            $("#clipboard-message-ok").fadeTo(500, 500).slideUp(500, function(){
+                $("#clipboard-message-ok ").slideUp(500);
+            });   
+            e.clearSelection();
+        });
+
+        clipboard.on('error', function(e) {
+        });
+
+        $("#clipboard-message-ok").hide();
+        $("#clipboard-message-nok").hide();
 
         // Create the tree inside the <div id="tree"> element.
         $("#tree").fancytree({
@@ -383,9 +407,12 @@
                 var key = node.key;
                 var title = node.title;
                 var url = node.data.url;
+                
+                var nbButton = $(node.span).find('button').length;
+
                 // Sample: add attribute
                 //$(node.span).find('span.fancytree-title').attr("foo", "bar");
-                if (! node.isFolder() && url.startsWith("file")) {
+                if (! node.isFolder() && url.startsWith("file") && nbButton == 0) {
                     stitle = $(node.span).find('span.fancytree-title').first();
                     stitle.attr("id", "file");
                     stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');

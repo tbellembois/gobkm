@@ -118,6 +118,11 @@ button.copy-button {
    position: absolute; 
 }
 
+div.alert {
+    position: absolute;
+    z-index: 2;
+}
+
 /* Fancytree */
 div#tree {
 }
