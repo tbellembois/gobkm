@@ -382,11 +382,14 @@
                 var node = data.node;
                 var key = node.key;
                 var title = node.title;
+                var url = node.data.url;
                 // Sample: add attribute
                 //$(node.span).find('span.fancytree-title').attr("foo", "bar");
-                if (! node.isFolder() && title.startsWith("file")) {
-                    $(node.span).find('span.fancytree-title').attr("id", "file");
-                    $(node.span).before('<button class="copy-button" data-clipboard-target="#hidden-' + key + '"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
+                if (! node.isFolder() && url.startsWith("file")) {
+                    stitle = $(node.span).find('span.fancytree-title').first();
+                    stitle.attr("id", "file");
+                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
+                    stitle.before('<div style="position: absolute; top: -1000px; left: -1000px;">' + url + '</div>');
                 }
 //                var nbArrow = $(node.span).find('span.arrow-link').length;
 //                if (! node.isFolder() && nbArrow == 0) {

@@ -109,8 +109,9 @@ span.bookmark-starred-link:HOVER {
 }
 
 span#file {
-    padding-left: 10px;
+    padding-left: 26px;
     font-style: italic;
+    cursor: default;
 }
 
 button.copy-button {
