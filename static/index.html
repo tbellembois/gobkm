@@ -51,7 +51,7 @@
 
 <body>
 
-<div id="container">
+<div id="container" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
 
     <!--
     Copy to clipboard messages
@@ -101,11 +101,6 @@
         </div>
         <div id="search-result">
         </div>
-    </div>
-
-    <!-- Drop zone for new bookmarks -->
-    <div id=drop-zone ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" class="well well-lg" title="Select a destination folder and drop a new bookmark here.">
-        <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
     </div>
 
     <!-- Main tree -->
@@ -418,13 +413,6 @@
                     stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
                     stitle.before('<div style="position: absolute; top: -1000px; left: -1000px;">' + url + '</div>');
                 }
-//                var nbArrow = $(node.span).find('span.arrow-link').length;
-//                if (! node.isFolder() && nbArrow == 0) {
-//                    var $spanTitle = $(node.span).find('span.fancytree-title');
-//                    var $link = $spanTitle.attr('title');
-//                    //console.log($link);
-//                    $spanTitle.after('<span class="arrow-link" onclick=\'window.open(\"' + $link + '\");\'>&#10140;</span>');
-//                }
             },
             icon: function(event, data) {
                 return data.node.isFolder() ? true : data.node.icon;
@@ -432,38 +420,6 @@
             tooltip: function(event, data) {
                 return data.node.isFolder() ? "" : data.node.data.url;
             },
-//            click: function(event, data) {
-//
-//                //console.log(event.type);
-//
-//                clearSearchResults();
-//                $("input#search-form-input").val("");
-//
-//                // Handle only left click
-//                if (event.which == 1) {
-//                    // stop prevent node been "started drag"
-//                    event.stopPropagation();
-//                    
-//                    $("div#search-result").html("");
-//                    $("input#search-form-input").val("");
-//
-//                    $("button#confirm-delete").fadeOut();
-//                    
-//                    if( data.node.isFolder() ) {
-//                    } else {
-//                        // https://stackoverflow.com/questions/25666780/how-to-have-a-link-in-a-fancytree
-//                        var node = data.node,
-//                            orgEvent = data.originalEvent;
-//
-//                        if (node.isActive() && node.data.url) {
-//                            window.open(node.data.url, (orgEvent.ctrlKey || orgEvent.metaKey) ? "_blank" : node.data.target);
-//                        }
-//
-//                        $("button#bookmark").prop("disabled", false);    
-//                        $("button#delete").prop("disabled", false);    
-//                    }
-//                }
-//            },
         }).on("mouseenter", ".fancytree-title", function(event){
 			var node = $.ui.fancytree.getNode(event);
             //console.log(node.key);
@@ -471,7 +427,7 @@
               function() 
               {
                 node.setActive();
-              }, 300);
+              }, 200);
         }).on("mouseup", ".fancytree-title", function(event){
                 //console.log("mouseup:" + event.which);
                 clearSearchResults();
@@ -542,15 +498,17 @@
         //console.log(data);
         
         tree = $("#tree").fancytree("getTree");
-        activeNode = tree.getActiveNode();
-        if (! activeNode) {
-            activeNode = tree.getNodeByKey("1");
-            activeNode = $("#tree").fancytree("getRootNode");
-        } 
-        if (!activeNode.isFolder()) {
-            activeNode = activeNode.getParent();
-        }
-        activeNodeKey = activeNode.key;
+    
+        activeNode = tree.getNodeByKey("1");
+       // activeNode = tree.getActiveNode();
+       // if (! activeNode) {
+       //     activeNode = tree.getNodeByKey("1");
+       //     activeNode = $("#tree").fancytree("getRootNode");
+       // } 
+       // if (!activeNode.isFolder()) {
+       //     activeNode = activeNode.getParent();
+       // }
+       activeNodeKey = activeNode.key;
 
         $.ajax({
             url: "/addBookmark/",
@@ -662,6 +620,10 @@ var timeout = null;
 // Listen for keystroke events
 searchInput.onkeyup = function (e) {
 
+    if (searchInput.value.length < 2) {
+        return;
+    }
+
     // Clear the timeout if it has already been set.
     // This will prevent the previous task from executing
     // if it has been less than <MILLISECONDS>
@@ -676,6 +638,9 @@ searchInput.onkeyup = function (e) {
                 search: searchInput.value
             }
         }).done(function(result) {
+            if (result == null) {
+                return;
+            }
             //console.log(result);
             clearSearchResults();
             // Close button

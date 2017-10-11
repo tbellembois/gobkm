@@ -7,6 +7,10 @@
 	     url('../fonts/ArchivoNarrow-Regular.svg#webfont') format('svg');
 }
 
+html, body, div#container {
+    height: 100%;
+}
+
 /* Remove some Fancytree styles */
 ul.fancytree-container {
     border: none;
@@ -21,8 +25,6 @@ input[type="text"] {
 }
 
 body {
-    font-family: "MyWebFont", sans-serif;
-    font-size: 1.5em;
 }
 
 body.wait, body.wait *{
@@ -136,10 +138,10 @@ span.pending span.fancytree-title:after {
 }
 
 /* Drop zone */
-div#drop-zone {
+/*div#drop-zone {
     position: fixed;
     z-index: 2;
     text-align: center;
     top: 2px;
     right: 2px;
-}
+}*/
