@@ -6,8 +6,8 @@ import (
 	"os"
 	"path"
 
-	log "github.com/Sirupsen/logrus"
 	_ "github.com/mattn/go-sqlite3" // register sqlite3 driver
+	log "github.com/sirupsen/logrus"
 	"github.com/tbellembois/gobkm/types"
 )
 

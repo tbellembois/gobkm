@@ -33,20 +33,23 @@
     </script>
 
     <!-- Include jQuery -->
+    
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery-ui.min.js"></script>
+    <script src="/js/jquery.contextMenu.min.js"></script>
+
     <!-- Include Bootstrap -->
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
     <!-- Include Clipboard-->
     <script type="text/javascript" src="/js/clipboard.min.js"></script>
-    <!-- Include Fancytree skin and library -->
-    <script src="/js/jquery.fancytree-all.min.js"></script>
+
+    <script src="/js/jquery.fancytree.min.js"></script>
+    <script src="/js/jquery.fancytree.table.js"></script>
+    <script src="/js/jquery.fancytree.gridnav.js"></script>
     <script src="/js/jquery.fancytree.edit.js"></script>
     <script src="/js/jquery.fancytree.dnd.js"></script>
     <script src="/js/jquery.fancytree.glyph.js"></script>
-    <script src="/js/jquery.contextMenu.min.js"></script>
     <script src="/js/jquery.fancytree.contextMenu.js"></script>
-
 </head>
 
 <body>
@@ -104,7 +107,18 @@
     </div>
 
     <!-- Main tree -->
-    <div id="tree"></div>
+    <table id="tree">
+        <colgroup>
+            <col></col>
+	        <col></col>
+        </colgroup>
+        <thead>
+            <tr><th></th><th></th></tr>
+        </thead>
+        <tbody>
+            <tr><td></td><td class="hidden-xs hidden-sm" /></tr>
+        </tbody>
+    </table>
 
     <!-- Footer -->
     <div id="footer">
@@ -189,18 +203,18 @@
 
         // Create the tree inside the <div id="tree"> element.
         $("#tree").fancytree({
-            extensions: ["edit", "dnd", "glyph", "contextMenu"],
+            extensions: ["edit", "dnd", "glyph", "contextMenu", "table", "gridnav"],
             autoScroll: true,
               contextMenu: {
                   menu: function(node){
                       if (node.folder){                 
                         return {
-                            "edit": { "name": "Edit", icon: "fa-edit" },
-                            "delete": { "name": "Delete", icon: "fa-trash-o" },
-                            "new": { "name": "New subfolder", icon: "fa-folder-o" },
+                            "edit": { "name": "edit", icon: "fa-edit" },
+                            "delete": { "name": "delete", icon: "fa-trash-o" },
+                            "new": { "name": "new subfolder", icon: "fa-folder-o" },
                             sep1: "-----",
                             "fold1": {
-                                "name": "New bookmark from URL", 
+                                "name": "new bookmark from URL", 
                                 icon: "fa-globe",
                                 "items": {
                                      newBkm: {
@@ -236,9 +250,9 @@
                         };
                       } else {
                         return {
-                            "star": { "name": "Star", icon: "fa-star" },
-                            "edit": { "name": "Edit", icon: "fa-edit" },
-                            "delete": { "name": "Delete", icon: "fa-trash" },
+                            "star": { "name": "star", icon: "fa-star" },
+                            "edit": { "name": "edit", icon: "fa-edit" },
+                            "delete": { "name": "delete", icon: "fa-trash" },
                         };
                        }
                     },
@@ -304,6 +318,31 @@
                 preset: "bootstrap3",
                 map: {}
             },
+//            renderColumns: function(event, data) {
+//                var node = data.node,
+//                    $tdList = $(node.tr).find(">td");
+//
+//                // Make the title cell span the remaining columns if it's a folder:
+//                if( node.isFolder() ) {
+//                    $tdList.eq(2)
+//                        .prop("colspan", 3)
+//                        .nextAll().remove();
+//                    return;
+//                }
+//                // (Column #0 is rendered by fancytree by adding the checkbox)
+//
+//                // Column #1 should contain the index as plain text, e.g. '2.7.1'
+//                $tdList.eq(1)
+//                    .text(node.getIndexHier())
+//                    .addClass("alignRight");
+//
+//                // (Column #2 is rendered by fancytree)
+//
+//                // ...otherwise render remaining columns
+//
+//                $tdList.eq(3).text(node.data.myCustomData);
+//                $tdList.eq(4).html("<input name='important' type='checkbox' value='" + node.key + "'>");
+//            },
             dnd: {
                 dragStart: function(node, data) {
                     return true;
@@ -320,8 +359,6 @@
                 dragDrop: function(node, data) {
                     fromNode = data.otherNode; // dragged item
                     toNode = node;
-                    //console.log(fromNode.title);
-                    //console.log(toNode.title);
 
                     if (fromNode.isFolder()) {
                         ajaxUrl = "/moveFolder/"
@@ -397,37 +434,37 @@
                     }
                 }
             },
-            renderNode: function (event, data) {
-                var node = data.node;
-                var key = node.key;
-                var title = node.title;
-                var url = node.data.url;
-                
-                var nbButton = $(node.span).find('button').length;
-
-                // Sample: add attribute
-                //$(node.span).find('span.fancytree-title').attr("foo", "bar");
-                if (! node.isFolder() && url.startsWith("file") && nbButton == 0) {
-                    stitle = $(node.span).find('span.fancytree-title').first();
-                    stitle.attr("id", "file");
-                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
-                    stitle.before('<div style="position: absolute; top: -1000px; left: -1000px;">' + url + '</div>');
-                }
-            },
+//            renderNode: function (event, data) {
+//                var node = data.node;
+//                var key = node.key;
+//                var title = node.title;
+//                var url = node.data.url;
+//                
+//                var nbButton = $(node.span).find('button').length;
+//
+//                // Sample: add attribute
+//                //$(node.span).find('span.fancytree-title').attr("foo", "bar");
+//                if (! node.isFolder() && url.startsWith("file") && nbButton == 0) {
+//                    stitle = $(node.span).find('span.fancytree-title').first();
+//                    stitle.attr("id", "file");
+//                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
+//                    stitle.before('<div style="position: absolute; top: -1000px; left: -1000px;">' + url + '</div>');
+//                }
+//            },
             icon: function(event, data) {
                 return data.node.isFolder() ? true : data.node.icon;
             },
             tooltip: function(event, data) {
                 return data.node.isFolder() ? "" : data.node.data.url;
             },
-        }).on("mouseenter", ".fancytree-title", function(event){
-			var node = $.ui.fancytree.getNode(event);
-            //console.log(node.key);
-            setTimeout(
-              function() 
-              {
-                node.setActive();
-              }, 200);
+//        }).on("mouseenter", ".fancytree-title", function(event){
+//			var node = $.ui.fancytree.getNode(event);
+//            //console.log(node.key);
+//            setTimeout(
+//              function() 
+//              {
+//                node.setActive();
+//              }, 200);
         }).on("mouseup", ".fancytree-title", function(event){
                 //console.log("mouseup:" + event.which);
                 clearSearchResults();

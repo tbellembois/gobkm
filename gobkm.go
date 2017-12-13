@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/GeertJohan/go.rice"
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/tbellembois/gobkm/handlers"
 	"github.com/tbellembois/gobkm/models"
 )

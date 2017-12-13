@@ -19,7 +19,7 @@ import (
 	"github.com/tbellembois/gobkm/models"
 	"github.com/tbellembois/gobkm/types"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 const faviconRequestBaseURL = "http://www.google.com/s2/favicons?domain_url="

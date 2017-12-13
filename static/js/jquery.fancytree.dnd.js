@@ -9,11 +9,29 @@
  * Released under the MIT license
  * https://github.com/mar10/fancytree/wiki/LicenseInfo
  *
- * @version 2.23.0
- * @date 2017-05-27T20:09:38Z
+ * @version 2.26.0
+ * @date 2017-11-04T17:52:53Z
  */
 
-;(function($, window, document, undefined) {
+;(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define( [
+			"jquery",
+			"jquery-ui/ui/widgets/draggable",
+			"jquery-ui/ui/widgets/droppable",
+			"./jquery.fancytree"
+		], factory );
+	} else if ( typeof module === "object" && module.exports ) {
+		// Node/CommonJS
+		require("jquery.fancytree");
+		module.exports = factory(require("jquery"));
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+
+}( function( $ ) {
 
 "use strict";
 
@@ -247,7 +265,7 @@ function _initDragAndDrop(tree) {
 
 $.ui.fancytree.registerExtension({
 	name: "dnd",
-	version: "2.23.0",
+	version: "2.26.0",
 	// Default options for this extension.
 	options: {
 		// Make tree nodes accept draggables
@@ -569,4 +587,6 @@ $.ui.fancytree.registerExtension({
 		 }
 	}
 });
-}(jQuery, window, document));
+// Value returned by `require('jquery.fancytree..')`
+return $.ui.fancytree;
+}));  // End of closure
