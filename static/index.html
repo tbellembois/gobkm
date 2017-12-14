@@ -6,6 +6,8 @@
     <title>GoBkm</title>
     <meta name="description" content="A minimalist folder-based bookmark manager">
     <meta name="author" content="Thomas Bellembois">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
     <!-- from https://realfavicongenerator.net/ -->
     <link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
@@ -54,16 +56,16 @@
 
 <body>
 
-<div id="container" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
+<div class="container-fluid" id="container" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
 
     <!--
     Copy to clipboard messages
     -->
     <div id="clipboard-message-ok" class="alert alert-success" role="alert">
-      Copied to clipboard
+      copied to clipboard
     </div>
     <div id="clipboard-message-nok" class="alert alert-danger" role="alert">
-      An error occured trying to copy to clipboard
+      an error occured trying to copy to clipboard
     </div>
 
     <!--
@@ -90,7 +92,6 @@
                 {{end}}
             </ul>
           </div>
-
         </div>
     </div>
 
@@ -107,18 +108,21 @@
     </div>
 
     <!-- Main tree -->
-    <table id="tree">
-        <colgroup>
-            <col></col>
-	        <col></col>
-        </colgroup>
-        <thead>
-            <tr><th></th><th></th></tr>
-        </thead>
-        <tbody>
-            <tr><td></td><td class="hidden-xs hidden-sm" /></tr>
-        </tbody>
-    </table>
+    <div id="scrollParent" style="height: 100%; overflow: auto;">
+        <table id="tree">
+            <colgroup>
+                <col></col>
+                <col></col>
+                <col></col>
+            </colgroup>
+            <thead>
+                <tr><th></th><th></th><th></th><th></th></tr>
+            </thead>
+            <tbody>
+                <tr><td></td><td class="hidden-xs hidden-sm" /><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
 
     <!-- Footer -->
     <div id="footer">
@@ -204,6 +208,7 @@
         // Create the tree inside the <div id="tree"> element.
         $("#tree").fancytree({
             extensions: ["edit", "dnd", "glyph", "contextMenu", "table", "gridnav"],
+            scrollParent: $("#scrollParent"),
             autoScroll: true,
               contextMenu: {
                   menu: function(node){
@@ -218,33 +223,32 @@
                                 icon: "fa-globe",
                                 "items": {
                                      newBkm: {
-                                                type: 'text', 
-                                                value: "", 
-                                                events: {
-                                                    keyup: function(e) {
-                                                        if (e.keyCode == 13) {
-                                                             $.ajax({
-                                                                url: "/addBookmark/",
-                                                                data: {
-                                                                    destinationFolderId: node.key,
-                                                                    bookmarkUrl: $("input[name=context-menu-input-newBkm]").val()
+                                        type: 'text', 
+                                        value: "", 
+                                        events: {
+                                            keyup: function(e) {
+                                                if (e.keyCode == 13) {
+                                                     $.ajax({
+                                                        url: "/addBookmark/",
+                                                        data: {
+                                                            destinationFolderId: node.key,
+                                                            bookmarkUrl: $("input[name=context-menu-input-newBkm]").val()
+                                                        }
+                                                    }).done(function(result) {
+                                                        node.load(forceReload=true).then(
+                                                            function() {
+                                                                if (! node.isExpanded()) {
+                                                                    node.setExpanded(true);
                                                                 }
-                                                            }).done(function(result) {
-                                                                node.load(forceReload=true).then(
-                                                                    function() {
-                                                                        if (! node.isExpanded()) {
-                                                                            node.setExpanded(true);
-                                                                        }
-                                                                    }
-                                                                );
-                                                            }).always(function() {
-                                                                $('.context-menu-root').first().trigger("contextmenu:hide");
-                                                            });
-                                                       
-                                                        } 
-                                                    }
-                                                }
+                                                            }
+                                                        );
+                                                    }).always(function() {
+                                                        $('.context-menu-root').first().trigger("contextmenu:hide");
+                                                    });
+                                                } 
                                             }
+                                        }
+                                    }
                                 }
                             },
                         };
@@ -260,11 +264,9 @@
                     //console.log("Selected action '" + action + "' on node " + node);
                     switch (action) {
                         case "star":
-                            //console.log("star");
                             star(node.key);
                             break;
                         case "edit":
-                            //console.log("edit");
                             node.editStart();
                             break;
                         case "new":
@@ -281,7 +283,6 @@
                                             function() {
                                                 tree = $("#tree").fancytree("getTree");
                                                 newNode = tree.getNodeByKey(result.key.toString());
-
                                                 newNode.moveTo(node, 'firstChild');
                                                 newNode.setActive();
                                                 newNode.editStart();
@@ -302,7 +303,6 @@
                                 data: {
                                     itemId: node.key
                                 }
-
                             }).done(function(result) {
                                 node.remove();
                             });
@@ -318,31 +318,6 @@
                 preset: "bootstrap3",
                 map: {}
             },
-//            renderColumns: function(event, data) {
-//                var node = data.node,
-//                    $tdList = $(node.tr).find(">td");
-//
-//                // Make the title cell span the remaining columns if it's a folder:
-//                if( node.isFolder() ) {
-//                    $tdList.eq(2)
-//                        .prop("colspan", 3)
-//                        .nextAll().remove();
-//                    return;
-//                }
-//                // (Column #0 is rendered by fancytree by adding the checkbox)
-//
-//                // Column #1 should contain the index as plain text, e.g. '2.7.1'
-//                $tdList.eq(1)
-//                    .text(node.getIndexHier())
-//                    .addClass("alignRight");
-//
-//                // (Column #2 is rendered by fancytree)
-//
-//                // ...otherwise render remaining columns
-//
-//                $tdList.eq(3).text(node.data.myCustomData);
-//                $tdList.eq(4).html("<input name='important' type='checkbox' value='" + node.key + "'>");
-//            },
             dnd: {
                 dragStart: function(node, data) {
                     return true;
@@ -384,7 +359,6 @@
                     });
                 }
             },
-
             edit: {
                 triggerStart: ["f2", "shift+click"],
                 save: function(event, data) {
@@ -401,7 +375,6 @@
                             itemId: node.key,
                             itemName: data.input.val()
                         }
-
                     }).done(function(result) {
                         node.setTitle(result.Title); // in case server modified it
                     }).fail(function(result) {
@@ -434,37 +407,36 @@
                     }
                 }
             },
-//            renderNode: function (event, data) {
-//                var node = data.node;
-//                var key = node.key;
-//                var title = node.title;
-//                var url = node.data.url;
-//                
-//                var nbButton = $(node.span).find('button').length;
-//
-//                // Sample: add attribute
-//                //$(node.span).find('span.fancytree-title').attr("foo", "bar");
-//                if (! node.isFolder() && url.startsWith("file") && nbButton == 0) {
-//                    stitle = $(node.span).find('span.fancytree-title').first();
-//                    stitle.attr("id", "file");
-//                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
-//                    stitle.before('<div style="position: absolute; top: -1000px; left: -1000px;">' + url + '</div>');
-//                }
-//            },
+            renderColumns: function(event, data) {
+                var node = data.node;
+                var url = node.data.url;
+                var nbButton = $(node).find('button').length;
+
+                if (! node.isFolder() && url.startsWith("file") && nbButton == 0) {
+                    var murl = url.split('/').reverse()[0];
+                    if (murl == "") {
+                        murl = url.split('/').reverse()[1];
+                    }
+                    stitle = $(node.span).find('span.fancytree-title').first();
+                    stitle.html("");
+                    stitle.attr("id", "file");
+                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
+                    stitle.before('<div class="copy-text">' + url + '</div>');
+                }
+            },
             icon: function(event, data) {
                 return data.node.isFolder() ? true : data.node.icon;
             },
             tooltip: function(event, data) {
                 return data.node.isFolder() ? "" : data.node.data.url;
             },
-//        }).on("mouseenter", ".fancytree-title", function(event){
-//			var node = $.ui.fancytree.getNode(event);
-//            //console.log(node.key);
-//            setTimeout(
-//              function() 
-//              {
-//                node.setActive();
-//              }, 200);
+        }).on("mouseenter", ".fancytree-title", function(event){
+			var node = $.ui.fancytree.getNode(event);
+            setTimeout(
+              function() 
+              {
+                node.setActive();
+              }, 200);
         }).on("mouseup", ".fancytree-title", function(event){
                 //console.log("mouseup:" + event.which);
                 clearSearchResults();
@@ -474,24 +446,19 @@
 
                 // Handle only left click
                 if (event.which == 1 && !node.title.startsWith("file")) {
-                   
                    $("div#search-result").html("");
                    $("input#search-form-input").val("");
-
                    $("button#confirm-delete").fadeOut();
                    
                    if( node.isFolder() ) {
                    } else {
-
                        if (node.isActive() && node.data.url) {
                            window.open(node.data.url, "_blank");
                        }
-
                        $("button#bookmark").prop("disabled", false);    
                        $("button#delete").prop("disabled", false);    
                    }
                 }
-
         });
     });
 </script>
@@ -536,16 +503,16 @@
         
         tree = $("#tree").fancytree("getTree");
     
-        activeNode = tree.getNodeByKey("1");
-       // activeNode = tree.getActiveNode();
-       // if (! activeNode) {
-       //     activeNode = tree.getNodeByKey("1");
-       //     activeNode = $("#tree").fancytree("getRootNode");
-       // } 
-       // if (!activeNode.isFolder()) {
-       //     activeNode = activeNode.getParent();
-       // }
-       activeNodeKey = activeNode.key;
+        //activeNode = tree.getNodeByKey("1");
+        activeNode = tree.getActiveNode();
+        if (! activeNode) {
+            activeNode = tree.getNodeByKey("1");
+            activeNode = $("#tree").fancytree("getRootNode");
+        } 
+        if (!activeNode.isFolder()) {
+            activeNode = activeNode.getParent();
+        }
+        activeNodeKey = activeNode.key;
 
         $.ajax({
             url: "/addBookmark/",
