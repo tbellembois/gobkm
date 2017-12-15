@@ -25,6 +25,10 @@ span.fancytree-title {
     display: initial;
 }
 
+span.ws-wrap span.fancytree-title {
+    white-space: normal;
+}
+
 /* Remove some Bootstrap styles */
 input[type="text"] {
     font-weight: normal;
