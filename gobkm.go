@@ -98,26 +98,22 @@ func main() {
 	}
 
 	// Handlers initialization.
+	http.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
+	http.HandleFunc("/addBookmarkBookmarklet/", env.AddBookmarkBookmarkletHandler)
+	http.HandleFunc("/addFolder/", env.AddFolderHandler)
+	http.HandleFunc("/bookmarkThis/", env.BookmarkThisHandler)
+	http.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
+	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
+	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
-	http.HandleFunc("/getBookmark/", env.GetBookmarkHandler)
+	http.HandleFunc("/import/", env.ImportHandler)
 	http.HandleFunc("/moveFolder/", env.MoveFolderHandler)
 	http.HandleFunc("/moveBookmark/", env.MoveBookmarkHandler)
 	http.HandleFunc("/renameFolder/", env.RenameFolderHandler)
 	http.HandleFunc("/renameBookmark/", env.RenameBookmarkHandler)
-	http.HandleFunc("/addFolder/", env.AddFolderHandler)
-	http.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
-	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
-	http.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
-	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
-	http.HandleFunc("/export/", env.ExportHandler)
-	http.HandleFunc("/import/", env.ImportHandler)
 	http.HandleFunc("/searchBookmarks/", env.SearchBookmarkHandler)
-	// websocket handler
+	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	http.HandleFunc("/socket/", env.SocketHandler)
-	// bookmarklet handler
-	http.HandleFunc("/bookmarkThis/", env.BookmarkThisHandler)
-	//http.HandleFunc("/bookmarkThis2/", env.BookmarkThis2Handler)
-	http.HandleFunc("/addBookmarkBookmarklet/", env.AddBookmarkBookmarkletHandler)
 	http.HandleFunc("/", env.MainHandler)
 
 	// Rice boxes initialization.

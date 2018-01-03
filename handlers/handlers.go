@@ -708,50 +708,6 @@ func (env *Env) MoveFolderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//GetBookmarkHandler retrieves the bookmark with the given id.
-func (env *Env) GetBookmarkHandler(w http.ResponseWriter, r *http.Request) {
-	var (
-		err        error
-		bookmarkID int
-	)
-	// GET parameters retrieval.
-	bookmarkIDParam := r.URL.Query()["itemId"]
-	log.WithFields(log.Fields{
-		"bookmarkIdParam": bookmarkIDParam,
-	}).Debug("GetBookmarkHandler:Query parameter")
-
-	// Parameters check.
-	if len(bookmarkIDParam) == 0 {
-		failHTTP(w, "GetBookmarkHandler", "bookmarkIdParam empty", http.StatusBadRequest)
-		return
-	}
-	// bookmarkId int convertion.
-	if bookmarkID, err = strconv.Atoi(bookmarkIDParam[0]); err != nil {
-		failHTTP(w, "GetBookmarkHandler", "bookmarkId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
-
-	// Getting the bookmark.
-	bkm := env.DB.GetBookmark(bookmarkID)
-	// Datastore error check.
-	if err = env.DB.FlushErrors(); err != nil {
-		failHTTP(w, "GetBookmarkHandler", err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Building the result struct.
-	resultBookmarkStruct := types.Bookmark{Id: bookmarkID, Title: bkm.Title, URL: bkm.URL, Favicon: bkm.Favicon, Starred: bkm.Starred}
-	log.WithFields(log.Fields{
-		"resultBookmarkStruct": resultBookmarkStruct,
-	}).Debug("StarBookmarkHandler")
-
-	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(resultBookmarkStruct); err != nil {
-		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
-	}
-
-}
-
 // GetBranchNodesHandler retrieves the subfolders and bookmarks of the given folder.
 func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 	var (

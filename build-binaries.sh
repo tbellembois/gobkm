@@ -13,7 +13,7 @@ PACKAGE_ARCHIVE_NAME="gobkm.zip"
 STATIC_RESOURCES_ARCHIVE_NAME="static.zip"
 
 #BUILD_GOPHERJS_CMD="gopherjs build static/js/gjs-main.go -o static/js/gjs-main.js -m"
-BUILD_ARMV7_CMD="env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CC=/usr/bin/arm-linux-gnueabihf-gcc go build -o $OUTPUT_DIR/$BINARY_ARMV7_NAME ."
+BUILD_ARMV7_CMD="env GOOS=linux GOARCH=arm CC=arm-linux-gnueabi-gcc GOARM=7 CGO_ENABLED=1 ENABLE_CGO=1 go build -o $OUTPUT_DIR/$BINARY_ARMV7_NAME ."
 BUILD_X86_CMD="go build -o $OUTPUT_DIR/$BINARY_X86_NAME ."
 
 RICE_ARMV7_CMD="rice append --exec $OUTPUT_DIR/$BINARY_ARMV7_NAME"
@@ -31,11 +31,11 @@ $BUILD_X86_CMD
 echo "-appending rice data"
 $RICE_X86_CMD
 
-echo "-building $BINARY_ARMV7_NAME"
-$BUILD_ARMV7_CMD
+#echo "-building $BINARY_ARMV7_NAME"
+#$BUILD_ARMV7_CMD
 
-echo "-appending rice data"
-$RICE_ARMV7_CMD
+#echo "-appending rice data"
+#$RICE_ARMV7_CMD
 
 echo "-building binaries zip"
 zip -r $OUTPUT_DIR/$PACKAGE_ARCHIVE_NAME $OUTPUT_DIR

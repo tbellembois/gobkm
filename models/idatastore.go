@@ -9,10 +9,8 @@ type Datastore interface {
 	FlushErrors() error
 
 	SearchBookmarks(string) []*types.Bookmark
-	GetAllBookmarks() []*types.Bookmark
 	GetBookmark(int) *types.Bookmark
 	GetFolderBookmarks(int) types.Bookmarks
-	GetNoIconBookmarks() []*types.Bookmark
 	GetStarredBookmarks() []*types.Bookmark
 	SaveBookmark(*types.Bookmark) int64
 	UpdateBookmark(*types.Bookmark)
@@ -20,7 +18,6 @@ type Datastore interface {
 
 	GetFolder(int) *types.Folder
 	GetFolderSubfolders(int) []*types.Folder
-	GetRootFolders() []*types.Folder
 	SaveFolder(*types.Folder) int64
 	UpdateFolder(*types.Folder)
 	DeleteFolder(*types.Folder)
