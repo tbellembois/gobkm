@@ -115,7 +115,7 @@
 
     <!-- Main tree -->
     <div id="scrollParent" style="height: 100%; overflow: auto;">
-        <table id="tree">
+        <table id="tree" class="table table-condensed table-hover table-striped fancytree-fade-expander">
             <colgroup>
                 <col></col>
                 <col></col>
@@ -215,6 +215,7 @@
         $("#tree").fancytree({
             extensions: ["edit", "dnd", "glyph", "contextMenu", "table", "gridnav"],
             scrollParent: $("#scrollParent"),
+            glyph: { preset: "bootstrap3", map: {} },
             autoScroll: true,
               contextMenu: {
                   menu: function(node){

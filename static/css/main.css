@@ -19,7 +19,7 @@ span.ws-wrap span.fancytree-title {
     white-space: normal;
 }
 
-/* Remove some Bootstrap styles */
+/* Redefine some Bootstrap styles */
 input[type="text"] {
     font-weight: normal;
 }
@@ -92,6 +92,7 @@ div#starred-list {
 
 div#bookmarklet {
     float: left;
+    width: 100%;
 }
 
 img.favicon {
