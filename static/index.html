@@ -52,11 +52,17 @@
     <script src="/js/jquery.fancytree.dnd.js"></script>
     <script src="/js/jquery.fancytree.glyph.js"></script>
     <script src="/js/jquery.fancytree.contextMenu.js"></script>
-</head>
+  </head>
 
 <body>
 
-<div class="container-fluid" id="container" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
+<div ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" id="drop-zone" title="drop new bookmarks here">
+    <span class="badge">
+        <i class="fa fa-bookmark" aria-hidden="true"></i>
+    </span>
+</div>
+
+<div class="container-fluid" id="container">
 
     <!--
     Copy to clipboard messages
@@ -184,7 +190,7 @@
 <!-- Initialize the tree when page is loaded -->
 <script type="text/javascript">
     $(function() {
-        // Instanciate clipboard.
+        // Instanciate clipboard for file links.
         var clipboard = new Clipboard('button', {
             target: function(trigger) {
                 return trigger.nextElementSibling;
@@ -498,9 +504,21 @@
 
     function dzDrop(ev) {
         ev.preventDefault();
-        var data = ev.dataTransfer.getData("text");
-        //console.log(data);
         
+        var data
+        dttypes = ev.dataTransfer.types;
+        if ($.inArray("text/uri-list", dttypes) != -1) {
+            data = ev.dataTransfer.getData("text/uri-list");
+        } else if($.inArray("text/x-moz-url", dttypes) != -1) {
+            data = ev.dataTransfer.getData("text/x-moz-url");
+        } else {
+            alert("not supported by your browser");
+            return;
+        }
+        console.log(data);
+        //console.log(ev.dataTransfer.types);
+        // ["text/plain", "text/uri-list"]
+        // ["text/plain", "text/x-moz-url"
         tree = $("#tree").fancytree("getTree");
     
         //activeNode = tree.getNodeByKey("1");
