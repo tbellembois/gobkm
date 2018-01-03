@@ -28,8 +28,8 @@ rm -Rf $OUTPUT_DIR/*
 echo "-building $BINARY_X86_NAME"
 $BUILD_X86_CMD
 
-echo "-appending rice data"
-$RICE_X86_CMD
+#echo "-appending rice data"
+#$RICE_X86_CMD
 
 #echo "-building $BINARY_ARMV7_NAME"
 #$BUILD_ARMV7_CMD
