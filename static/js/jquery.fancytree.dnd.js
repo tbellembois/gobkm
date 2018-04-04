@@ -4,13 +4,13 @@
  * Drag-and-drop support (jQuery UI draggable/droppable).
  * (Extension module for jquery.fancytree.js: https://github.com/mar10/fancytree/)
  *
- * Copyright (c) 2008-2017, Martin Wendt (http://wwWendt.de)
+ * Copyright (c) 2008-2018, Martin Wendt (http://wwWendt.de)
  *
  * Released under the MIT license
  * https://github.com/mar10/fancytree/wiki/LicenseInfo
  *
- * @version 2.26.0
- * @date 2017-11-04T17:52:53Z
+ * @version 2.28.1
+ * @date 2018-03-19T06:47:37Z
  */
 
 ;(function( factory ) {
@@ -24,7 +24,7 @@
 		], factory );
 	} else if ( typeof module === "object" && module.exports ) {
 		// Node/CommonJS
-		require("jquery.fancytree");
+		require("./jquery.fancytree");
 		module.exports = factory(require("jquery"));
 	} else {
 		// Browser globals
@@ -207,7 +207,7 @@ function _initDragAndDrop(tree) {
 				// Support glyph symbols instead of icons
 				if( glyph ) {
 					$helper.find(".fancytree-drag-helper-img")
-						.addClass(glyph.map.dragHelper);
+						.addClass(glyph.map._addClass + " " + glyph.map.dragHelper);
 				}
 				// Allow to modify the helper, e.g. to add multi-node-drag feedback
 				if( opts.initHelper ) {
@@ -265,7 +265,7 @@ function _initDragAndDrop(tree) {
 
 $.ui.fancytree.registerExtension({
 	name: "dnd",
-	version: "2.26.0",
+	version: "2.28.1",
 	// Default options for this extension.
 	options: {
 		// Make tree nodes accept draggables
@@ -317,7 +317,7 @@ $.ui.fancytree.registerExtension({
 	},
 	/* Display drop marker according to hitMode ('after', 'before', 'over'). */
 	_setDndStatus: function(sourceNode, targetNode, helper, hitMode, accept) {
-		var markerOffsetX,
+		var markerOffsetX, pos,
 			markerAt = "center",
 			instData = this._local,
 			dndOpt = this.options.dnd ,
@@ -334,9 +334,8 @@ $.ui.fancytree.registerExtension({
 //                .prependTo("body");
 
 			if( glyphOpt ) {
-				// instData.$dropMarker.addClass(glyph.map.dragHelper);
 				instData.$dropMarker
-					.addClass(glyphOpt.map.dropMarker);
+					.addClass(glyphOpt.map._addClass + " " + glyphOpt.map.dropMarker);
 			}
 		}
 		if( hitMode === "after" || hitMode === "before" || hitMode === "over" ){
@@ -352,16 +351,22 @@ $.ui.fancytree.registerExtension({
 				break;
 			}
 
+			pos = {
+				my: "left" + offsetString(markerOffsetX) + " center",
+				at: "left " + markerAt,
+				of: $targetTitle
+			};
+			if( this.options.rtl ) {
+				pos.my = "right" + offsetString(-markerOffsetX) + " center";
+				pos.at = "right " + markerAt;
+			}
 			instData.$dropMarker
 				.toggleClass(classDropAfter, hitMode === "after")
 				.toggleClass(classDropOver, hitMode === "over")
 				.toggleClass(classDropBefore, hitMode === "before")
+				.toggleClass("fancytree-rtl", !!this.options.rtl)
 				.show()
-				.position($.ui.fancytree.fixPositionOptions({
-					my: "left" + offsetString(markerOffsetX) + " center",
-					at: "left " + markerAt,
-					of: $targetTitle
-					}));
+				.position($.ui.fancytree.fixPositionOptions(pos));
 		} else {
 			instData.$dropMarker.hide();
 		}

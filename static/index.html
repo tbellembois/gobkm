@@ -20,11 +20,11 @@
     <meta name="msapplication-TileImage" content="/img/mstile-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
-    <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/css/ui.fancytree.min.css">
     <link rel="stylesheet" type="text/css" href="/css/jquery.contextMenu.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/fontawesome-all.min.css">
     <link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
 
@@ -35,16 +35,14 @@
     </script>
 
     <!-- Include jQuery -->
-    
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery-ui.min.js"></script>
     <script src="/js/jquery.contextMenu.min.js"></script>
-
     <!-- Include Bootstrap -->
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    <!-- Include Clipboard-->
+    <!-- Include Clipboard -->
     <script type="text/javascript" src="/js/clipboard.min.js"></script>
-
+    <!-- Include Fancytree -->
     <script src="/js/jquery.fancytree.min.js"></script>
     <script src="/js/jquery.fancytree.table.js"></script>
     <script src="/js/jquery.fancytree.gridnav.js"></script>
@@ -56,131 +54,145 @@
 
 <body>
 
-<div ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" id="drop-zone" title="drop new bookmarks here">
-    <span class="badge">
-        <i class="fa fa-cloud-download" aria-hidden="true"></i>
-    </span>
-</div>
-
 <div class="container-fluid" id="container">
 
+    <div class="row">
+    <div id="header" class="collapse show col-xs-11">
+
     <!--
-    Copy to clipboard messages
+    Copy to clipboard messages and drop zone
     -->
-    <div id="clipboard-message-ok" class="alert alert-success" role="alert">
-      copied to clipboard
-    </div>
-    <div id="clipboard-message-nok" class="alert alert-danger" role="alert">
-      an error occured trying to copy to clipboard
+    <div class="row">
+        <div class="col-sm-10">
+            <div id="clipboard-message-ok" class="alert alert-success" role="alert">
+                copied to clipboard
+            </div>
+            <div id="clipboard-message-nok" class="alert alert-danger" role="alert">
+                an error occured trying to copy to clipboard
+            </div>
+        </div>
+
+        <div class="col-sm-2" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" id="drop-zone" title="drop new bookmarks here">
+            <span class="badge">
+                <i class="fas fa-cloud-download-alt"></i>
+            </span>
+        </div>
     </div>
 
     <!--
     Starred bookmarks
     -->
-    <div id="starred-list">
-        <div class="panel panel-default">
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-            <div class="panel-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-body card" id="starred-list">
+                <h5 class="card-title">
+                    <span class="fas fa-star" aria-hidden="true"></span>
+                </h5>
                 <ul id="starred">
-                {{with .Bkms}}
-                {{range .}}
+                    {{with .Bkms}} {{range .}}
                     <li id="bookmark-starred-{{.Id}}">
-                       <div class="bookmark">
+                        <div class="bookmark">
                             <img src="{{.Favicon}}" alt="" class="favicon">
-                            <span class="bookmark-starred-link" 
-                                  title="{{.URL}}" 
-                                  onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
+                            <span class="bookmark-starred-link" title="{{.URL}}" onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
                             </span>
-                            <a href="#" onclick="unStar('{{.Id}}');" class="glyphicon glyphicon-remove" aria-hidden="true" title="Remove star."></a>
+                            <a href="#" onclick="unStar('{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
                         </div>
                     </li>
-                {{end}}
-                {{end}}
-            </ul>
-          </div>
+                    {{end}} {{end}}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
         </div>
     </div>
 
     <!-- Search form -->
-    <div id="search-box">
-        <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1">
-                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-            </span>
-            <input type="text" id="search-form-input" class="form-control" placeholder="Search a bookmark title..." aria-describedby="basic-addon1">
+    <div class="row">
+        <div class="input-group mb-3 col-sm-12" id="search-box">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" id="search-form-input" class="form-control" placeholder="search a bookmark title..." aria-describedby="basic-addon1">
         </div>
-        <div id="search-result">
+        <div class="col-sm-12" id="search-result">
+            <ul class="list-group">
+            </ul>
         </div>
+    </div>
+
+    </div>
+    <div class="col-xs-1 align-self-end">
+        <a id="collapser" class="btn btn-light" data-toggle="collapse" href="#header" role="button" aria-expanded="false" aria-controls="header">
+            <i class="fas fa-angle-double-up"></i>
+        </a>
+    </div>
     </div>
 
     <!-- Main tree -->
-    <div id="scrollParent" style="height: 100%; overflow: auto;">
-        <table id="tree" class="table table-condensed table-hover table-striped fancytree-fade-expander">
-            <colgroup>
-                <col></col>
-                <col></col>
-                <col></col>
-            </colgroup>
-            <thead>
-                <tr><th></th><th></th><th></th><th></th></tr>
-            </thead>
-            <tbody>
-                <tr><td></td><td class="hidden-xs hidden-sm" /><td></td><td></td></tr>
-            </tbody>
-        </table>
+    <div class="row">
+        <div id="scrollParent" class="col-sm-12">
+            <table id="tree" class="table table-condensed table-hover table-striped fancytree-fade-expander">
+                <colgroup>
+                    <col></col>
+                    <col></col>
+                    <col></col>
+                </colgroup>
+                <thead>
+                    <tr><th></th><th></th><th></th><th></th></tr>
+                </thead>
+                <tbody>
+                    <tr><td></td><td/><td></td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Footer -->
-    <div id="footer">
+    <div id="footer" class="row">
 
         <!-- Import form -->
-        <div id="action-box">
+        <div id="action-box" class="col-sm-12">
             <div id="import-input-box" style="display:none">
                 <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="input-group">
-                                <input type="file" name="importFile" accept=".html" id="import-file" class="form-control">
-                                <span class="input-group-btn">
-                                <button onclick="document.getElementById('import-file-form').submit();" class="btn btn-default" type="button"><span class="glyphicon glyphicon-download" aria-hidden="true" ></span></button>
-                                </span>
-                            </div>
-                        </div>
+                    <div class="input-group">
+                        <input type="file" name="importFile" accept=".html" id="import-file" class="form-control">
+                        <span class="input-group-btn">
+                        <button onclick="document.getElementById('import-file-form').submit();" class="btn btn-default" type="button"><i class="fas fa-download"></i></button>
+                        </span>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- Copyright -->
-        <div id="copyright">
+        <div id="copyright" class="col-sm-12">
             <!--
             <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
-    -->
+            -->
         </div>
 
         <!-- Bookmarklets -->
-        <div id="bookmarklet" style="display: none;">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">bookmarklets</h3>
+        <div class="card panel-default row col-sm-12" id="bookmarklet" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">bookmarklets</h3>
+                <div id="bookmarklet-app">
+                    <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
                 </div>
-                <div class="panel-body">
-                    <div id="bookmarklet-app">
-                        <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
-                    </div>
-                    <div id="bookmarklet-add">
-                        <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm bookmark current page</a>
-                    </div>
+                <div id="bookmarklet-add">
+                    <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm bookmark current page</a>
                 </div>
             </div>
         </div>
-
+        
         <!-- Import and export buttons -->
-        <div id="import-export">
+        <div id="import-export row" class="col-sm-12">
             <div class="btn-group" role="group" aria-label="...">
-                <button type="button" title="export bookmarks" class="btn btn-default" id="export-box"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span></button>
-                <button type="button" title="import bookmarks" class="btn btn-default" id="import-box"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></button>
-                <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
+                <button type="button" title="export bookmarks" class="btn btn-default" id="export-box"><i class="fas fa-upload"></i></button>
+                <button type="button" title="import bookmarks" class="btn btn-default" id="import-box"><i class="fas fa-download"></i></button>
+                <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><i class="fas fa-globe"></i></button>
             </div>
         </div>
     </div>
@@ -215,19 +227,21 @@
         $("#tree").fancytree({
             extensions: ["edit", "dnd", "glyph", "contextMenu", "table", "gridnav"],
             scrollParent: $("#scrollParent"),
-            glyph: { preset: "bootstrap3", map: {} },
+            glyph: { 
+                preset: "awesome5",
+                map: {}
+            },
             autoScroll: true,
               contextMenu: {
                   menu: function(node){
                       if (node.folder){                 
                         return {
-                            "edit": { "name": "edit", icon: "fa-edit" },
-                            "delete": { "name": "delete", icon: "fa-trash-o" },
-                            "new": { "name": "new subfolder", icon: "fa-folder-o" },
+                            "edit": { "name": "edit" },
+                            "delete": { "name": "delete" },
+                            "new": { "name": "new subfolder" },
                             sep1: "-----",
                             "fold1": {
                                 "name": "new bookmark from URL", 
-                                icon: "fa-globe",
                                 "items": {
                                      newBkm: {
                                         type: 'text', 
@@ -261,9 +275,9 @@
                         };
                       } else {
                         return {
-                            "star": { "name": "star", icon: "fa-star" },
-                            "edit": { "name": "edit", icon: "fa-edit" },
-                            "delete": { "name": "delete", icon: "fa-trash" },
+                            "star": { "name": "star" },
+                            "edit": { "name": "edit" },
+                            "delete": { "name": "delete" },
                         };
                        }
                     },
@@ -320,10 +334,6 @@
             filter: {
                 counter: false,
                 mode: "hide"
-            },
-            glyph: {
-                preset: "bootstrap3",
-                map: {}
             },
             dnd: {
                 dragStart: function(node, data) {
@@ -427,7 +437,7 @@
                     stitle = $(node.span).find('span.fancytree-title').first();
                     stitle.html("");
                     stitle.attr("id", "file");
-                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></button>');
+                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fas fa-clipboard"></i></button>');
                     stitle.before('<div class="copy-text">' + url + '</div>');
                 }
             },
@@ -616,13 +626,10 @@
 
     function createBookmarkLi(bID, bTitle, bURL, bFavicon) {
         newBookmark = " \
-            <li id='bookmark-starred-ID'> \
-                <div class='bookmark'> \
-                    <img src=\"SRC\" alt='' class='favicon'> \
-                    <span class='bookmark-starred-link' title=\"URL\" onclick='window.open(\"URL\", \"_blank\");'>TITLE</span> \
-                </div> \
-            </li> \
-        "
+        <a href='#' onclick='window.open(\"URL\", \"_blank\");' class='list-group-item list-group-item-action' id='bookmark-starred-ID'> \
+            <img src=\"SRC\" alt='' class='favicon'> \
+            <span class='bookmark-starred-link' title=\"URL\">TITLE</span> \
+        </a>"
         newBookmark = newBookmark.replace("ID", bID);
         newBookmark = newBookmark.replace("SRC", bFavicon);
         newBookmark = newBookmark.replace("URL", bURL);
@@ -667,7 +674,7 @@ searchInput.onkeyup = function (e) {
             //console.log(result);
             clearSearchResults();
             // Close button
-            $("div#search-result").append('<div id="close-search-results-button" title="close list" onclick="clearSearchResults();">&#x2716;</div>');
+            $("div#search-result").append('<div id="close-search-results-button" title="close list" onclick="clearSearchResults();"><i class="fas fa-times-circle"></i></div>');
             $.each(result, function(key,value) {
                 //console.log(value);
                 $("div#search-result").append(createBookmarkLi(value.Id, value.Title, value.URL, value.Favicon));
@@ -683,6 +690,14 @@ searchInput.onkeyup = function (e) {
     });
     $("button#import-box").click(function() {
         $("div#import-input-box").toggle(); 
+    });
+   
+    $('.collapse').on('shown.bs.collapse', function () {
+        $(this).parent().find(".fas").removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
+    });
+ 
+    $('.collapse').on('hidden.bs.collapse', function () {
+        $(this).parent().find(".fas").removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
     });
 </script>
 </body>

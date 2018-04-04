@@ -120,9 +120,9 @@ func main() {
 
 	// Rice boxes initialization.
 	// Awesome fonts may need to send the Access-Control-Allow-Origin header to "*"
-	fontsBox := rice.MustFindBox("static/fonts")
-	fontsFileServer := http.StripPrefix("/fonts/", decoratedHandler(http.FileServer(fontsBox.HTTPBox())))
-	http.Handle("/fonts/", fontsFileServer)
+	fontsBox := rice.MustFindBox("static/webfonts")
+	fontsFileServer := http.StripPrefix("/webfonts/", decoratedHandler(http.FileServer(fontsBox.HTTPBox())))
+	http.Handle("/webfonts/", fontsFileServer)
 
 	cssBox := rice.MustFindBox("static/css")
 	cssFileServer := http.StripPrefix("/css/", http.FileServer(cssBox.HTTPBox()))

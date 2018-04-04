@@ -24,6 +24,7 @@ _testmain.go
 *.prof
 
 # Custom locations
+rice-box.go
 bindata.go
 bkm.db
 static/js/gjs-main.js*

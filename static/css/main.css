@@ -1,159 +1,16 @@
-@font-face{ 
-	font-family: 'MyWebFont';
-	src: url('../fonts/ArchivoNarrow-Regular.eot');
-	src: url('../fonts/ArchivoNarrow-Regular.eot?#iefix') format('embedded-opentype'),
-	     url('../fonts/ArchivoNarrow-Regular.woff') format('woff'),
-	     url('../fonts/ArchivoNarrow-Regular.ttf') format('truetype'),
-	     url('../fonts/ArchivoNarrow-Regular.svg#webfont') format('svg');
-}
-
-html, body, div#container {
-    height: 100%;
-}
-
-span.fancytree-title {
-    display: initial;
-}
-
-span.ws-wrap span.fancytree-title {
-    white-space: normal;
-}
-
-/* Redefine some Bootstrap styles */
-input[type="text"] {
-    font-weight: normal;
-}
-
-body {
-}
-
-body.wait, body.wait *{
-     cursor: wait !important;   
-}
-
-div#action-box {
-    float: left;
-}
-
-div#footer {
-    position: fixed;
-    right: 0px;
-    bottom: 0px;
-    background-color: white;
-}
-div#copyright {
-    float: left;
-}
-div#import-export {
-    float: right;
-}
-div#export-box {
-    cursor :pointer;
-}
-div#import-box {
-    cursor :pointer;
-}
-
-div#rename-box {
-    padding-left: 5px;
-}
-div#delete-box {
-    padding-left: 5px;
-}
-
-div#add-folder-box, div#rename-input-box, div#import-input-box{
-    font-style: italic;
-    margin-top: 5px;
-}
-div#rename-input-box {
-    float: left;
-    width: 100%;
-}
-
-input#rename-input-box-form {
-}
-
-div#search-result {
-    padding-right: 20px;
-    padding-left: 20px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-div#search-result li {
-    list-style-type: none;
-}
-div#close-search-results-button {
-    cursor: pointer;
-}
-div#starred-list {
-    float: left;
-    width: 100%;
-}
-
-div#bookmarklet {
-    float: left;
-    width: 100%;
-}
-
-img.favicon {
-    float: left;
-}
-
-span.arrow-link {
-    font-weight: bold;
-    cursor: pointer;
-}
-span.bookmark-starred-link {
-    cursor: pointer;
-}
-span.bookmark-starred-link:HOVER {
-    background-color: #eff9fe;
-    border: 1px solid #70c0e7;
-}
-
-span#file {
-    cursor: default;
-    line-height: 25px;
-}
-
-button.copy-button {
-    float: left;
-    width: 25px;
-    height: 25px;
-    margin-left: 20px;
-    padding: 0px;
-}
-div.copy-text {
-    float: left;
-    line-height: 25px;
-    background-color: #EFEFEF;
-}
-
-div.alert {
-    position: absolute;
-    z-index: 2;
-}
-
-/* Fancytree */
-div#tree {
-}
-
-/* Editing pending */
-span.pending span.fancytree-title {
-  font-style: italic;
-}
-span.pending span.fancytree-title:after {
-  content: "\2026"; /* ellipsis */
-}
-
 /* Drop zone */
 div#drop-zone {
-    position: fixed;
     z-index: 99;
     text-align: center;
-    top: 2px;
-    right: 2px;
+    font-size: 4em;
 }
-i.fa-cloud-download {
+
+/* Close search result list button */
+div#close-search-results-button {
+    font-size: 2em;
+}
+
+/* Collapse/expand button */
+a#collapser {
     font-size: 2em;
 }
