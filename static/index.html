@@ -40,8 +40,6 @@
     <script src="/js/jquery.contextMenu.min.js"></script>
     <!-- Include Bootstrap -->
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    <!-- Include Clipboard -->
-    <script type="text/javascript" src="/js/clipboard.min.js"></script>
     <!-- Include Fancytree -->
     <script src="/js/jquery.fancytree.min.js"></script>
     <script src="/js/jquery.fancytree.table.js"></script>
@@ -50,6 +48,8 @@
     <script src="/js/jquery.fancytree.dnd.js"></script>
     <script src="/js/jquery.fancytree.glyph.js"></script>
     <script src="/js/jquery.fancytree.contextMenu.js"></script>
+    <!-- Include Clipboard -->
+    <script src="/js/clipboard.min.js"></script>
   </head>
 
 <body>
@@ -57,79 +57,76 @@
 <div class="container-fluid" id="container">
 
     <div class="row">
-    <div id="header" class="collapse show col-xs-11">
-
-    <!--
-    Copy to clipboard messages and drop zone
-    -->
-    <div class="row">
-        <div class="col-sm-10">
-            <div id="clipboard-message-ok" class="alert alert-success" role="alert">
-                copied to clipboard
-            </div>
-            <div id="clipboard-message-nok" class="alert alert-danger" role="alert">
-                an error occured trying to copy to clipboard
-            </div>
-        </div>
-
-        <div class="col-sm-2" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" id="drop-zone" title="drop new bookmarks here">
-            <span class="badge">
-                <i class="fas fa-cloud-download-alt"></i>
-            </span>
-        </div>
-    </div>
-
-    <!--
-    Starred bookmarks
-    -->
-    <div class="row">
         <div class="col-sm-12">
-            <div class="card-body card" id="starred-list">
-                <h5 class="card-title">
-                    <span class="fas fa-star" aria-hidden="true"></span>
-                </h5>
-                <ul id="starred">
-                    {{with .Bkms}} {{range .}}
-                    <li id="bookmark-starred-{{.Id}}">
-                        <div class="bookmark">
-                            <img src="{{.Favicon}}" alt="" class="favicon">
-                            <span class="bookmark-starred-link" title="{{.URL}}" onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
-                            </span>
-                            <a href="#" onclick="unStar('{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
-                        </div>
-                    </li>
-                    {{end}} {{end}}
-                </ul>
+            <a id="collapser" class="btn btn-light" data-toggle="collapse" href="#header" role="button" aria-expanded="false" aria-controls="header">
+                <i id="collapse-button" class="fas fa-angle-double-up"></i>
+            </a>
+        </div>
+    </div>
+
+    <div ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" id="drop-zone" title="drop new bookmarks here">
+        <span class="badge">
+            <i class="fas fa-cloud-download-alt"></i>
+        </span>
+    </div>
+    <div id="clipboard-message-ok" class="alert alert-success" role="alert">
+        copied to clipboard
+    </div>
+    <div id="clipboard-message-nok" class="alert alert-danger" role="alert">
+        an error occured trying to copy to clipboard
+    </div>
+
+        <div id="header" class="row collapse show col-xs-12">
+
+            <!--
+            Copy to clipboard messages and drop zone
+            -->
+            <div class="row">
+                <div class="col-sm-12">
+
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-sm-12">
-        </div>
-    </div>
-
-    <!-- Search form -->
-    <div class="row">
-        <div class="input-group mb-3 col-sm-12" id="search-box">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+            <!--
+            Starred bookmarks
+            -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card-body card" id="starred-list">
+                        <h5 class="card-title">
+                            <span class="fas fa-star" aria-hidden="true"></span>
+                        </h5>
+                        <ul id="starred">
+                            {{with .Bkms}} {{range .}}
+                            <li id="bookmark-starred-{{.Id}}">
+                                <div class="bookmark">
+                                    <img src="{{.Favicon}}" alt="" class="favicon">
+                                    <span class="bookmark-starred-link" title="{{.URL}}" onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
+                                    </span>
+                                    <a href="#" onclick="unStar('{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
+                                </div>
+                            </li>
+                            {{end}} {{end}}
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <input type="text" id="search-form-input" class="form-control" placeholder="search a bookmark title..." aria-describedby="basic-addon1">
-        </div>
-        <div class="col-sm-12" id="search-result">
-            <ul class="list-group">
-            </ul>
-        </div>
-    </div>
 
-    </div>
-    <div class="col-xs-1 align-self-end">
-        <a id="collapser" class="btn btn-light" data-toggle="collapse" href="#header" role="button" aria-expanded="false" aria-controls="header">
-            <i class="fas fa-angle-double-up"></i>
-        </a>
-    </div>
-    </div>
+            <!-- Search form -->
+            <div class="row">
+                <div class="input-group col-sm-12" id="search-box">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" id="search-form-input" class="form-control" placeholder="search a bookmark title..." aria-describedby="basic-addon1">
+                </div>
+                <div class="col-sm-12" id="search-result">
+                    <ul class="list-group">
+                    </ul>
+                </div>
+            </div>
+
+        </div> <!-- #header -->
 
     <!-- Main tree -->
     <div class="row">
@@ -202,24 +199,16 @@
 <!-- Initialize the tree when page is loaded -->
 <script type="text/javascript">
     $(function() {
-        // Instanciate clipboard for file links.
-        var clipboard = new Clipboard('button', {
-            target: function(trigger) {
-                return trigger.nextElementSibling;
-            }
-        });
 
+        var clipboard = new ClipboardJS('.copy-button');
         clipboard.on('success', function(e) {
-            //console.log(e.text);
-            $("#clipboard-message-ok").fadeTo(500, 500).slideUp(500, function(){
-                $("#clipboard-message-ok ").slideUp(500);
-            });   
+            $("#clipboard-message-ok").show().hide(2000);
             e.clearSelection();
         });
-
+        
         clipboard.on('error', function(e) {
+            $("#clipboard-message-nok").show().hide(2000);
         });
-
         $("#clipboard-message-ok").hide();
         $("#clipboard-message-nok").hide();
 
@@ -427,6 +416,7 @@
             renderColumns: function(event, data) {
                 var node = data.node;
                 var url = node.data.url;
+                var key = node.key;
                 var nbButton = $(node).find('button').length;
 
                 if (! node.isFolder() && url.startsWith("file") && nbButton == 0) {
@@ -437,8 +427,23 @@
                     stitle = $(node.span).find('span.fancytree-title').first();
                     stitle.html("");
                     stitle.attr("id", "file");
-                    stitle.before('<button class="copy-button" title="copy to clipboard"><i class="fas fa-clipboard"></i></button>');
-                    stitle.before('<div class="copy-text">' + url + '</div>');
+
+                    newElem = " \
+                    <div class=\"row\"> \
+                        <div class=\"col-11\"> \
+                            <input readonly type=\"text\" class=\"form-control copy-text\" id=\"fKEY\" value=\"URL\"></input> \
+                        </div> \
+                        <div class=\"col-1\"> \
+                            <button data-clipboard-target=\"#fKEY\" class=\"copy-button\" title=\"copy to clipboard\"><i class=\"fas fa-clipboard\"></i></button> \
+                        </div> \
+                      </div> \
+                    "
+                    newElem = newElem.replace("/KEY/g", key);
+                    newElem = newElem.replace("/URL/g", url);
+                    stitle.before(newElem);
+                } else if (node.isFolder()) {
+                    stitle = $(node.span).find('span.fancytree-title').first();
+                    stitle.addClass("folder");
                 }
             },
             icon: function(event, data) {
@@ -478,6 +483,7 @@
                 }
         });
     });
+    $(".fancytree-container").addClass("fancytree-connectors");
 </script>
 
 <script type="text/javascript">
@@ -526,7 +532,7 @@
             alert("not supported by your browser");
             return;
         }
-        console.log(data);
+        //console.log(data);
         //console.log(ev.dataTransfer.types);
         // ["text/plain", "text/uri-list"]
         // ["text/plain", "text/x-moz-url"
@@ -693,11 +699,11 @@ searchInput.onkeyup = function (e) {
     });
    
     $('.collapse').on('shown.bs.collapse', function () {
-        $(this).parent().find(".fas").removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
+        $("#collapse-button").removeClass("fa-angle-double-down").addClass("fa-angle-double-up");
     });
  
     $('.collapse').on('hidden.bs.collapse', function () {
-        $(this).parent().find(".fas").removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
+        $("#collapse-button").removeClass("fa-angle-double-up").addClass("fa-angle-double-down");
     });
 </script>
 </body>
