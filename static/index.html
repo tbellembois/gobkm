@@ -25,7 +25,6 @@
     <link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="/css/fontawesome-all.min.css">
     <link rel="stylesheet" type="text/css" href="/css/gijgo.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="/css/jquery-editable.css" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="/css/main.css">
 
     <!-- Some variables passed by the handler -->
@@ -45,8 +44,6 @@
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
     <!-- Include Tooltip -->
     <script type="text/javascript" src="/js/tooltip.min.js"></script>
-    <!-- Include Jquery editable -->
-    <script type="text/javascript" src="/js/jquery-editable-poshytip.min.js"></script>
     <!-- Include Gijgo -->
     <script type="text/javascript" src="/js/core.js"></script>
     <script type="text/javascript" src="/js/tree.js"></script>
@@ -406,8 +403,7 @@
         function editCallBack(itemKey, opt, rootMenu, originalEvent) {
             var nodeId = tree.getSelections()[0];
             $("li[data-id=" + nodeId + "]").removeClass("active");
-            $("span.editable[data-pk=" + nodeId + "]").editable("enable");
-            $("span.editable[data-pk=" + nodeId + "]").trigger( "click" );
+            $("div[edit=" + nodeId + "]").show();
         }
         // Called on delete.
         function deleteCallBack(itemKey, opt, rootMenu, originalEvent) {
@@ -529,49 +525,42 @@
         //
         // Called when a node is rendered.
         tree.on('nodeDataBound', function (e, node, id, record) {
-            console.log(record);
             // Adding the editing hidden form
-         //var eltitle = $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
-         //    $("<div></div>").addClass("input-group-prepend").append(
-         //        $("<span></span>").addClass("input-group-text").attr("id", "edit-title-" + id).text("title")
-         //    )).append(
-         //        $("<input></input>").addClass("form-control").attr("aria-describedby", "edit-title-" + id).val(record.text)
-         //    );
-         //var elurl = $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
-         //    $("<div></div>").addClass("input-group-prepend").append(
-         //        $("<span></span>").addClass("input-group-text").attr("id", "edit-url-" + id).text("url")
-         //    )).append(
-         //        $("<input></input>").addClass("form-control").attr("aria-describedby", "edit-url-" + id).val(record.url)
-         //    );
-         //var elbuttonok = $("<button></button>").attr("type", "button").addClass("btn btn-success").text("ok");
-         //var elbuttoncancel = $("<button></button>").attr("type", "button").addClass("btn btn-secondary").text("cancel");
-         //
-         //if (record.url != "") {
-         //    node.append(eltitle).append(elurl).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
-         //} else {
-         //    node.append(eltitle).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
-         //}
-
-            // Add X-editable attribute to the display span for further edition.
-            var s = node.find('span[data-role="display"]').first();
-            s.attr("data-type", "text")
-            .attr("data-pk", id)
-            .attr("data-title", "enter name")
-            .addClass("editable");
+            var eledit = $("<div></div>").attr("edit", id);
+            var eltitle = $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
+                $("<div></div>").addClass("input-group-prepend").append(
+                    $("<span></span>").addClass("input-group-text").attr("id", "edit-title-" + id).text("title")
+                )).append(
+                    $("<input></input>").addClass("form-control").attr("id", "input-title-" + id).attr("aria-describedby", "edit-title-" + id).val(record.text)
+                );
+            var elurl = $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
+                $("<div></div>").addClass("input-group-prepend").append(
+                    $("<span></span>").addClass("input-group-text").attr("id", "edit-url-" + id).text("url")
+                )).append(
+                    $("<input></input>").addClass("form-control").attr("id", "input-url-" + id).attr("aria-describedby", "edit-url-" + id).val(record.url)
+                );
+            var elid = $("<input></input>").attr("type", "hidden").attr("id", "input-id-" + id).val(id);
+            var elbuttonok = $("<button></button>").attr("onclick", "editOkCallBack('" + id + "');").attr("type", "button").addClass("btn btn-success").text("ok");
+            var elbuttoncancel = $("<button></button>").attr("onclick", "$('div[edit=" + id + "]').hide();").attr("type", "button").addClass("btn btn-secondary").text("cancel");
             
+            if (record.url != "") {
+                var elfld = $("<input></input>").attr("type", "hidden").attr("id", "input-fld-" + id).val(false);
+                eledit.append(elid).append(eltitle).append(elfld).append(elurl).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
+                node.find("div[data-role=wrapper]").first().after(eledit);
+            } else {
+                var elfld = $("<input></input>").attr("type", "hidden").attr("id", "input-fld-" + id).val(true);
+                eledit.append(elid).append(eltitle).append(elfld).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
+                node.find("div[data-role=wrapper]").first().after(eledit)
+            }
+            eledit.hide();
+
             // Appending an link with the url (not for folders).
             if (record.url != "") {
                 var d = $("<div></div>").attr("class", "icon-link");
-                var a = $("<a></a>").attr("href", record.url).attr("target", "_blank").attr("title", record.url);
+                var a = $("<a></a>").attr("link-id", id).attr("href", record.url).attr("target", "_blank").attr("title", record.url);
                 var i = $("<i></i>").attr("class", "fas fa-link");
                 d.append(a.append(i));
                 node.find('div[data-role="wrapper"]').append(d);
-            }
-            // Appending an attribute to the node to identify folders.
-            if (record.url != "") {
-                node.attr("isfolder", false);
-            } else {
-                node.attr("isfolder", true);
             }
         });
         // Called when a node is enabled
@@ -580,62 +569,12 @@
             // When cancelling a node edition, the node remains editable
             var currentpk = node.attr("data-id");
             $("span.editable").each( function( index, element ){
-                var pk = $(this).attr("data-pk");
-                if (pk != currentpk) {
-                    $(this).editable("disable");
-                }
+                //var pk = $(this).attr("data-pk");
+                //if (pk != currentpk) {
+                //    $(this).editable("disable");
+                //}
             });
         });
-
-        //
-        // X-editable callback functions.
-        //
- 
-        //
-        // X-editable default options
-        //
-        // inline mode edition
-        $.fn.editable.defaults.mode = "inline";
-        // additionnal param passed for edition
-        $.fn.editable.defaults.params = function(params) {
-            // getting the edited node
-            var n = tree.getNodeById(params.pk);
-            // getting the isfolder attribute
-            var isfolder = n.attr("isfolder");
-            // appending it to the params
-            params.isfolder = isfolder
-            return params
-        }
-        // function called on save
-        $.fn.editable.defaults.url = function(params) {
-            //console.log(params);
-            var isfolder = (params.isfolder == "true");
-            var url = "/renameBookmark/";
-            if (isfolder) {
-                url = "/renameFolder/";
-            }
-
-            var d = $.Deferred();
-            $.ajax({
-                method: "GET",
-                url: url,
-                data: {
-                    itemId: params.pk,
-                    itemName: params.value,
-                },
-                dataType: "json",
-            }).done(function(data) {
-                //console.log( "done:" + JSON.stringify(data) );
-                d.resolve(data);
-            }).fail(function(data) {
-                console.log( "fail:" + data.responseText );
-                d.reject();
-            }).always(function(data) {
-                $(".editable").editable("disable");
-            });
-            
-            return d.promise();
-        }
 
     });
 </script>
@@ -663,6 +602,41 @@
 </script>
 
 <script>
+    //
+    // Bookmark edition callback.
+    //
+    function editOkCallBack(nodeId) {
+        //console.log(params);
+        var isfolder = $("input#input-fld-" + nodeId).val();
+        var ftitle = $("input#input-title-" + nodeId).val();
+        var furl = $("input#input-url-" + nodeId).val();
+        var fid = $("input#input-id-" + nodeId).val();
+
+        var url = "/renameBookmark/";
+        if (isfolder == "true") {
+            url = "/renameFolder/";
+        }
+
+        $.ajax({
+            method: "GET",
+            url: url,
+            data: {
+                itemId: fid,
+                itemName: ftitle,
+                itemUrl: furl,
+            },
+            dataType: "json",
+        }).done(function(data) {
+            displayMessage("updated " + ftitle, "success");
+            $("li[data-id=" + fid + "]").find("span[data-role=display]").first().text(ftitle);
+            $("li[data-id=" + fid + "]").find("a[link-id=" + fid + "]").first().attr("href", furl).attr("title", furl);       
+        }).fail(function(data) {
+            displayMessage("error !", "alert");
+        }).always(function(data) {
+            $("div[edit=" + nodeId + "]").hide();
+        });
+    }
+
     function dzAllowDrop(ev) {
         ev.preventDefault();
     }

@@ -546,9 +546,11 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	// GET parameters retrieval.
 	bookmarkIDParam := r.URL.Query()["itemId"]
 	bookmarkName := r.URL.Query()["itemName"]
+	bookmarkUrl := r.URL.Query()["itemUrl"]
 	log.WithFields(log.Fields{
 		"bookmarkId":   bookmarkID,
 		"bookmarkName": bookmarkName,
+		"bookmarkUrl":  bookmarkUrl,
 	}).Debug("RenameBookmarkHandler:Query parameter")
 
 	// Parameters check.
@@ -568,6 +570,7 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	bkm := env.DB.GetBookmark(bookmarkID)
 	// Renaming it.
 	bkm.Title = bookmarkName[0]
+	bkm.URL = bookmarkUrl[0]
 	// Updating the folder into the DB.
 	env.DB.UpdateBookmark(bkm)
 	// Datastore error check.
