@@ -31,12 +31,14 @@ a#collapser {
     width: 100%;
 }
 
-/* Folders icons */
-span.fancytree-icon {
-    font-size: 20px;
+/* Icon links */
+div.icon-link {
+    float: right;
+    font-size: 1.2em;
 }
 
-/* Tree titles */
-span.fancytree-title {
-    margin-left: 10px;
+/* Context menu*/
+li.context-menu-item > span {
+    font-weight: normal;
+    font-family: monospace;
 }

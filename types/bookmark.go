@@ -25,12 +25,13 @@ type Bookmark struct {
 
 // Node
 type Node struct {
-	Key    int    `json:"key"`
-	Title  string `json:"title"`
-	URL    string `json:"url"`
-	Folder bool   `json:"folder"`
-	Lazy   bool   `json:"lazy"`
-	Icon   string `json:"icon"`
+	Key      int     `json:"id"`
+	Title    string  `json:"text"`
+	URL      string  `json:"url"`
+	Folder   bool    `json:"hasChildren"`
+	Lazy     bool    `json:"lazy"`
+	Icon     string  `json:"icon"`
+	Children []*Node `json:"children"`
 }
 
 // Bookmarks implements the sort interface

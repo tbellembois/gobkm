@@ -21,11 +21,11 @@
     <meta name="theme-color" content="#ffffff">
 
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/ui.fancytree.min.css">
     <link rel="stylesheet" type="text/css" href="/css/jquery.contextMenu.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/fontawesome-all.min.css">
     <link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/css/jquery-editable.css" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="/css/main.css">
 
     <!-- Some variables passed by the handler -->
@@ -38,23 +38,29 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery-ui.min.js"></script>
     <script src="/js/jquery.contextMenu.min.js"></script>
+    <script src="/js/jquery.ui.position.min.js"></script>
+    <!-- Include Popper -->
+    <script type="text/javascript" src="/js/popper.min.js"></script>
     <!-- Include Bootstrap -->
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    <!-- Include Fancytree -->
-    <script src="/js/jquery.fancytree.min.js"></script>
-    <script src="/js/jquery.fancytree.table.js"></script>
-    <script src="/js/jquery.fancytree.gridnav.js"></script>
-    <script src="/js/jquery.fancytree.edit.js"></script>
-    <script src="/js/jquery.fancytree.dnd.js"></script>
-    <script src="/js/jquery.fancytree.glyph.js"></script>
-    <script src="/js/jquery.fancytree.contextMenu.js"></script>
+    <!-- Include Tooltip -->
+    <script type="text/javascript" src="/js/tooltip.min.js"></script>
+    <!-- Include Jquery editable -->
+    <script type="text/javascript" src="/js/jquery-editable-poshytip.min.js"></script>
+    <!-- Include Gijgo -->
+    <script type="text/javascript" src="/js/core.js"></script>
+    <script type="text/javascript" src="/js/tree.js"></script>
     <!-- Include Clipboard -->
-    <script src="/js/clipboard.min.js"></script>
-  </head>
+    <script type="text/javascript" src="/js/clipboard.min.js"></script>
+
+</head>
 
 <body>
 
 <div class="container-fluid" id="container">
+
+    <input type="hidden" name="cutted-nodeid">
+    <input type="hidden" name="cutted-nodeisfolder">
 
     <div class="row">
         <div class="col-sm-12">
@@ -98,12 +104,12 @@
                         </h5>
                         <ul id="starred">
                             {{with .Bkms}} {{range .}}
-                            <li id="bookmark-starred-{{.Id}}">
+                            <li id="bookmark-starred--{{.Id}}">
                                 <div class="bookmark">
                                     <img src="{{.Favicon}}" alt="" class="favicon">
                                     <span class="bookmark-starred-link" title="{{.URL}}" onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
                                     </span>
-                                    <a href="#" onclick="unStar('{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
+                                    <a href="#" onclick="unStar('-{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
                                 </div>
                             </li>
                             {{end}} {{end}}
@@ -131,19 +137,7 @@
     <!-- Main tree -->
     <div class="row">
         <div id="scrollParent" class="col-sm-12">
-            <table id="tree" class="table table-condensed table-hover table-striped fancytree-fade-expander">
-                <colgroup>
-                    <col></col>
-                    <col></col>
-                    <col></col>
-                </colgroup>
-                <thead>
-                    <tr><th></th><th></th><th></th><th></th></tr>
-                </thead>
-                <tbody>
-                    <tr><td></td><td/><td></td><td></td></tr>
-                </tbody>
-            </table>
+            <div id="tree"></div>
         </div>
     </div>
 
@@ -205,289 +199,450 @@
             $("#clipboard-message-ok").show().hide(2000);
             e.clearSelection();
         });
-        
         clipboard.on('error', function(e) {
             $("#clipboard-message-nok").show().hide(2000);
         });
         $("#clipboard-message-ok").hide();
         $("#clipboard-message-nok").hide();
 
-        // Create the tree inside the <div id="tree"> element.
-        $("#tree").fancytree({
-            extensions: ["edit", "dnd", "glyph", "contextMenu", "table", "gridnav"],
-            scrollParent: $("#scrollParent"),
-            glyph: { 
-                preset: "awesome5",
-                map: {}
+        // Context menu.
+        $.contextMenu({
+            selector: '.active',
+            callback: function(key, options) {
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m); 
             },
-            autoScroll: true,
-              contextMenu: {
-                  menu: function(node){
-                      if (node.folder){                 
-                        return {
-                            "edit": { "name": "edit" },
-                            "delete": { "name": "delete" },
-                            "new": { "name": "new subfolder" },
-                            sep1: "-----",
-                            "fold1": {
-                                "name": "new bookmark from URL", 
-                                "items": {
-                                     newBkm: {
-                                        type: 'text', 
-                                        value: "", 
-                                        events: {
-                                            keyup: function(e) {
-                                                if (e.keyCode == 13) {
-                                                     $.ajax({
-                                                        url: "/addBookmark/",
-                                                        data: {
-                                                            destinationFolderId: node.key,
-                                                            bookmarkUrl: $("input[name=context-menu-input-newBkm]").val()
-                                                        }
-                                                    }).done(function(result) {
-                                                        node.load(forceReload=true).then(
-                                                            function() {
-                                                                if (! node.isExpanded()) {
-                                                                    node.setExpanded(true);
-                                                                }
-                                                            }
-                                                        );
-                                                    }).always(function() {
-                                                        $('.context-menu-root').first().trigger("contextmenu:hide");
-                                                    });
-                                                } 
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                        };
-                      } else {
-                        return {
-                            "star": { "name": "star" },
-                            "edit": { "name": "edit" },
-                            "delete": { "name": "delete" },
-                        };
-                       }
+            items: {
+                "edit": {
+                    name: "edit",
+                    icon: function(){
+                        return 'fas fa-edit';
                     },
-                actions: function(node, action, options) {
-                    //console.log("Selected action '" + action + "' on node " + node);
-                    switch (action) {
-                        case "star":
-                            star(node.key);
-                            break;
-                        case "edit":
-                            node.editStart();
-                            break;
-                        case "new":
-                            $.ajax({
-                                url: "/addFolder/",
-                                data: {
-                                    folderName: "new folder",
-                                    parentId: node.key
+                    callback: function(itemKey, opt, rootMenu, originalEvent) {
+                        editCallBack(itemKey, opt, rootMenu, originalEvent); 
+                    }
+                },
+                "sep1": "",
+                "newsubfolder": {
+                    name: "new subfolder",
+                    icon: function(){
+                        return 'far fa-folder-open';
+                    },
+                    callback: function(itemKey, opt, rootMenu, originalEvent) {
+                        newsubfolderCallBack(itemKey, opt, rootMenu, originalEvent); 
+                    },
+                    disabled: function(key, opt){        
+                        var nodeId = tree.getSelections()[0];
+                        // getting the selected node
+                        var n = tree.getNodeById(nodeId);
+                        // disabling on bookmarks
+                        if (n.attr("isfolder") != "true"){
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                },
+                "sep11": "",
+                "fold1": {
+                    "name": "new bookmark from URL",
+                    icon: function(){
+                        return 'far fa-bookmark';
+                    },
+                    disabled: function(key, opt){        
+                        var nodeId = tree.getSelections()[0];
+                        // getting the selected node
+                        var n = tree.getNodeById(nodeId);
+                        // disabling on bookmarks
+                        if (n.attr("isfolder") != "true"){
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    "items": {
+                         newBkm: {
+                            type: 'text', 
+                            value: "", 
+                            events: {
+                                keyup: function(e) {
+                                    if (e.keyCode == 13) {
+                                        var nodeId = tree.getSelections()[0];
+
+                                        $.ajax({
+                                            url: "/addBookmark/",
+                                            data: {
+                                                destinationFolderId: nodeId,
+                                                bookmarkUrl: $("input[name=context-menu-input-newBkm]").val()
+                                            }
+                                        }).done(function(result) {
+                                            alert("something to do here");
+                                        }).always(function() {
+                                            $('.context-menu-root').first().trigger("contextmenu:hide");
+                                        });
+                                    } 
                                 }
-                            }).done(function(result) {
-                                node.load(forceReload=true).then(
-                                    function() {
-                                        node.setExpanded(true).then(
-                                            function() {
-                                                tree = $("#tree").fancytree("getTree");
-                                                newNode = tree.getNodeByKey(result.key.toString());
-                                                newNode.moveTo(node, 'firstChild');
-                                                newNode.setActive();
-                                                newNode.editStart();
-                                            });
-                                    });
-                            });                           
-                            break;
-                        case "delete":
-                            //console.log("delete");
-                            if (node.isFolder()) {
-                                ajaxUrl = "/deleteFolder/"
-                            } else {
-                                ajaxUrl = "/deleteBookmark/"
                             }
-                            // Save data.input.val() or return false to keep the editor open
-                            $.ajax({
-                                url: ajaxUrl,
-                                data: {
-                                    itemId: node.key
-                                }
-                            }).done(function(result) {
-                                node.remove();
-                            });
-                            break;
-                    }
-                }
-              },
-            filter: {
-                counter: false,
-                mode: "hide"
-            },
-            dnd: {
-                dragStart: function(node, data) {
-                    return true;
-                },
-                dragEnter: function(node, data) {
-                    if (data.node.isFolder()) {
-                        return ["over"];
-                    }
-                    return false;
-                },
-                dragStop: function(node, data) {
-                    node.setExpanded(true);
-                },
-                dragDrop: function(node, data) {
-                    fromNode = data.otherNode; // dragged item
-                    toNode = node;
-
-                    if (fromNode.isFolder()) {
-                        ajaxUrl = "/moveFolder/"
-                    } else {
-                        ajaxUrl = "/moveBookmark/"
-                    }
-                    $.ajax({
-                        url: ajaxUrl,
-                        data: {
-                            sourceItemId: fromNode.key,
-                            destinationItemId: toNode.key
                         }
-
-                    }).done(function(result) {
-                        // the method explained here:
-                        // https://github.com/mar10/fancytree/wiki/ExtDnd#howto-drop-on-a-lazy-node
-                        // does not work because "always" is not call for new directories
-                        // TODO: to be improved
-                        fromNode.moveTo(toNode, data.hitMode);
-                        toNode.load(forceReload=true).always(function(){
-                            toNode.setExpanded(true);
-                        });
-                    });
-                }
-            },
-            edit: {
-                triggerStart: ["f2", "shift+click"],
-                save: function(event, data) {
-                    var node = data.node;
-
-                    if (node.isFolder()) {
-                        ajaxUrl = "/renameFolder/"
-                    } else {
-                        ajaxUrl = "/renameBookmark/"
                     }
-                    $.ajax({
-                        url: ajaxUrl,
-                        data: {
-                            itemId: node.key,
-                            itemName: data.input.val()
+                },
+                "sep2": "",
+                "cut": {
+                    name: "cut",
+                    icon: function(){
+                        return 'fas fa-cut';
+                    },
+                    callback: function(itemKey, opt, rootMenu, originalEvent) {
+                        cutCallBack(itemKey, opt, rootMenu, originalEvent); 
+                    }
+                },
+                "sep3": "",
+                "paste": {
+                    name: "paste",
+                    icon: function(){
+                        return 'fas fa-paste';
+                    },
+                    callback: function(itemKey, opt, rootMenu, originalEvent) {
+                        pasteCallBack(itemKey, opt, rootMenu, originalEvent); 
+                    },
+                    disabled: function(key, opt){        
+                        // disable paste if no node has been cutted
+                        if ($('input[name="cutted-nodeid"]').val() == ""){
+                            return true;
+                        } else {
+                            return false;
                         }
-                    }).done(function(result) {
-                        node.setTitle(result.Title); // in case server modified it
-                    }).fail(function(result) {
-                        node.setTitle(data.orgTitle);
-                    }).always(function() {
-                        $(data.node.span).removeClass("pending");
-                    });
-                    return true;
-                },
-                close: function(event, data) {
-                    // Editor was removed. If we started an async request, mark the node as pending
-                    if (data.save) {
-                        $(data.node.span).addClass("pending");
                     }
                 },
-            },
-            source: [{
-                title: "/",
-                key: "1",
-                active: true,
-                folder: true,
-                lazy: true
-            }],
-            lazyLoad: function(event, data) {
-                var node = data.node;
-                data.result = {
-                    url: "/getBranchNodes/",
-                    data: {
-                        key: node.key
+                "sep4": "",
+                "delete": {
+                    name: "delete",
+                    icon: function(){
+                        return 'fas fa-trash-alt';
+                    },
+                    callback: function(itemKey, opt, rootMenu, originalEvent) {
+                        deleteCallBack(itemKey, opt, rootMenu, originalEvent); 
+                    },
+                },
+                "sep5": "",
+                "star": {
+                    name: "star",
+                    icon: function(){
+                        return 'fas fa-star';
+                    },
+                    callback: function(itemKey, opt, rootMenu, originalEvent) {
+                        starCallBack(itemKey, opt, rootMenu, originalEvent); 
+                    },
+                    disabled: function(key, opt){        
+                        // disable star on folders
+                        var nodeId = tree.getSelections()[0];
+                        // getting the selected node
+                        var n = tree.getNodeById(nodeId);
+
+                        if (n.attr("isfolder") == "true"){
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
-                }
-            },
-            renderColumns: function(event, data) {
-                var node = data.node;
-                var url = node.data.url;
-                var key = node.key;
-                var nbButton = $(node).find('button').length;
-
-                if (! node.isFolder() && url.startsWith("file") && nbButton == 0) {
-                    var murl = url.split('/').reverse()[0];
-                    if (murl == "") {
-                        murl = url.split('/').reverse()[1];
-                    }
-                    stitle = $(node.span).find('span.fancytree-title').first();
-                    stitle.html("");
-                    stitle.attr("id", "file");
-
-                    newElem = " \
-                    <div class=\"row\"> \
-                        <div class=\"col-11\"> \
-                            <input readonly type=\"text\" class=\"form-control copy-text\" id=\"fKEY\" value=\"URL\"></input> \
-                        </div> \
-                        <div class=\"col-1\"> \
-                            <button data-clipboard-target=\"#fKEY\" class=\"copy-button\" title=\"copy to clipboard\"><i class=\"fas fa-clipboard\"></i></button> \
-                        </div> \
-                      </div> \
-                    "
-                    newElem = newElem.replace("/KEY/g", key);
-                    newElem = newElem.replace("/URL/g", url);
-                    stitle.before(newElem);
-                } else if (node.isFolder()) {
-                    stitle = $(node.span).find('span.fancytree-title').first();
-                    stitle.addClass("folder");
-                }
-            },
-            icon: function(event, data) {
-                return data.node.isFolder() ? true : data.node.icon;
-            },
-            tooltip: function(event, data) {
-                return data.node.isFolder() ? "" : data.node.data.url;
-            },
-        }).on("mouseenter", ".fancytree-title", function(event){
-			var node = $.ui.fancytree.getNode(event);
-            setTimeout(
-              function() 
-              {
-                node.setActive();
-              }, 200);
-        }).on("mouseup", ".fancytree-title", function(event){
-                //console.log("mouseup:" + event.which);
-                clearSearchResults();
-                $("input#search-form-input").val("");
-
-                var node = $.ui.fancytree.getNode(event);
-
-                // Handle only left click
-                if (event.which == 1 && !node.title.startsWith("file")) {
-                   $("div#search-result").html("");
-                   $("input#search-form-input").val("");
-                   $("button#confirm-delete").fadeOut();
-                   
-                   if( node.isFolder() ) {
-                   } else {
-                       if (node.isActive() && node.data.url) {
-                           window.open(node.data.url, "_blank");
-                       }
-                       $("button#bookmark").prop("disabled", false);    
-                       $("button#delete").prop("disabled", false);    
-                   }
-                }
+                },
+                "sep6": "",
+                "quit": {name: "quit", icon: function(){
+                    return 'fas fa-times';
+                }}
+            }
         });
+
+        // Create the tree inside the <div id="tree"> element.
+        $('#tree').tree({
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            width: 350,
+            border: true,
+            primaryKey: 'id',
+            //dataSource: '/getBranchNodes/',
+            //lazyLoading: true,
+            dataSource: '/getTree/',
+            lazyLoading: false,
+            imageUrlField: 'icon',
+        });
+
+        // Getting the tree as a variable.
+        var tree = $('#tree').tree();
+
+        //
+        // Menu callback functions.
+        //
+        // Called on create subfolder.
+        function newsubfolderCallBack(itemKey, opt, rootMenu, originalEvent) {
+            var nodeId = tree.getSelections()[0];
+            
+            // calling ajax
+            $.ajax({
+                method: "GET",
+                url: "/addFolder/",
+                data: {
+                    parentId: nodeId,
+                    folderName: "new folder",
+                },
+                dataType: "json",
+            }).done(function(result) {
+                displayMessage("folder created !", "success");
+                // add node
+                var parent = tree.getNodeById(nodeId);
+                tree.expand(parent);
+                tree.addNode({ id: result.id, text: "new folder", url: "", hasChildren: true, lazy: true, icon: "" }, parent);
+                // make the new folder editable
+                newNode = tree.getNodeById(result.id);
+                tree.select(newNode);
+                $("span.editable[data-pk=" + result.id + "]").editable("enable");
+                $("span.editable[data-pk=" + result.id + "]").trigget("click");
+            }).fail(function() {
+                displayMessage("error !", "alert");
+            }).always(function() {
+            });
+        }
+        // Called on edit.
+        function editCallBack(itemKey, opt, rootMenu, originalEvent) {
+            var nodeId = tree.getSelections()[0];
+            $("li[data-id=" + nodeId + "]").removeClass("active");
+            $("span.editable[data-pk=" + nodeId + "]").editable("enable");
+            $("span.editable[data-pk=" + nodeId + "]").trigger( "click" );
+        }
+        // Called on delete.
+        function deleteCallBack(itemKey, opt, rootMenu, originalEvent) {
+            var nodeId = tree.getSelections()[0];
+            var n = tree.getNodeById(nodeId);      
+            var isfolder = (n.attr("isfolder") == "true");
+
+            // building ajax url
+            var url = "/deleteBookmark/";
+            if (isfolder) {
+                url = "/deleteFolder/";
+            }
+            // calling ajax
+            $.ajax({
+                method: "GET",
+                url: url,
+                data: {
+                    itemId: nodeId,
+                },
+                dataType: "json",
+            }).done(function() {
+                displayMessage("deleted !", "success");
+                // remove node
+                tree.removeNode(n);
+            }).fail(function() {
+                displayMessage("error !", "alert");
+            }).always(function() {
+            });
+        }
+        // Called on cut.
+        function cutCallBack(itemKey, opt, rootMenu, originalEvent) {
+            var nodeId = tree.getSelections()[0];
+            // getting the cutted node
+            var n = tree.getNodeById(nodeId);
+            // getting the cutted node data
+            var data = tree.getDataById(nodeId);
+            // getting the isfolder attribute
+            var isfolder = n.attr("isfolder");
+            // setting the hidden input fields
+            $('input[name="cutted-nodeid"]').val(nodeId);
+            $('input[name="cutted-nodeisfolder"]').val(isfolder);
+            // sending a message
+            displayMessage("cutted " + data.text, "success");
+        }
+        // Called on paste.
+        function pasteCallBack(itemKey, opt, rootMenu, originalEvent) {
+            var nodeId = tree.getSelections()[0];
+            // getting the node to paste from the hidden input fields
+            var topasteNodeId = $('input[name="cutted-nodeid"]').val();
+            var topasteIsFolder = $('input[name="cutted-nodeisfolder"]').val();
+            // getting the pasted and destination nodes
+            var dn = tree.getNodeById(nodeId);
+            var pn = tree.getNodeById(topasteNodeId);
+            // getting the pasted and destination nodes data
+            var dndata = tree.getDataById(nodeId);
+            var pndata = tree.getDataById(topasteNodeId);
+            // getting the isfolder attribute
+            var isfolder = pn.attr("isfolder");           
+
+            // building ajax url
+            var isfolder = (topasteIsFolder == "true");
+            var url = "/moveBookmark/";
+            if (isfolder) {
+                url = "/moveFolder/";
+            }
+
+            // calling ajax
+            $.ajax({
+                method: "GET",
+                url: url,
+                data: {
+                    sourceItemId: topasteNodeId,
+                    destinationItemId: nodeId,
+                },
+                dataType: "json",
+            }).done(function() {
+                displayMessage("pasted " + pndata.text + " into " + dndata.text, "success");
+                // expand destination node then move node
+                tree.expand(dn);
+                tree.addNode(tree.getDataById(topasteNodeId), dn);
+                tree.removeNode(pn);
+                // delete hidden input fields values
+                $('input[name="cutted-nodeid"]').val("");
+                $('input[name="cutted-nodeisfolder"]').val("");
+            }).fail(function() {
+                displayMessage("error !", "alert");
+            }).always(function() {
+            });
+        }
+        // Called on star.
+        function starCallBack(itemKey, opt, rootMenu, originalEvent) {
+            var nodeId = tree.getSelections()[0];
+
+            // calling ajax
+            $.ajax({
+                method: "GET",
+                url: "/starBookmark/",
+                data: {
+                    bookmarkId: nodeId,
+                    star: true,
+                },
+                dataType: "json",
+            }).done(function(result) {
+                // add new starred bookmark
+                newID = result.Id
+                newFavicon = result.Favicon
+                newURL = result.URL
+                newTitle = result.Title
+                $("ul#starred").append(createStarredBookmarkLi(newID, newTitle, newURL, newFavicon));
+                displayMessage("stared " + newTitle, "success");
+            }).fail(function() {
+                displayMessage("error !", "alert");
+            }).always(function() {
+            });
+        }
+
+        //
+        // Tree callback functions.
+        //
+        // Called when a node is rendered.
+        tree.on('nodeDataBound', function (e, node, id, record) {
+            console.log(record);
+            // Adding the editing hidden form
+         //var eltitle = $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
+         //    $("<div></div>").addClass("input-group-prepend").append(
+         //        $("<span></span>").addClass("input-group-text").attr("id", "edit-title-" + id).text("title")
+         //    )).append(
+         //        $("<input></input>").addClass("form-control").attr("aria-describedby", "edit-title-" + id).val(record.text)
+         //    );
+         //var elurl = $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
+         //    $("<div></div>").addClass("input-group-prepend").append(
+         //        $("<span></span>").addClass("input-group-text").attr("id", "edit-url-" + id).text("url")
+         //    )).append(
+         //        $("<input></input>").addClass("form-control").attr("aria-describedby", "edit-url-" + id).val(record.url)
+         //    );
+         //var elbuttonok = $("<button></button>").attr("type", "button").addClass("btn btn-success").text("ok");
+         //var elbuttoncancel = $("<button></button>").attr("type", "button").addClass("btn btn-secondary").text("cancel");
+         //
+         //if (record.url != "") {
+         //    node.append(eltitle).append(elurl).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
+         //} else {
+         //    node.append(eltitle).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
+         //}
+
+            // Add X-editable attribute to the display span for further edition.
+            var s = node.find('span[data-role="display"]').first();
+            s.attr("data-type", "text")
+            .attr("data-pk", id)
+            .attr("data-title", "enter name")
+            .addClass("editable");
+            
+            // Appending an link with the url (not for folders).
+            if (record.url != "") {
+                var d = $("<div></div>").attr("class", "icon-link");
+                var a = $("<a></a>").attr("href", record.url).attr("target", "_blank").attr("title", record.url);
+                var i = $("<i></i>").attr("class", "fas fa-link");
+                d.append(a.append(i));
+                node.find('div[data-role="wrapper"]').append(d);
+            }
+            // Appending an attribute to the node to identify folders.
+            if (record.url != "") {
+                node.attr("isfolder", false);
+            } else {
+                node.attr("isfolder", true);
+            }
+        });
+        // Called when a node is enabled
+        tree.on('select', function (e, node) {
+            // Disabling editing on all other nodes
+            // When cancelling a node edition, the node remains editable
+            var currentpk = node.attr("data-id");
+            $("span.editable").each( function( index, element ){
+                var pk = $(this).attr("data-pk");
+                if (pk != currentpk) {
+                    $(this).editable("disable");
+                }
+            });
+        });
+
+        //
+        // X-editable callback functions.
+        //
+ 
+        //
+        // X-editable default options
+        //
+        // inline mode edition
+        $.fn.editable.defaults.mode = "inline";
+        // additionnal param passed for edition
+        $.fn.editable.defaults.params = function(params) {
+            // getting the edited node
+            var n = tree.getNodeById(params.pk);
+            // getting the isfolder attribute
+            var isfolder = n.attr("isfolder");
+            // appending it to the params
+            params.isfolder = isfolder
+            return params
+        }
+        // function called on save
+        $.fn.editable.defaults.url = function(params) {
+            //console.log(params);
+            var isfolder = (params.isfolder == "true");
+            var url = "/renameBookmark/";
+            if (isfolder) {
+                url = "/renameFolder/";
+            }
+
+            var d = $.Deferred();
+            $.ajax({
+                method: "GET",
+                url: url,
+                data: {
+                    itemId: params.pk,
+                    itemName: params.value,
+                },
+                dataType: "json",
+            }).done(function(data) {
+                //console.log( "done:" + JSON.stringify(data) );
+                d.resolve(data);
+            }).fail(function(data) {
+                console.log( "fail:" + data.responseText );
+                d.reject();
+            }).always(function(data) {
+                $(".editable").editable("disable");
+            });
+            
+            return d.promise();
+        }
+
     });
-    $(".fancytree-container").addClass("fancytree-connectors");
 </script>
 
 <script type="text/javascript">
     $(function() {
+        // establishing web socket connection
         if (window.location.protocol == "https:") {
             wsproto = "wss";
         } else {
@@ -495,21 +650,14 @@
         }
         var ws= new WebSocket(wsproto + "://{{.GoBkmProxyHost}}/socket/");
 
+        // Getting the tree as a variable.
+        var tree = $('#tree').tree();
+
+        // on message receive
         ws.onmessage = function(evt) {
-            //console.log( "Received Message: " + evt.data);
-            newBookmark = createBookmarkLi(evt.ID, evt.Title, evt.URL, "")
-
-            tree = $("#tree").fancytree("getTree");
-            activeNode = tree.getNodeByKey("1");
-            activeNodeKey = activeNode.key;
-
-            activeNode.load(forceReload=true).then(
-                function() {
-                    if (! activeNode.isExpanded()) {
-                        activeNode.setExpanded(true);
-                    }
-                }
-            );
+            // lazyli reloading the tree
+            // TODO: improve this
+            tree.reload();
         };
     });
 </script>
@@ -522,6 +670,7 @@
     function dzDrop(ev) {
         ev.preventDefault();
         
+        // getting the url from dropped bookmark
         var data
         dttypes = ev.dataTransfer.types;
         if ($.inArray("text/uri-list", dttypes) != -1) {
@@ -536,33 +685,27 @@
         //console.log(ev.dataTransfer.types);
         // ["text/plain", "text/uri-list"]
         // ["text/plain", "text/x-moz-url"
-        tree = $("#tree").fancytree("getTree");
     
-        //activeNode = tree.getNodeByKey("1");
-        activeNode = tree.getActiveNode();
-        if (! activeNode) {
-            activeNode = tree.getNodeByKey("1");
-            activeNode = $("#tree").fancytree("getRootNode");
-        } 
-        if (!activeNode.isFolder()) {
-            activeNode = activeNode.getParent();
-        }
-        activeNodeKey = activeNode.key;
+        // Getting the tree as a variable.
+        var tree = $('#tree').tree();
 
+        // getting the selected node id
+        var nodeId = tree.getSelections()[0];
+        if (typeof nodeId == 'undefined') {
+            nodeId = "1";
+        }
+        activeNode = tree.getNodeById(nodeId);
+
+        // calling ajax
         $.ajax({
             url: "/addBookmark/",
             data: {
-                destinationFolderId: activeNodeKey,
+                destinationFolderId: nodeId,
                 bookmarkUrl: data
             }
         }).done(function(result) {
-            activeNode.load(forceReload=true).then(
-                function() {
-                    if (! activeNode.isExpanded()) {
-                        activeNode.setExpanded(true);
-                    }
-                }
-            );
+            displayMessage("added !", "success");
+            tree.reload();
         }).always(function() {
         });
 
@@ -570,22 +713,6 @@
 </script>
 
 <script>
-    function star(id) {
-         $.ajax({
-            url: "/starBookmark/",
-            data: {
-                bookmarkId: id,
-                star: true
-            }
-        }).done(function(result) {
-            newID = result.Id
-            newFavicon = result.Favicon
-            newURL = result.URL
-            newTitle = result.Title
-            $("ul#starred").append(createStarredBookmarkLi(newID, newTitle, newURL, newFavicon));
-        }).always(function() {
-        });
-    }
     function unStar(id) {
         $.ajax({
             url: "/starBookmark/",
@@ -601,6 +728,14 @@
 </script>
 
 <script>
+    function displayMessage(msgText, type) {
+        var d = $("<div>");
+        d.attr("role", "alert");
+        d.addClass("alert alert-" + type);
+        d.css("z-index", "99");
+        d.text(msgText);
+        $("body").prepend(d.delay(1000).fadeOut("slow"));
+    }
     function clearSearchResults() {
         $("div#search-result").html("");
     }
@@ -617,7 +752,7 @@
                 <div class='bookmark'> \
                     <img src=\"SRC\" alt='' class='favicon'> \
                     <span class='bookmark-starred-link'  title=\"URL\" onclick='window.open(\"URL\", \"_blank\");'>TITLE</span> \
-                    <a href='#' onclick=\"unStar('ID');\" class='glyphicon glyphicon-remove' aria-hidden='true' title='Remove bookmark.'></a> \
+                    <a href='#' onclick=\"unStar('-ID');\" class='fas fa-star-half' aria-hidden='true' title='remove bookmark'></a> \
                 </div> \
             </li> \
         "

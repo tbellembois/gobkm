@@ -41,6 +41,7 @@ type Env struct {
 	GoBkmProxyHost      string // the application Host
 	TplMainData         string // main template data
 	TplAddBookmarkData  string // add bookmark template data
+	TplTestData         string // test template data
 	CSSMainData         []byte // main css data
 	CSSAwesoneFontsData []byte // awesome fonts css data
 	JsData              []byte // js data
@@ -85,6 +86,31 @@ func insertIndent(wr io.Writer, depth int) {
 				"err": err,
 			}).Error("insertIdent")
 		}
+	}
+}
+
+// TestHandler not used in production.
+func (env *Env) TestHandler(w http.ResponseWriter, r *http.Request) {
+	var (
+		err error
+	)
+	log.WithFields(log.Fields{
+		"r": r,
+	}).Debug("TestHandler")
+
+	n := types.Node{Key: 5}
+	c := env.getChildren(&n)
+	log.Debug(c)
+
+	// Building the HTML template.
+	htmlTpl := template.New("test")
+	if htmlTpl, err = htmlTpl.Parse(env.TplTestData); err != nil {
+		failHTTP(w, "TestHandler", err.Error(), http.StatusInternalServerError)
+		// TODO: should we exit the program ?
+	}
+
+	if err = htmlTpl.Execute(w, nil); err != nil {
+		failHTTP(w, "TestHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -416,6 +442,13 @@ func (env *Env) DeleteFolderHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "DeleteFolderHandler", err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	// Returning an empty JSON to trigger de done() ajax function.
+	if err = json.NewEncoder(w).Encode(types.Folder{}); err != nil {
+		failHTTP(w, "DeleteFolderHandler", err.Error(), http.StatusInternalServerError)
+	}
 }
 
 // DeleteBookmarkHandler handles the bookmarks deletion.
@@ -440,6 +473,8 @@ func (env *Env) DeleteBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "DeleteBookmarkHandler", "bookmarkId Atoi conversion", http.StatusInternalServerError)
 		return
 	}
+	// the id in the view in negative, reverting
+	bookmarkID = -bookmarkID
 
 	// Getting the bookmark.
 	bkm := env.DB.GetBookmark(bookmarkID)
@@ -449,6 +484,13 @@ func (env *Env) DeleteBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = env.DB.FlushErrors(); err != nil {
 		failHTTP(w, "DeleteBookmarkHandler", err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	// Returning an empty JSON to trigger de done() ajax function.
+	if err = json.NewEncoder(w).Encode(types.Bookmark{}); err != nil {
+		failHTTP(w, "DeleteBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -488,12 +530,11 @@ func (env *Env) RenameFolderHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "RenameFolderHandler", err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(types.Folder{Id: int(fld.Id), Title: fld.Title}); err != nil {
 		failHTTP(w, "RenameFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
-
 }
 
 // RenameBookmarkHandler handles the bookmarks rename.
@@ -520,6 +561,8 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "RenameBookmarkHandler", "bookmarkId Atoi conversion", http.StatusInternalServerError)
 		return
 	}
+	// the id in the view in negative, reverting
+	bookmarkID = -bookmarkID
 
 	// Getting the bookmark.
 	bkm := env.DB.GetBookmark(bookmarkID)
@@ -533,12 +576,11 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//_ = wsconn.WriteMessage(websocket.TextMessage, []byte("Bookmark renamed."))
-
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(types.Folder{Id: int(bkm.Id), Title: bkm.Title}); err != nil {
 		failHTTP(w, "RenameBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
-
 }
 
 // StarBookmarkHandler handles the bookmark starring/unstarring.
@@ -573,6 +615,8 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "StarBookmarkHandler", "bookmarkId Atoi conversion", http.StatusInternalServerError)
 		return
 	}
+	// the id in the view in negative, reverting
+	bookmarkID = -bookmarkID
 
 	// Getting the bookmark.
 	bkm := env.DB.GetBookmark(bookmarkID)
@@ -592,7 +636,8 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		"resultBookmarkStruct": resultBookmarkStruct,
 	}).Debug("StarBookmarkHandler")
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(resultBookmarkStruct); err != nil {
 		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
@@ -623,6 +668,10 @@ func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "MoveBookmarkHandler", "bookmarkId Atoi conversion", http.StatusInternalServerError)
 		return
 	}
+
+	// the id in the view in negative, reverting
+	bookmarkID = -bookmarkID
+
 	if destinationFolderID, err = strconv.Atoi(destinationFolderIDParam[0]); err != nil {
 		failHTTP(w, "MoveBookmarkHandler", "destinationFolderId Atoi conversion", http.StatusInternalServerError)
 		return
@@ -650,6 +699,12 @@ func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = env.DB.FlushErrors(); err != nil {
 		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
 		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	// Returning an empty JSON to trigger de done() ajax function.
+	if err = json.NewEncoder(w).Encode(types.Bookmark{}); err != nil {
+		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -706,6 +761,87 @@ func (env *Env) MoveFolderHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	// Returning an empty JSON to trigger de done() ajax function.
+	if err = json.NewEncoder(w).Encode(types.Folder{}); err != nil {
+		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func (env *Env) getChildren(node *types.Node) types.Node {
+	log.WithFields(log.Fields{"node.Key": node.Key}).Debug("getChildren")
+	var (
+		bks  types.Bookmarks
+		flds []*types.Folder
+	)
+
+	bks = env.DB.GetFolderBookmarks(node.Key)
+	for _, bk := range bks {
+		node.Children = append(node.Children, &types.Node{Key: -bk.Id, Title: bk.Title, URL: bk.URL, Icon: bk.Favicon, Folder: false, Lazy: false})
+	}
+	flds = env.DB.GetFolderSubfolders(node.Key)
+
+	if flds != nil {
+		for _, fld := range flds {
+			log.WithFields(log.Fields{"fld": fld}).Debug("getChildren")
+			n := env.getChildren(&types.Node{Key: fld.Id, Title: fld.Title, Folder: false, Lazy: false})
+			node.Children = append(node.Children, &n)
+		}
+		return *node
+	} else {
+		return *node
+	}
+}
+
+// GetTreeHandler return the entire bookmark tree
+func (env *Env) GetTreeHandler(w http.ResponseWriter, r *http.Request) {
+	var (
+		err error
+	)
+
+	// Getting the root folder children folders.
+	flds := env.DB.GetFolderSubfolders(1)
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Adding them into a map.
+	var nodesMap []*types.Node
+	for _, fld := range flds {
+		newNode := env.getChildren(&types.Node{Key: fld.Id, Title: fld.Title, Folder: true, Lazy: true})
+		nodesMap = append(nodesMap, &newNode)
+	}
+
+	// Getting the folder bookmarks.
+	bkms := env.DB.GetFolderBookmarks(1)
+	//sort.Sort(bkms)
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Adding them into a map.
+	for _, bkm := range bkms {
+		// Returning a default favicon if needed
+		if bkm.Favicon == "" {
+			bkm.Favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAACiElEQVQ4EaVTzU8TURCf2tJuS7tQtlRb6UKBIkQwkRRSEzkQgyEc6lkOKgcOph78Y+CgjXjDs2i44FXY9AMTlQRUELZapVlouy3d7kKtb0Zr0MSLTvL2zb75eL838xtTvV6H/xELBptMJojeXLCXyobnyog4YhzXYvmCFi6qVSfaeRdXdrfaU1areV5KykmX06rcvzumjY/1ggkR3Jh+bNf1mr8v1D5bLuvR3qDgFbvbBJYIrE1mCIoCrKxsHuzK+Rzvsi29+6DEbTZz9unijEYI8ObBgXOzlcrx9OAlXyDYKUCzwwrDQx1wVDGg089Dt+gR3mxmhcUnaWeoxwMbm/vzDFzmDEKMMNhquRqduT1KwXiGt0vre6iSeAUHNDE0d26NBtAXY9BACQyjFusKuL2Ry+IPb/Y9ZglwuVscdHaknUChqLF/O4jn3V5dP4mhgRJgwSYm+gV0Oi3XrvYB30yvhGa7BS70eGFHPoTJyQHhMK+F0ZesRVVznvXw5Ixv7/C10moEo6OZXbWvlFAF9FVZDOqEABUMRIkMd8GnLwVWg9/RkJF9sA4oDfYQAuzzjqzwvnaRUFxn/X2ZlmGLXAE7AL52B4xHgqAUqrC1nSNuoJkQtLkdqReszz/9aRvq90NOKdOS1nch8TpL555WDp49f3uAMXhACRjD5j4ykuCtf5PP7Fm1b0DIsl/VHGezzP1KwOiZQobFF9YyjSRYQETRENSlVzI8iK9mWlzckpSSCQHVALmN9Az1euDho9Xo8vKGd2rqooA8yBcrwHgCqYR0kMkWci08t/R+W4ljDCanWTg9TJGwGNaNk3vYZ7VUdeKsYJGFNkfSzjXNrSX20s4/h6kB81/271ghG17l+rPTAAAAAElFTkSuQmCC"
+		}
+		// Escaping HTML characters
+		bkm.Title = html.EscapeString(bkm.Title)
+
+		// negating the node id to have unique ids in the view between folders and bookmarks
+		newNode := types.Node{Key: -bkm.Id, Title: bkm.Title, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL, Children: nil}
+		nodesMap = append(nodesMap, &newNode)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(nodesMap); err != nil {
+		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
+	}
 }
 
 // GetBranchNodesHandler retrieves the subfolders and bookmarks of the given folder.
@@ -716,18 +852,17 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	// GET parameters retrieval.
-	keyParam := r.URL.Query().Get("key")
+	parentIdParam := r.URL.Query().Get("parentId")
 	log.WithFields(log.Fields{
-		"keyParam": keyParam,
+		"keyParam": parentIdParam,
 	}).Debug("GetBranchNodesHandler:Query parameter")
 
-	// Parameters check.
-	if len(keyParam) == 0 {
-		failHTTP(w, "GetBranchNodesHandler", "keyParam empty", http.StatusBadRequest)
-		return
+	// Returning the root folder if not parameters are passed.
+	if len(parentIdParam) == 0 {
+		parentIdParam = "1"
 	}
 	// key int convertion.
-	if key, err = strconv.Atoi(keyParam); err != nil {
+	if key, err = strconv.Atoi(parentIdParam); err != nil {
 		failHTTP(w, "GetBranchNodesHandler", "key Atoi conversion", http.StatusInternalServerError)
 		return
 	}
@@ -764,13 +899,9 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// Escaping HTML characters
 		bkm.Title = html.EscapeString(bkm.Title)
-		// If the bookmark is starred, adding a *
-		// NO: not there clean to do this here, better in the HTML
-		//if bkm.Starred {
-		//	bkm.Title = "&#x2605; " + bkm.Title
-		//}
 
-		newNode := types.Node{Key: bkm.Id, Title: bkm.Title, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL}
+		// negating the node id to have unique ids in the view between folders and bookmarks
+		newNode := types.Node{Key: -bkm.Id, Title: bkm.Title, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL, Children: nil}
 		nodesMap = append(nodesMap, &newNode)
 	}
 
@@ -808,13 +939,6 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 	if err = htmlTpl.Execute(w, folderAndBookmark); err != nil {
 		failHTTP(w, "MainHandler", err.Error(), http.StatusInternalServerError)
 	}
-}
-
-// TestHandler not used in production.
-func (env *Env) TestHandler(w http.ResponseWriter, r *http.Request) {
-	log.WithFields(log.Fields{
-		"r": r,
-	}).Debug("TestHandler")
 }
 
 // ImportHandler handles the import requests.

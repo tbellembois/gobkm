@@ -35,7 +35,7 @@ func decoratedHandler(h http.Handler) http.Handler {
 
 func main() {
 	// Getting the program parameters.
-	listenPort := flag.String("port", "8080", "the port to listen")
+	listenPort := flag.String("port", "8081", "the port to listen")
 	goBkmProxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
 	logfile := flag.String("logfile", "", "log to the given file")
 	debug := flag.Bool("debug", false, "debug (verbose log), default is error")
@@ -98,6 +98,9 @@ func main() {
 	if env.TplAddBookmarkData, err = templateBox.String("addBookmark.html"); err != nil {
 		log.Fatal(err)
 	}
+	if env.TplTestData, err = templateBox.String("test.html"); err != nil {
+		log.Fatal(err)
+	}
 
 	// Handlers initialization.
 	http.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
@@ -108,6 +111,7 @@ func main() {
 	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
 	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
+	http.HandleFunc("/getTree/", env.GetTreeHandler)
 	http.HandleFunc("/import/", env.ImportHandler)
 	http.HandleFunc("/moveFolder/", env.MoveFolderHandler)
 	http.HandleFunc("/moveBookmark/", env.MoveBookmarkHandler)
@@ -116,6 +120,7 @@ func main() {
 	http.HandleFunc("/searchBookmarks/", env.SearchBookmarkHandler)
 	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	http.HandleFunc("/socket/", env.SocketHandler)
+	http.HandleFunc("/test/", env.TestHandler)
 	http.HandleFunc("/", env.MainHandler)
 
 	// Rice boxes initialization.
