@@ -265,15 +265,18 @@
                                 keyup: function(e) {
                                     if (e.keyCode == 13) {
                                         var nodeId = tree.getSelections()[0];
-
+                                        var nodeUrl = $("input[name=context-menu-input-newBkm]").val();
                                         $.ajax({
                                             url: "/addBookmark/",
                                             data: {
                                                 destinationFolderId: nodeId,
-                                                bookmarkUrl: $("input[name=context-menu-input-newBkm]").val()
+                                                bookmarkUrl: nodeUrl,
                                             }
                                         }).done(function(result) {
-                                            alert("something to do here");
+                                            // add node
+                                            var parent = tree.getNodeById(nodeId);
+                                            tree.expand(parent);
+                                            tree.addNode({ id: nodeId, text: nodeUrl, url: nodeUrl, hasChildren: false, lazy: false, icon: "" }, parent);
                                         }).always(function() {
                                             $('.context-menu-root').first().trigger("contextmenu:hide");
                                         });
@@ -561,6 +564,12 @@
                 var i = $("<i></i>").attr("class", "fas fa-link");
                 d.append(a.append(i));
                 node.find('div[data-role="wrapper"]').append(d);
+            }
+            // Appending an attribute to the node to identify folders.
+            if (record.url != "") {
+                node.attr("isfolder", false);
+            } else {
+                node.attr("isfolder", true);
             }
         });
         // Called when a node is enabled
