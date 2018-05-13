@@ -240,11 +240,14 @@
                         }
                     }
                 },
-                "sep11": "",
-                "fold1": {
-                    "name": "new bookmark from URL",
+                "sep2": "",
+                "newbookmark": {
+                    name: "new bookmark",
                     icon: function(){
                         return 'far fa-bookmark';
+                    },
+                    callback: function(itemKey, opt, rootMenu, originalEvent) {
+                        newbookmarkCallBack(itemKey, opt, rootMenu, originalEvent); 
                     },
                     disabled: function(key, opt){        
                         var nodeId = tree.getSelections()[0];
@@ -256,37 +259,9 @@
                         } else {
                             return false;
                         }
-                    },
-                    "items": {
-                         newBkm: {
-                            type: 'text', 
-                            value: "", 
-                            events: {
-                                keyup: function(e) {
-                                    if (e.keyCode == 13) {
-                                        var nodeId = tree.getSelections()[0];
-                                        var nodeUrl = $("input[name=context-menu-input-newBkm]").val();
-                                        $.ajax({
-                                            url: "/addBookmark/",
-                                            data: {
-                                                destinationFolderId: nodeId,
-                                                bookmarkUrl: nodeUrl,
-                                            }
-                                        }).done(function(result) {
-                                            // add node
-                                            var parent = tree.getNodeById(nodeId);
-                                            tree.expand(parent);
-                                            tree.addNode({ id: nodeId, text: nodeUrl, url: nodeUrl, hasChildren: false, lazy: false, icon: "" }, parent);
-                                        }).always(function() {
-                                            $('.context-menu-root').first().trigger("contextmenu:hide");
-                                        });
-                                    } 
-                                }
-                            }
-                        }
                     }
                 },
-                "sep2": "",
+                "sep3": "",
                 "cut": {
                     name: "cut",
                     icon: function(){
@@ -296,7 +271,7 @@
                         cutCallBack(itemKey, opt, rootMenu, originalEvent); 
                     }
                 },
-                "sep3": "",
+                "sep4": "",
                 "paste": {
                     name: "paste",
                     icon: function(){
@@ -314,7 +289,7 @@
                         }
                     }
                 },
-                "sep4": "",
+                "sep5": "",
                 "delete": {
                     name: "delete",
                     icon: function(){
@@ -324,7 +299,7 @@
                         deleteCallBack(itemKey, opt, rootMenu, originalEvent); 
                     },
                 },
-                "sep5": "",
+                "sep6": "",
                 "star": {
                     name: "star",
                     icon: function(){
@@ -345,11 +320,7 @@
                             return false;
                         }
                     }
-                },
-                "sep6": "",
-                "quit": {name: "quit", icon: function(){
-                    return 'fas fa-times';
-                }}
+                }
             }
         });
 
@@ -373,6 +344,35 @@
         //
         // Menu callback functions.
         //
+        // Called on create bookmark.
+        function newbookmarkCallBack(itemKey, opt, rootMenu, originalEvent) {
+            var nodeId = tree.getSelections()[0];
+            
+            // calling ajax
+            $.ajax({
+                method: "GET",
+                url: "/addBookmark/",
+                data: {
+                    destinationFolderId: nodeId,
+                    bookmarkUrl: "https://golang.org/",
+                },
+                dataType: "json",
+            }).done(function(result) {
+                displayMessage("bookmark created !", "success");
+                // add node
+                var parent = tree.getNodeById(nodeId);
+                tree.expand(parent);
+                tree.addNode({ id: -result.id, text: "new bookmark", url: "https://golang.org/", hasChildren: false, lazy: false, icon: "" }, parent);
+                // make the new bookmark editable
+                newNode = tree.getNodeById(-result.id);
+                tree.unselect(parent);
+                tree.select(newNode);
+                editCallBack();
+            }).fail(function() {
+                displayMessage("error !", "alert");
+            }).always(function() {
+            });
+        }
         // Called on create subfolder.
         function newsubfolderCallBack(itemKey, opt, rootMenu, originalEvent) {
             var nodeId = tree.getSelections()[0];
@@ -394,9 +394,9 @@
                 tree.addNode({ id: result.id, text: "new folder", url: "", hasChildren: true, lazy: true, icon: "" }, parent);
                 // make the new folder editable
                 newNode = tree.getNodeById(result.id);
+                tree.unselect(parent);
                 tree.select(newNode);
-                $("span.editable[data-pk=" + result.id + "]").editable("enable");
-                $("span.editable[data-pk=" + result.id + "]").trigget("click");
+                editCallBack();
             }).fail(function() {
                 displayMessage("error !", "alert");
             }).always(function() {

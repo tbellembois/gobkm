@@ -301,8 +301,8 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	go env.UpdateBookmarkFavicon(&newBookmark)
 
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(types.Bookmark{Id: int(bookmarkID), URL: bookmarkURLDecoded}); err != nil {
-		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
+	if err = json.NewEncoder(w).Encode(types.Node{Key: int(bookmarkID), Title: bookmarkURLDecoded, URL: bookmarkURLDecoded, Folder: false, Lazy: false}); err != nil {
+		failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
 
