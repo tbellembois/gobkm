@@ -1,6 +1,6 @@
 # GoBkm
 
-GoBkm is an *ultra minimalist single user online bookmark manager* inspired by <http://sitebar.org/> written in [Go](https://golang.org/) and [GopherJS](http://www.gopherjs.org/).  
+GoBkm is an *ultra minimalist single user online bookmark manager* inspired by <http://sitebar.org/> written in [Go](https://golang.org/).  
 It is designed to run on a remote server (I run it on a [RaspberryPi](https://www.raspberrypi.org/)) and accessed remotely.
 
 The purpose of this project was to study the Go programming language (OOP, databases, HTML templates, learning curve).
@@ -46,7 +46,8 @@ Debug mode (by default only errors are shown):
 ## GUI
 
 - drag and drop an URL from your Web browser address bar into the drop zone (top right corner) OR
-- use the "GoBkm bookmark current page" bookmarklet to bookmark the current page
+- use the "GoBkm bookmark current page" bookmarklet to bookmark the current page OR
+- use the "new bookmark" context menu when a folder is selected
 - rename folders and bookmarks with the context menu when selected
 
 ## Bookmarklets
