@@ -42,3 +42,9 @@ li.context-menu-item > span {
     font-weight: normal;
     font-family: monospace;
 }
+
+/* Edit form */
+div.edit {
+    padding: 14px;
+    border: 6px solid #dae0e5;
+}

@@ -21,6 +21,13 @@ type Bookmark struct {
 	Favicon string // base64 encoded image
 	Starred bool
 	Folder  *Folder
+	Tags    []*Tag
+}
+
+// Tag
+type Tag struct {
+	Id   int
+	Name string `json:"name"`
 }
 
 // Node
@@ -32,6 +39,7 @@ type Node struct {
 	Lazy     bool    `json:"lazy"`
 	Icon     string  `json:"icon"`
 	Children []*Node `json:"children"`
+	Tags     []*Tag  `json:"tag"`
 }
 
 // Bookmarks implements the sort interface

@@ -72,11 +72,27 @@ func (db *SQLiteDataStore) CreateDatabase() {
 	}
 
 	// Tables creation if needed.
-	if _, db.err = db.Exec("CREATE TABLE IF NOT EXISTS folder ( id integer PRIMARY KEY, title string NOT NULL, parentFolderId integer, nbChildrenFolders integer, FOREIGN KEY (parentFolderId) references folder(id) ON DELETE CASCADE)"); db.err != nil {
+	if _, db.err = db.Exec(`CREATE TABLE IF NOT EXISTS folder ( id integer PRIMARY KEY, title string NOT NULL, parentFolderId integer, nbChildrenFolders integer, 
+		FOREIGN KEY (parentFolderId) references folder(id) 
+		ON DELETE CASCADE)`); db.err != nil {
 		log.Error("CreateDatabase: error executing the CREATE TABLE request for table bookmark")
 		return
 	}
-	if _, db.err = db.Exec("CREATE TABLE IF NOT EXISTS bookmark ( id integer PRIMARY KEY, title string NOT NULL, url string NOT NULL, favicon string, starred integer, folderId integer, FOREIGN KEY (folderId) references folder(id) ON DELETE CASCADE)"); db.err != nil {
+	if _, db.err = db.Exec("CREATE TABLE IF NOT EXISTS tag ( id integer PRIMARY KEY, name string NOT NULL)"); db.err != nil {
+		log.Error("CreateDatabase: error executing the CREATE TABLE request for table bookmark")
+		return
+	}
+	if _, db.err = db.Exec(`CREATE TABLE IF NOT EXISTS bookmarktag ( id integer PRIMARY KEY, 
+		bookmarkId integer,
+		tagId integer,
+		FOREIGN KEY (bookmarkId) references bookmark(id), 
+		FOREIGN KEY (tagId) references tag(id))`); db.err != nil {
+		log.Error("CreateDatabase: error executing the CREATE TABLE request for table bookmarktag")
+		return
+	}
+	if _, db.err = db.Exec(`CREATE TABLE IF NOT EXISTS bookmark ( id integer PRIMARY KEY, title string NOT NULL, url string NOT NULL, favicon string, starred integer, folderId integer, 
+		FOREIGN KEY (folderId) references folder(id) 
+		ON DELETE CASCADE)`); db.err != nil {
 		log.Error("CreateDatabase: error executing the CREATE TABLE request for table bookmark")
 		return
 	}
@@ -122,10 +138,15 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 	// Creating new sample folders.
 	folder1 := types.Folder{Id: 1, Title: "IT", Parent: folderRoot}
 	folder2 := types.Folder{Id: 2, Title: "Development", Parent: &folder1}
-	// Creating new sample bookmark.
-	bookmark1 := types.Bookmark{Id: 1, Title: "GoLang", Starred: true, URL: "https://golang.org/", Favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAb9JREFUOI3tkj9oU1EUh797c3lgjA4xL61FX0yhMQqmW5QgFim4+GcyQ3Hp1MlBqFIyOGUobRScnYoQikNA0Ao6WJS2UIdiK7SUVGtfIZg0iMSA+Iy5Dg9fGnyLu2e6nHPu9zv3/K7QWuMXjfqebjQbOM5PIuEjHI6Ywq9P/TlUdm09+3KeNxtlAHbLWzTrNeTBQxjhHuLHohrgwqkBRi5dpO+4JQDEh80NfePOXaIDJ3FigximBUAyk+5SOvFphR/tNovvyzg769TKmxQLecS5a9d1dOQ2zp7N6bjF1PAZlJKMv1hFpVxIa+0t96+cBWD82TLr2zaGaVGbvYcEqLx+gmFajKZiqANBeo/2MZcb89RHUzEAeiNh5nJjGKZF9VUJAFks5FGVrc7IuuW7VH518slMGlHdpljII/sTSW+7j5ohEIrP9S9cnnxIaShOaSjOzNoOBNz81ceLHqg/kRRqv0ggGGLCdm3t+fqRmZtZ15HKEhN2Go1ABUO06VjfBdDSLQS0IFNd4fytSQAWHuR4B8gW7lWJP8B7rtA8zU7zfH4V8f0brew0ou37j/wBHigx2D2d/LvHJ/Vv8R8AvwHjjZMncK4ImgAAAABJRU5ErkJggg==", Folder: &folder2}
+	// Creating new sample tags.
+	tag1 := []*types.Tag{&types.Tag{Id: 1, Name: "mytag1"}}
+	tag2 := []*types.Tag{&types.Tag{Id: 1, Name: "mytag1"}, &types.Tag{Id: 2, Name: "mytag2"}}
+	// Creating new sample bookmarks.
+	bookmark1 := types.Bookmark{Id: 1, Title: "GoLang", Tags: tag1, Starred: true, URL: "https://golang.org/", Favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAb9JREFUOI3tkj9oU1EUh797c3lgjA4xL61FX0yhMQqmW5QgFim4+GcyQ3Hp1MlBqFIyOGUobRScnYoQikNA0Ao6WJS2UIdiK7SUVGtfIZg0iMSA+Iy5Dg9fGnyLu2e6nHPu9zv3/K7QWuMXjfqebjQbOM5PIuEjHI6Ywq9P/TlUdm09+3KeNxtlAHbLWzTrNeTBQxjhHuLHohrgwqkBRi5dpO+4JQDEh80NfePOXaIDJ3FigximBUAyk+5SOvFphR/tNovvyzg769TKmxQLecS5a9d1dOQ2zp7N6bjF1PAZlJKMv1hFpVxIa+0t96+cBWD82TLr2zaGaVGbvYcEqLx+gmFajKZiqANBeo/2MZcb89RHUzEAeiNh5nJjGKZF9VUJAFks5FGVrc7IuuW7VH518slMGlHdpljII/sTSW+7j5ohEIrP9S9cnnxIaShOaSjOzNoOBNz81ceLHqg/kRRqv0ggGGLCdm3t+fqRmZtZ15HKEhN2Go1ABUO06VjfBdDSLQS0IFNd4fytSQAWHuR4B8gW7lWJP8B7rtA8zU7zfH4V8f0brew0ou37j/wBHigx2D2d/LvHJ/Vv8R8AvwHjjZMncK4ImgAAAABJRU5ErkJggg==", Folder: &folder2}
+	bookmark2 := types.Bookmark{Id: 1, Title: "GoBkm Github", Tags: tag2, Starred: false, URL: "https://github.com/tbellembois/gobkm", Favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAilJREFUOI2FUUFrE0EYfTuzNgaxtmlmd9ON3WiS0gQ3Fs+BPXmVCBb03EMPUhBELzmEQGjv3nsJSiRLLvkDnrxJo5XUnCRirWiaGmIhBLP5PNSpSbDxg4GZ4X3ve+99wESVs1lz1baLZihUNzTtxNC0EzMUqq/adrGczZqTeEVeKJdDynVL31ut+0QERVHGgPJPE+Ll3traAyWf/0tAuRwiOzt7vX7fxj+ax4gA+H2+98319ZSSz4MBQMp1S71+376gqh8cx3mkcP55MBiAM9bmjLU77TY451/j8fhjn6q+7fX7dsp1S2eedSFIF4Li0agrpxDRmHxZy7FYSeLL2azJtqrVbQmg4fCS9DVqY8KST5JuVavbihkK1QeDQRIAvrVa55uXarpdGNEoAYCqqvvM8zwLALqdznBU6nmlzM6CM/YTADzPsxgADgBX5ufZtPTPFBBhSHT5z5MxlfMmAPw4OgIR3fkfwe10Oi2Vcs4/sblAYBcA5hYW4OP8+TQbRIR3jUYFON2U8Pt32cNM5ikAxCxr87ppvtE1jcK6/rpWq92TjY7j3L22tPQqGAgQY0wDTje1ubHxBABgJ5NlPRgkIsKyZVXDi4v7dHw8NlnuXh47mSxLIhARLNNs/PI8cdU0M7FI5MuLSuXjaKiGppG0d3Fmpt48OLgxFvohEZKJRMXQNNKFoMksDCHIEIISKyvu4bR1P8vlwrfi8WJvAnTTtouFQsGaxP8GGFLoTDqN+p0AAAAASUVORK5CYII=", Folder: &folder2}
+
 	folders = append(folders, &folder1, &folder2)
-	bookmarks = append(bookmarks, &bookmark1)
+	bookmarks = append(bookmarks, &bookmark1, &bookmark2)
 
 	// DB save.
 	for _, fld := range folders {
@@ -134,6 +155,94 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 	for _, bkm := range bookmarks {
 		db.SaveBookmark(bkm)
 	}
+}
+
+// GetBookmark returns the full tags list
+func (db *SQLiteDataStore) GetTags() []*types.Tag {
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return nil
+	}
+
+	// Querying the tags.
+	var (
+		rows *sql.Rows
+		tags []*types.Tag
+	)
+	rows, db.err = db.Query("SELECT * FROM tag")
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetTags:error closing rows")
+		}
+	}()
+
+	switch {
+	case db.err == sql.ErrNoRows:
+		log.Debug("GetTags:no bookmarks")
+		db.err = nil
+		return nil
+	case db.err != nil:
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("GetTags:SELECT query error")
+		return nil
+	default:
+		for rows.Next() {
+			// Building a new Tag instance with each row.
+			tag := new(types.Tag)
+			db.err = rows.Scan(&tag.Name)
+			if db.err != nil {
+				log.WithFields(log.Fields{
+					"err": db.err,
+				}).Error("GetTags:error scanning the query result row")
+				return nil
+			}
+
+		}
+		if db.err = rows.Err(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetTags:error looping rows")
+			return nil
+		}
+	}
+	return tags
+}
+
+// GetTag returns a Tag instance with the given id.
+func (db *SQLiteDataStore) GetTag(id int) *types.Tag {
+	log.WithFields(log.Fields{
+		"id": id,
+	}).Debug("GetTag")
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return nil
+	}
+
+	// Querying the Tag.
+	tag := new(types.Tag)
+	db.err = db.QueryRow("SELECT * FROM tag WHERE id=?", id).Scan(&tag.Id, &tag.Name)
+	switch {
+	case db.err == sql.ErrNoRows:
+		log.WithFields(log.Fields{
+			"id": id,
+		}).Debug("GetTag:no tag with that ID")
+		db.err = nil
+		return nil
+	case db.err != nil:
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("GetTag:SELECT query error")
+		return nil
+	default:
+		log.WithFields(log.Fields{
+			"Id":   tag.Id,
+			"Name": tag.Name,
+		}).Debug("GetTag:tag found")
+	}
+	return tag
 }
 
 // GetBookmark returns a Bookmark instance with the given id.
@@ -159,6 +268,7 @@ func (db *SQLiteDataStore) GetBookmark(id int) *types.Bookmark {
 		log.WithFields(log.Fields{
 			"id": id,
 		}).Debug("GetBookmark:no bookmark with that ID")
+		db.err = nil
 		return nil
 	case db.err != nil:
 		log.WithFields(log.Fields{
@@ -209,6 +319,7 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 		log.WithFields(log.Fields{
 			"id": id,
 		}).Debug("GetFolder:no folder with that ID")
+		db.err = nil
 		return nil
 	case db.err != nil:
 		log.WithFields(log.Fields{
@@ -253,6 +364,7 @@ func (db *SQLiteDataStore) GetStarredBookmarks() []*types.Bookmark {
 	switch {
 	case db.err == sql.ErrNoRows:
 		log.Debug("GetStarredBookmarks:no bookmarks")
+		db.err = nil
 		return nil
 	case db.err != nil:
 		log.WithFields(log.Fields{
@@ -311,6 +423,7 @@ func (db *SQLiteDataStore) SearchBookmarks(s string) []*types.Bookmark {
 	switch {
 	case db.err == sql.ErrNoRows:
 		log.Debug("SearchBookmarks:no bookmarks")
+		db.err = nil
 		return nil
 	case db.err != nil:
 		log.WithFields(log.Fields{
@@ -376,6 +489,7 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) types.Bookmarks {
 	switch {
 	case db.err == sql.ErrNoRows:
 		log.Debug("GetFolderBookmarks:no bookmarks")
+		db.err = nil
 		return nil
 	case db.err != nil:
 		log.WithFields(log.Fields{
@@ -440,6 +554,7 @@ func (db *SQLiteDataStore) GetFolderSubfolders(id int) []*types.Folder {
 	switch {
 	case db.err == sql.ErrNoRows:
 		log.Debug("GetChildrenFolders:no folders")
+		db.err = nil
 		return nil
 	case db.err != nil:
 		log.WithFields(log.Fields{
@@ -583,6 +698,47 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 	}
 }
 
+// SaveTag saves the new given Tag into the db
+func (db *SQLiteDataStore) SaveTag(t *types.Tag) int64 {
+	log.WithFields(log.Fields{
+		"t": t,
+	}).Debug("SaveTag")
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return 0
+	}
+
+	// Preparing the query.
+	var stmt *sql.Stmt
+	stmt, db.err = db.Prepare("INSERT INTO tag(name) values(?)")
+	if db.err != nil {
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("SaveTag:INSERT request prepare error")
+		return 0
+	}
+	defer func() {
+		if db.err = stmt.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("SaveTag:error closing stmt")
+		}
+	}()
+
+	// Executing the query.
+	var res sql.Result
+	res, db.err = stmt.Exec(t.Name)
+	if db.err != nil {
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("SaveTag:INSERT query error")
+		return 0
+	}
+
+	id, _ := res.LastInsertId()
+	return id
+}
+
 // SaveBookmark saves the new given Bookmark into the db
 func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 	log.WithFields(log.Fields{
@@ -593,6 +749,9 @@ func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 		return 0
 	}
 
+	//
+	// Bookmark
+	//
 	// Preparing the query.
 	var stmt *sql.Stmt
 	stmt, db.err = db.Prepare("INSERT INTO bookmark(title, url, folderId, favicon) values(?,?,?,?)")
@@ -624,6 +783,29 @@ func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 		return 0
 	}
 	id, _ := res.LastInsertId()
+
+	//
+	// Tags
+	//
+	// inserting new tags
+	for _, t := range b.Tags {
+		log.WithFields(log.Fields{"t": t}).Debug("SaveBookmark")
+		// new tag id
+		var ntid int
+		// getting new tag from db
+		nt := db.GetTag(t.Id)
+		if nt == nil {
+			// inserting the new tag into the db if it does not exist
+			ntid = int(db.SaveTag(t))
+		} else {
+			ntid = nt.Id
+		}
+
+		// linking the new tag to the bookmark
+		log.WithFields(log.Fields{"b.Id": b.Id, "ntid": ntid}).Debug("SaveBookmark")
+		db.Query("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid)
+	}
+
 	return id
 }
 

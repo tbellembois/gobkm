@@ -24,7 +24,8 @@
     <link rel="stylesheet" type="text/css" href="/css/jquery.contextMenu.min.css">
     <link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="/css/fontawesome-all.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/css/gijgo.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/select2.min.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
 
     <!-- Some variables passed by the handler -->
@@ -49,6 +50,8 @@
     <script type="text/javascript" src="/js/tree.js"></script>
     <!-- Include Clipboard -->
     <script type="text/javascript" src="/js/clipboard.min.js"></script>
+    <!-- Include Select2 -->
+    <script type="text/javascript" src="/js/select2.full.min.js"></script>
 
 </head>
 
@@ -529,7 +532,7 @@
         // Called when a node is rendered.
         tree.on('nodeDataBound', function (e, node, id, record) {
             // Adding the editing hidden form
-            var eledit = $("<div></div>").attr("edit", id);
+            var eledit = $("<div></div>").attr("edit", id).addClass("edit");
             var eltitle = $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
                 $("<div></div>").addClass("input-group-prepend").append(
                     $("<span></span>").addClass("input-group-text").attr("id", "edit-title-" + id).text("title")
@@ -541,6 +544,12 @@
                     $("<span></span>").addClass("input-group-text").attr("id", "edit-url-" + id).text("url")
                 )).append(
                     $("<input></input>").addClass("form-control").attr("id", "input-url-" + id).attr("aria-describedby", "edit-url-" + id).val(record.url)
+                );
+            var eltag =  $("<div></div>").addClass("input-group mb-3").attr("id", id).append(
+                $("<div></div>").addClass("input-group-prepend").append(
+                    $("<span></span>").addClass("input-group-text").attr("id", "edit-tag-" + id).text("tags")
+                )).append(
+                    $("<select></select>").addClass("form-control").attr("multiple", "multiple").attr("id", "select-tag-" + id).attr("aria-describedby", "edit-tag-" + id).val(record.tag)
                 );
             var elid = $("<input></input>").attr("type", "hidden").attr("id", "input-id-" + id).val(id);
             var elbuttonok = $("<button></button>").attr("onclick", "editOkCallBack('" + id + "');").attr("type", "button").addClass("btn btn-success").text("ok");

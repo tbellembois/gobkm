@@ -21,4 +21,8 @@ type Datastore interface {
 	SaveFolder(*types.Folder) int64
 	UpdateFolder(*types.Folder)
 	DeleteFolder(*types.Folder)
+
+	GetTags() []*types.Tag
+	GetTag(int) *types.Tag
+	SaveTag(*types.Tag) int64
 }

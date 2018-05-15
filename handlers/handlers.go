@@ -177,11 +177,6 @@ func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
 	}
 }
 
-type bookmarkThisStruct struct {
-	URL   string `json:"url"`
-	Title string `json:"title"`
-}
-
 // BookmarkThisHandler returns the add bookmark page.
 func (env *Env) BookmarkThisHandler(w http.ResponseWriter, r *http.Request) {
 	var (
