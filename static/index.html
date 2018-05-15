@@ -566,14 +566,22 @@
             }
             eledit.hide();
 
-            // Appending an link with the url (not for folders).
+            // Appending an link with the url for bookmarks.
             if (record.url != "") {
                 var d = $("<div></div>").attr("class", "icon-link");
                 var a = $("<a></a>").attr("link-id", id).attr("href", record.url).attr("target", "_blank").attr("title", record.url);
                 var i = $("<i></i>").attr("class", "fas fa-link");
                 d.append(a.append(i));
                 node.find('div[data-role="wrapper"]').append(d);
+
+                // Adding tags as title for bookmarks
+                var title = "";
+                $.each(record.tag, function( index, tag ) {
+                    title = title + " " + tag.name
+                });
+                node.attr("title", title);
             }
+            
             // Appending an attribute to the node to identify folders.
             if (record.url != "") {
                 node.attr("isfolder", false);

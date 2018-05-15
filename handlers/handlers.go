@@ -776,7 +776,7 @@ func (env *Env) getChildren(node *types.Node) types.Node {
 
 	bks = env.DB.GetFolderBookmarks(node.Key)
 	for _, bk := range bks {
-		node.Children = append(node.Children, &types.Node{Key: -bk.Id, Title: bk.Title, URL: bk.URL, Icon: bk.Favicon, Folder: false, Lazy: false})
+		node.Children = append(node.Children, &types.Node{Key: -bk.Id, Title: bk.Title, URL: bk.URL, Icon: bk.Favicon, Tags: bk.Tags, Folder: false, Lazy: false})
 	}
 	flds = env.DB.GetFolderSubfolders(node.Key)
 

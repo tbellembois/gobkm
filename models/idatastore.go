@@ -10,6 +10,7 @@ type Datastore interface {
 
 	SearchBookmarks(string) []*types.Bookmark
 	GetBookmark(int) *types.Bookmark
+	GetBookmarkTags(int) []*types.Tag
 	GetFolderBookmarks(int) types.Bookmarks
 	GetStarredBookmarks() []*types.Bookmark
 	SaveBookmark(*types.Bookmark) int64

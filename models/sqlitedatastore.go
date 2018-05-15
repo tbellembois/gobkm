@@ -143,7 +143,7 @@ func (db *SQLiteDataStore) PopulateDatabase() {
 	tag2 := []*types.Tag{&types.Tag{Id: 1, Name: "mytag1"}, &types.Tag{Id: 2, Name: "mytag2"}}
 	// Creating new sample bookmarks.
 	bookmark1 := types.Bookmark{Id: 1, Title: "GoLang", Tags: tag1, Starred: true, URL: "https://golang.org/", Favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAb9JREFUOI3tkj9oU1EUh797c3lgjA4xL61FX0yhMQqmW5QgFim4+GcyQ3Hp1MlBqFIyOGUobRScnYoQikNA0Ao6WJS2UIdiK7SUVGtfIZg0iMSA+Iy5Dg9fGnyLu2e6nHPu9zv3/K7QWuMXjfqebjQbOM5PIuEjHI6Ywq9P/TlUdm09+3KeNxtlAHbLWzTrNeTBQxjhHuLHohrgwqkBRi5dpO+4JQDEh80NfePOXaIDJ3FigximBUAyk+5SOvFphR/tNovvyzg769TKmxQLecS5a9d1dOQ2zp7N6bjF1PAZlJKMv1hFpVxIa+0t96+cBWD82TLr2zaGaVGbvYcEqLx+gmFajKZiqANBeo/2MZcb89RHUzEAeiNh5nJjGKZF9VUJAFks5FGVrc7IuuW7VH518slMGlHdpljII/sTSW+7j5ohEIrP9S9cnnxIaShOaSjOzNoOBNz81ceLHqg/kRRqv0ggGGLCdm3t+fqRmZtZ15HKEhN2Go1ABUO06VjfBdDSLQS0IFNd4fytSQAWHuR4B8gW7lWJP8B7rtA8zU7zfH4V8f0brew0ou37j/wBHigx2D2d/LvHJ/Vv8R8AvwHjjZMncK4ImgAAAABJRU5ErkJggg==", Folder: &folder2}
-	bookmark2 := types.Bookmark{Id: 1, Title: "GoBkm Github", Tags: tag2, Starred: false, URL: "https://github.com/tbellembois/gobkm", Favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAilJREFUOI2FUUFrE0EYfTuzNgaxtmlmd9ON3WiS0gQ3Fs+BPXmVCBb03EMPUhBELzmEQGjv3nsJSiRLLvkDnrxJo5XUnCRirWiaGmIhBLP5PNSpSbDxg4GZ4X3ve+99wESVs1lz1baLZihUNzTtxNC0EzMUqq/adrGczZqTeEVeKJdDynVL31ut+0QERVHGgPJPE+Ll3traAyWf/0tAuRwiOzt7vX7fxj+ax4gA+H2+98319ZSSz4MBQMp1S71+376gqh8cx3mkcP55MBiAM9bmjLU77TY451/j8fhjn6q+7fX7dsp1S2eedSFIF4Li0agrpxDRmHxZy7FYSeLL2azJtqrVbQmg4fCS9DVqY8KST5JuVavbihkK1QeDQRIAvrVa55uXarpdGNEoAYCqqvvM8zwLALqdznBU6nmlzM6CM/YTADzPsxgADgBX5ufZtPTPFBBhSHT5z5MxlfMmAPw4OgIR3fkfwe10Oi2Vcs4/sblAYBcA5hYW4OP8+TQbRIR3jUYFON2U8Pt32cNM5ikAxCxr87ppvtE1jcK6/rpWq92TjY7j3L22tPQqGAgQY0wDTje1ubHxBABgJ5NlPRgkIsKyZVXDi4v7dHw8NlnuXh47mSxLIhARLNNs/PI8cdU0M7FI5MuLSuXjaKiGppG0d3Fmpt48OLgxFvohEZKJRMXQNNKFoMksDCHIEIISKyvu4bR1P8vlwrfi8WJvAnTTtouFQsGaxP8GGFLoTDqN+p0AAAAASUVORK5CYII=", Folder: &folder2}
+	bookmark2 := types.Bookmark{Id: 2, Title: "GoBkm Github", Tags: tag2, Starred: false, URL: "https://github.com/tbellembois/gobkm", Favicon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAilJREFUOI2FUUFrE0EYfTuzNgaxtmlmd9ON3WiS0gQ3Fs+BPXmVCBb03EMPUhBELzmEQGjv3nsJSiRLLvkDnrxJo5XUnCRirWiaGmIhBLP5PNSpSbDxg4GZ4X3ve+99wESVs1lz1baLZihUNzTtxNC0EzMUqq/adrGczZqTeEVeKJdDynVL31ut+0QERVHGgPJPE+Ll3traAyWf/0tAuRwiOzt7vX7fxj+ax4gA+H2+98319ZSSz4MBQMp1S71+376gqh8cx3mkcP55MBiAM9bmjLU77TY451/j8fhjn6q+7fX7dsp1S2eedSFIF4Li0agrpxDRmHxZy7FYSeLL2azJtqrVbQmg4fCS9DVqY8KST5JuVavbihkK1QeDQRIAvrVa55uXarpdGNEoAYCqqvvM8zwLALqdznBU6nmlzM6CM/YTADzPsxgADgBX5ufZtPTPFBBhSHT5z5MxlfMmAPw4OgIR3fkfwe10Oi2Vcs4/sblAYBcA5hYW4OP8+TQbRIR3jUYFON2U8Pt32cNM5ikAxCxr87ppvtE1jcK6/rpWq92TjY7j3L22tPQqGAgQY0wDTje1ubHxBABgJ5NlPRgkIsKyZVXDi4v7dHw8NlnuXh47mSxLIhARLNNs/PI8cdU0M7FI5MuLSuXjaKiGppG0d3Fmpt48OLgxFvohEZKJRMXQNNKFoMksDCHIEIISKyvu4bR1P8vlwrfi8WJvAnTTtouFQsGaxP8GGFLoTDqN+p0AAAAASUVORK5CYII=", Folder: &folder2}
 
 	folders = append(folders, &folder1, &folder2)
 	bookmarks = append(bookmarks, &bookmark1, &bookmark2)
@@ -513,10 +513,13 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) types.Bookmarks {
 				}).Error("GetFolderBookmarks:error scanning the query result row")
 				return nil
 			}
+
+			// Getting the bookmark tags
+			bkm.Tags = db.GetBookmarkTags(bkm.Id)
+			bkms = append(bkms, bkm)
 			log.WithFields(log.Fields{
 				"bkm": bkm,
 			}).Debug("GetFolderBookmarks:bookmark found")
-			bkms = append(bkms, bkm)
 		}
 		if db.err = rows.Err(); db.err != nil {
 			log.WithFields(log.Fields{
@@ -524,8 +527,90 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) types.Bookmarks {
 			}).Error("GetFolderBookmarks:error looping rows")
 			return nil
 		}
+
 		return bkms
 	}
+}
+
+// GetBookmarkTags returns the tags of the bookmark
+func (db *SQLiteDataStore) GetBookmarkTags(id int) []*types.Tag {
+	log.WithFields(log.Fields{
+		"id": id,
+	}).Debug("GetBookmarkTags")
+	// Leaving silently on past errors...
+	if db.err != nil {
+		return nil
+	}
+
+	var (
+		row    *sql.Row
+		rows   *sql.Rows
+		tagids []int
+		tags   []*types.Tag
+	)
+	// Querying the tags ids.
+	rows, db.err = db.Query("SELECT tagId FROM bookmarktag WHERE bookmarkId is ?", id)
+	defer func() {
+		if db.err = rows.Close(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetBookmarkTags:error closing rows")
+		}
+	}()
+	switch {
+	case db.err == sql.ErrNoRows:
+		log.Debug("GetBookmarkTags:no tags")
+		db.err = nil
+		return nil
+	case db.err != nil:
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("GetBookmarkTags:SELECT query error")
+		return nil
+	default:
+		for rows.Next() {
+			var tagid int
+			db.err = rows.Scan(&tagid)
+			if db.err != nil {
+				log.WithFields(log.Fields{
+					"err": db.err,
+				}).Error("GetBookmarkTags:error scanning the query result row - tagid")
+				return nil
+			}
+			tagids = append(tagids, tagid)
+		}
+		if db.err = rows.Err(); db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetBookmarkTags:error looping rows")
+			return nil
+		}
+	}
+	log.WithFields(log.Fields{"tagids": tagids}).Debug("GetBookmarkTags")
+
+	// Querying the tags.
+	for _, tid := range tagids {
+		row = db.QueryRow("SELECT id, name FROM tag WHERE id is ?", tid)
+		defer func() {
+			if db.err = rows.Close(); db.err != nil {
+				log.WithFields(log.Fields{
+					"err": db.err,
+				}).Error("GetBookmarkTags:error closing rows")
+			}
+		}()
+		var tag types.Tag
+		db.err = row.Scan(&tag.Id, &tag.Name)
+		if db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("GetBookmarkTags:error scanning the query result row - tag")
+			return nil
+		}
+		log.WithFields(log.Fields{"tag": tag}).Debug("GetBookmarkTags")
+		tags = append(tags, &tag)
+	}
+
+	return tags
 }
 
 // GetFolderSubfolders returns the children folders as an array of *Folder
@@ -803,7 +888,7 @@ func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 
 		// linking the new tag to the bookmark
 		log.WithFields(log.Fields{"b.Id": b.Id, "ntid": ntid}).Debug("SaveBookmark")
-		db.Query("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid)
+		db.Exec("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid)
 	}
 
 	return id
