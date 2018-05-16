@@ -535,17 +535,21 @@ func (env *Env) RenameFolderHandler(w http.ResponseWriter, r *http.Request) {
 // RenameBookmarkHandler handles the bookmarks rename.
 func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-		bookmarkID int
-		err        error
+		bookmarkID   int
+		tID          int
+		err          error
+		bookmarkTags []*types.Tag
 	)
 	// GET parameters retrieval.
 	bookmarkIDParam := r.URL.Query()["itemId"]
 	bookmarkName := r.URL.Query()["itemName"]
 	bookmarkUrl := r.URL.Query()["itemUrl"]
+	bookmarkTag := r.URL.Query()["itemTag[]"]
 	log.WithFields(log.Fields{
 		"bookmarkId":   bookmarkID,
 		"bookmarkName": bookmarkName,
 		"bookmarkUrl":  bookmarkUrl,
+		"bookmarkTag":  bookmarkTag,
 	}).Debug("RenameBookmarkHandler:Query parameter")
 
 	// Parameters check.
@@ -563,9 +567,23 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Getting the bookmark.
 	bkm := env.DB.GetBookmark(bookmarkID)
+	// Getting the tags.
+	for _, t := range bookmarkTag {
+		if tID, err = strconv.Atoi(t); err != nil {
+			// assuming that the tag is a new one with name t
+			// adding it into the db
+			tID = int(env.DB.SaveTag(&types.Tag{Name: string(t)}))
+		}
+		bookmarkTags = append(bookmarkTags, env.DB.GetTag(tID))
+	}
+	log.WithFields(log.Fields{
+		"bookmarkTags": bookmarkTags,
+	}).Debug("RenameBookmarkHandler")
+
 	// Renaming it.
 	bkm.Title = bookmarkName[0]
 	bkm.URL = bookmarkUrl[0]
+	bkm.Tags = bookmarkTags
 	// Updating the folder into the DB.
 	env.DB.UpdateBookmark(bkm)
 	// Datastore error check.

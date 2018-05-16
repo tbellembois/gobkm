@@ -412,7 +412,13 @@ func (db *SQLiteDataStore) SearchBookmarks(s string) []*types.Bookmark {
 	)
 
 	// Querying the bookmarks.
-	rows, db.err = db.Query("SELECT id, title, url, favicon, starred, folderId FROM bookmark WHERE title LIKE ? ORDER BY title", "%"+s+"%")
+	rows, db.err = db.Query(`SELECT bookmark.id, bookmark.title, bookmark.url, bookmark.favicon, bookmark.starred, bookmark.folderId 
+		FROM bookmark
+		LEFT JOIN bookmarktag ON bookmarktag.bookmarkId = bookmark.Id
+		LEFT JOIN tag ON bookmarktag.tagId = tag.Id
+		WHERE bookmark.title LIKE ? OR
+		tag.name LIKE ?
+		ORDER BY title`, "%"+s+"%", "%"+s+"%")
 	defer func() {
 		if db.err = rows.Close(); db.err != nil {
 			log.WithFields(log.Fields{
@@ -780,6 +786,30 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 		log.WithFields(log.Fields{
 			"err": db.err,
 		}).Error("UpdateBookmark: UPDATE query transaction commit error")
+	}
+
+	//
+	// Tags
+	//
+	// lazily deleting current tags
+	db.Exec("DELETE from bookmarktag WHERE bookmarkId IS ?", b.Id)
+	// inserting new tags
+	for _, t := range b.Tags {
+		log.WithFields(log.Fields{"t": t}).Debug("UpdateBookmark")
+		// new tag id
+		var ntid int
+		// getting new tag from db
+		nt := db.GetTag(t.Id)
+		if nt == nil {
+			// inserting the new tag into the db if it does not exist
+			ntid = int(db.SaveTag(t))
+		} else {
+			ntid = nt.Id
+		}
+
+		// linking the new tag to the bookmark
+		log.WithFields(log.Fields{"b.Id": b.Id, "ntid": ntid}).Debug("UpdateBookmark")
+		db.Exec("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid)
 	}
 }
 

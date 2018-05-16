@@ -409,6 +409,11 @@
         function editCallBack(itemKey, opt, rootMenu, originalEvent) {
             var nodeId = tree.getSelections()[0];
 
+            // hide possible open edit div
+            $("div[class=edit]").hide();
+            // clean possible selected values not committed
+            $(".select2").val(null).trigger('change');
+
             // show edit div
             $("li[data-id=" + nodeId + "]").removeClass("active");
             $("div[edit=" + nodeId + "]").show();
@@ -423,15 +428,10 @@
                     processResults: function (data) {
                         // replacing name by text expected by select2
                         var newdata = $.map(data, function (obj) {
-                            s = $.inArray(obj.id, selectedIds);
                             obj.text = obj.text || obj.name;
                             obj.id = obj.id || obj.id;
-                            if (s != -1) {
-                                obj.selected = true;
-                            }
                             return obj;
                         });
-                        console.log(newdata)
                         return {
                             results: newdata
                         };
@@ -446,7 +446,7 @@
             }).then(function( data) {
                 $.each(data, function( index, value ) {
                     // create the option and append to Select2
-                    var option = new Option(value.name, data.id, true, true);
+                    var option = new Option(value.name, value.id, true, true);
                     $("#select-tag-" + nodeId).append(option).trigger('change');
 
                     // manually trigger the `select2:select` event
@@ -686,13 +686,18 @@
         var isfolder = $("input#input-fld-" + nodeId).val();
         var ftitle = $("input#input-title-" + nodeId).val();
         var furl = $("input#input-url-" + nodeId).val();
+        var ftag = $("select#select-tag-" + nodeId).select2('data');
         var fid = $("input#input-id-" + nodeId).val();
 
         var url = "/renameBookmark/";
         if (isfolder == "true") {
             url = "/renameFolder/";
         }
-
+        var selectedIds = [];
+        $.each(ftag, function( index, value ) {
+            selectedIds.push(value.id);
+        });
+        console.log(selectedIds);
         $.ajax({
             method: "GET",
             url: url,
@@ -700,6 +705,7 @@
                 itemId: fid,
                 itemName: ftitle,
                 itemUrl: furl,
+                itemTag: selectedIds,
             },
             dataType: "json",
         }).done(function(data) {
