@@ -408,9 +408,59 @@
         // Called on edit.
         function editCallBack(itemKey, opt, rootMenu, originalEvent) {
             var nodeId = tree.getSelections()[0];
+
+            // show edit div
             $("li[data-id=" + nodeId + "]").removeClass("active");
             $("div[edit=" + nodeId + "]").show();
+            
+            // initialize select2
+            $("#select-tag-" + nodeId).select2({
+                placeholder: 'select or enter a tag',
+                tags: true,
+                ajax: {
+                    url: '/getTags/',
+                    dataType: 'json',
+                    processResults: function (data) {
+                        // replacing name by text expected by select2
+                        var newdata = $.map(data, function (obj) {
+                            s = $.inArray(obj.id, selectedIds);
+                            obj.text = obj.text || obj.name;
+                            obj.id = obj.id || obj.id;
+                            if (s != -1) {
+                                obj.selected = true;
+                            }
+                            return obj;
+                        });
+                        console.log(newdata)
+                        return {
+                            results: newdata
+                        };
+                    },
+                },
+            });
+
+            // getting the bookmark tags
+            $.ajax({
+                url: "/getBookmarkTags/",
+                data: { bookmarkId: nodeId }
+            }).then(function( data) {
+                $.each(data, function( index, value ) {
+                    // create the option and append to Select2
+                    var option = new Option(value.name, data.id, true, true);
+                    $("#select-tag-" + nodeId).append(option).trigger('change');
+
+                    // manually trigger the `select2:select` event
+                    $("#select-tag-" + nodeId).trigger({
+                        type: 'select2:select',
+                        params: {
+                            data: data
+                        }
+                    });
+                });
+            });
+
         }
+
         // Called on delete.
         function deleteCallBack(itemKey, opt, rootMenu, originalEvent) {
             var nodeId = tree.getSelections()[0];
@@ -549,7 +599,7 @@
                 $("<div></div>").addClass("input-group-prepend").append(
                     $("<span></span>").addClass("input-group-text").attr("id", "edit-tag-" + id).text("tags")
                 )).append(
-                    $("<select></select>").addClass("form-control").attr("multiple", "multiple").attr("id", "select-tag-" + id).attr("aria-describedby", "edit-tag-" + id).val(record.tag)
+                    $("<select></select>").addClass("form-control").addClass("select2").attr("multiple", "multiple").attr("id", "select-tag-" + id).attr("aria-describedby", "edit-tag-" + id).val(record.tag)
                 );
             var elid = $("<input></input>").attr("type", "hidden").attr("id", "input-id-" + id).val(id);
             var elbuttonok = $("<button></button>").attr("onclick", "editOkCallBack('" + id + "');").attr("type", "button").addClass("btn btn-success").text("ok");
@@ -557,7 +607,7 @@
             
             if (record.url != "") {
                 var elfld = $("<input></input>").attr("type", "hidden").attr("id", "input-fld-" + id).val(false);
-                eledit.append(elid).append(eltitle).append(elfld).append(elurl).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
+                eledit.append(elid).append(eltitle).append(elfld).append(elurl).append(eltag).append(elbuttonok).append("&nbsp;").append(elbuttoncancel);
                 node.find("div[data-role=wrapper]").first().after(eledit);
             } else {
                 var elfld = $("<input></input>").attr("type", "hidden").attr("id", "input-fld-" + id).val(true);

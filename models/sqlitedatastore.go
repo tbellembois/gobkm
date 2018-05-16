@@ -192,14 +192,14 @@ func (db *SQLiteDataStore) GetTags() []*types.Tag {
 		for rows.Next() {
 			// Building a new Tag instance with each row.
 			tag := new(types.Tag)
-			db.err = rows.Scan(&tag.Name)
+			db.err = rows.Scan(&tag.Id, &tag.Name)
 			if db.err != nil {
 				log.WithFields(log.Fields{
 					"err": db.err,
 				}).Error("GetTags:error scanning the query result row")
 				return nil
 			}
-
+			tags = append(tags, tag)
 		}
 		if db.err = rows.Err(); db.err != nil {
 			log.WithFields(log.Fields{

@@ -109,6 +109,8 @@ func main() {
 	http.HandleFunc("/bookmarkThis/", env.BookmarkThisHandler)
 	http.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
 	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
+	http.HandleFunc("/getBookmarkTags/", env.GetBookmarkTagsHandler)
+	http.HandleFunc("/getTags/", env.GetTagsHandler)
 	http.HandleFunc("/export/", env.ExportHandler)
 	http.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
 	http.HandleFunc("/getTree/", env.GetTreeHandler)

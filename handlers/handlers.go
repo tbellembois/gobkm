@@ -842,6 +842,67 @@ func (env *Env) GetTreeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetTagsHandler retrieves the tags.
+func (env *Env) GetTagsHandler(w http.ResponseWriter, r *http.Request) {
+
+	var (
+		err error
+	)
+
+	// Getting the tags.
+	tags := env.DB.GetTags()
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "GetTagsHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(tags); err != nil {
+		failHTTP(w, "GetTagsHandler", err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// GetBookmarkTagsHandler retrieves the tags for the given bookmark.
+func (env *Env) GetBookmarkTagsHandler(w http.ResponseWriter, r *http.Request) {
+
+	var (
+		err        error
+		bookmarkID int
+	)
+	// GET parameters retrieval.
+	bookmarkIDParam := r.URL.Query()["bookmarkId"]
+	log.WithFields(log.Fields{
+		"bookmarkIDParam": bookmarkIDParam,
+	}).Debug("GetBookmarkTagsHandler:Query parameter")
+
+	// Parameters check.
+	if len(bookmarkIDParam) == 0 {
+		failHTTP(w, "GetBookmarkTagsHandler", "folderIdParam empty", http.StatusBadRequest)
+		return
+	}
+	// folderId int convertion.
+	if bookmarkID, err = strconv.Atoi(bookmarkIDParam[0]); err != nil {
+		failHTTP(w, "GetBookmarkTagsHandler", "folderId Atoi conversion", http.StatusInternalServerError)
+		return
+	}
+	// the id in the view in negative, reverting
+	bookmarkID = -bookmarkID
+
+	// Getting the tags.
+	tags := env.DB.GetBookmarkTags(bookmarkID)
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "GetBookmarkTagsHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(tags); err != nil {
+		failHTTP(w, "GetBookmarkTagsHandler", err.Error(), http.StatusInternalServerError)
+	}
+}
+
 // GetBranchNodesHandler retrieves the subfolders and bookmarks of the given folder.
 func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 	var (
