@@ -750,7 +750,10 @@
         if (typeof nodeId == 'undefined') {
             nodeId = "1";
         }
-        activeNode = tree.getNodeById(nodeId);
+        console.log(nodeId);
+
+        // getting the destination node
+        var dn = tree.getNodeById(nodeId);
 
         // calling ajax
         $.ajax({
@@ -761,7 +764,10 @@
             }
         }).done(function(result) {
             displayMessage("added !", "success");
-            tree.reload();
+            // expanded the destination node
+            tree.expand(dn);
+            // adding the new node
+            tree.addNode({ id: -result.id, text: result.text, url: result.url, hasChildren: false, lazy: false, icon: result.icon }, dn);
         }).always(function() {
         });
 

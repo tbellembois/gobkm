@@ -124,11 +124,6 @@ func (env *Env) SocketHandler(w http.ResponseWriter, r *http.Request) {
 		}).Error("SocketHandler")
 		failHTTP(w, "SocketHandler", "error opening socket", http.StatusInternalServerError)
 	}
-	// TESTS
-	//for i := 0; i < 10; i++ {
-	//	_ = wsconn.WriteMessage(websocket.BinaryMessage, []byte("Message from server:"+strconv.Itoa(i)))
-	//	time.Sleep(3000 * time.Millisecond)
-	//}
 }
 
 // UpdateBookmarkFavicon retrieves and updates the favicon for the given bookmark.
@@ -297,7 +292,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(types.Node{Key: int(bookmarkID), Title: bookmarkURLDecoded, URL: bookmarkURLDecoded, Folder: false, Lazy: false}); err != nil {
-		failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
+		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -591,7 +586,6 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "RenameBookmarkHandler", err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//_ = wsconn.WriteMessage(websocket.TextMessage, []byte("Bookmark renamed."))
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(types.Folder{Id: int(bkm.Id), Title: bkm.Title}); err != nil {
