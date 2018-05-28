@@ -52,4 +52,5 @@ div.edit {
 /* Tag list */
 div#tags > button {
     font-size: 0.7em;
+    margin: 2px;
 }
