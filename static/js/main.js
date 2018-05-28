@@ -1,3 +1,9 @@
+// search the bookmarks with the given tag
+function searchTag(name) {
+    $("input#search-form-input").val(name);
+    $("input#search-form-input").trigger( "keyup" );
+}
+
 // unstar the given bookmark
 function unStar(id) {
     $.ajax({
@@ -25,6 +31,7 @@ function displayMessage(msgText, type) {
 // clear the search results
 function clearSearchResults() {
     $("div#search-result").html("");
+    $("input#search-form-input").val("");
 }
 
 // toggle the given element
@@ -496,6 +503,19 @@ $(function() {
         tree.reload();
     };
 
+    // retrieving tags
+    $.ajax({
+        method: "GET",
+        url: "/getTags/",
+    }).done(function(result) {
+        $.each(result, function(id, val) {
+            $("div#tags").append('<button type="button" class="btn btn-outline-primary" onclick="searchTag(\'' + val.name + '\')">' + val.name + '</button>');
+        });
+    }).fail(function() {
+        displayMessage("error retrieving tag list !", "alert");
+    }).always(function() {
+    });
+
     // clipboard initialization
     var clipboard = new ClipboardJS('.copy-button');
     clipboard.on('success', function(e) {
@@ -535,7 +555,7 @@ $(function() {
     timeout = null;
 
     // Listen for keystroke events
-    searchInput.onkeyup = function (e) {
+    searchInput.keyup = function (e) {
 
         if (searchInput.value.length < 2) {
             return;
