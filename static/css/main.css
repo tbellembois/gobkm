@@ -1,6 +1,6 @@
 /* Drop zone */
 div#drop-zone {
-    position: absolute;
+    position: fixed;
     top: 2px;
     right: 2px;
     z-index: 99;
