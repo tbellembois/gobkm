@@ -451,7 +451,11 @@ function nodeDataBoundCallback (e, node, id, record) {
     // Appending an link with the url for bookmarks.
     if (record.url != "") {
         var d = $("<div></div>").attr("class", "icon-link");
-        var a = $("<a></a>").attr("link-id", id).attr("href", record.url).attr("target", "_blank").attr("title", record.url);
+        if (record.url.startsWith("file")) {
+            var a = $("<a></a>").attr("link-id", id).attr("href", "#").attr("onclick", "alert('" + record.url + "')").attr("title", record.url);
+        } else {
+            var a = $("<a></a>").attr("link-id", id).attr("href", record.url).attr("target", "_blank").attr("title", record.url);
+        }
         var i = $("<i></i>").attr("class", "fas fa-link");
         d.append(a.append(i));
         node.find('div[data-role="wrapper"]').append(d);
@@ -515,18 +519,6 @@ $(function() {
         displayMessage("error retrieving tag list !", "alert");
     }).always(function() {
     });
-
-    // clipboard initialization
-    var clipboard = new ClipboardJS('.copy-button');
-    clipboard.on('success', function(e) {
-        $("#clipboard-message-ok").show().hide(2000);
-        e.clearSelection();
-    });
-    clipboard.on('error', function(e) {
-        $("#clipboard-message-nok").show().hide(2000);
-    });
-    $("#clipboard-message-ok").hide();
-    $("#clipboard-message-nok").hide();
 
     // import/export button bidding
     $("button#export-box").click(function() {
