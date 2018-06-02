@@ -540,16 +540,14 @@ $(function() {
     // search input bindding
     //
     // https://schier.co/blog/2014/12/08/wait-for-user-to-stop-typing-using-javascript.html
-    // Get the input box
-    searchInput = document.getElementById('search-form-input');
-
     // Init a timeout variable to be used below
-    timeout = null;
+    var timeout = null;
 
-    // Listen for keystroke events
-    searchInput.keyup = function (e) {
+    // Listen for keystroke events in the search input
+    $('#search-form-input').keyup(function (e) {
 
-        if (searchInput.value.length < 2) {
+        search = $(this).val();
+        if (search.length < 2) {
             return;
         }
 
@@ -564,7 +562,7 @@ $(function() {
             $.ajax({
                 url: "/searchBookmarks/",
                 data: {
-                    search: searchInput.value
+                    search: search
                 }
             }).done(function(result) {
                 if (result == null) {
@@ -580,7 +578,7 @@ $(function() {
                 });
             });
         }, 500);
-    };
+    });
 
     // context menu initialization
     $.contextMenu({
