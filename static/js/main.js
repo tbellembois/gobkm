@@ -30,7 +30,7 @@ function displayMessage(msgText, type) {
 
 // clear the search results
 function clearSearchResults() {
-    $("div#search-result").html("");
+    $("ul#search-list").html("");
     $("input#search-form-input").val("");
 }
 
@@ -477,6 +477,8 @@ function nodeDataBoundCallback (e, node, id, record) {
 };
 // Called when a node is enabled
 function selectCallback (e, node) {
+    // Deleting search results
+    clearSearchResults();
     // Disabling editing on all other nodes
     // When cancelling a node edition, the node remains editable
     var currentpk = node.attr("data-id");
@@ -571,10 +573,10 @@ $(function() {
                 //console.log(result);
                 clearSearchResults();
                 // Close button
-                $("div#search-result").append('<div id="close-search-results-button" title="close list" onclick="clearSearchResults();"><i class="fas fa-times-circle"></i></div>');
+                //$("div#search-result").append('<div id="close-search-results-button" title="close list" onclick="clearSearchResults();"><i class="fas fa-times-circle"></i></div>');
                 $.each(result, function(key,value) {
                     //console.log(value);
-                    $("div#search-result").append(createBookmarkLi(value.Id, value.Title, value.URL, value.Favicon));
+                    $("ul#search-list").append(createBookmarkLi(value.Id, value.Title, value.URL, value.Favicon));
                 });
             });
         }, 500);
@@ -718,4 +720,5 @@ $(function() {
 
     tree.on('nodeDataBound', nodeDataBoundCallback);
     tree.on('select', selectCallback);
+    tree.on('expand', clearSearchResults);
 });

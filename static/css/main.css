@@ -19,8 +19,14 @@ a#collapser {
 }
 
 /* Bookmarks flyover mouse style */
-.bookmark-starred-link {
+.bookmark-starred-link, .bookmark-link {
     cursor: pointer;
+}
+
+/* Search results */
+div#search-result > div.card {
+    width: 350px;
+    border: none;
 }
 
 /* Clipboard alert */
