@@ -43,6 +43,11 @@ Debug mode (by default only errors are shown):
     ./gobkm -debug
 ```
 
+Specify sqlite database file path
+```bash
+    ./gobkm -db /var/gobkm/gobkm.db
+```
+
 ## GUI
 
 - drag and drop an URL from your Web browser address bar into the drop zone (top right corner) OR

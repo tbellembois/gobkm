@@ -14,10 +14,6 @@ import (
 	"github.com/tbellembois/gobkm/models"
 )
 
-const (
-	dbName = "bkm.db"
-)
-
 var (
 	datastore   *models.SQLiteDataStore
 	templateBox *rice.Box
@@ -36,7 +32,8 @@ func decoratedHandler(h http.Handler) http.Handler {
 func main() {
 	// Getting the program parameters.
 	listenPort := flag.String("port", "8081", "the port to listen")
-	goBkmProxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
+	proxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
+	dbPath:= flag.String("db", "bkm.db", "the full sqlite db path")
 	logfile := flag.String("logfile", "", "log to the given file")
 	debug := flag.Bool("debug", false, "debug (verbose log), default is error")
 	flag.Parse()
@@ -57,13 +54,13 @@ func main() {
 	}
 	log.WithFields(log.Fields{
 		"listenPort": *listenPort,
-		"goBkmURL":   *goBkmProxyURL,
+		"proxyURL":   *proxyURL,
 		"logfile":    *logfile,
 		"debug":      *debug,
 	}).Debug("main:flags")
 
 	// Database initialization.
-	if datastore, err = models.NewDBstore(dbName); err != nil {
+	if datastore, err = models.NewDBstore(*dbPath); err != nil {
 		log.Panic(err)
 	}
 	// Database creation.
@@ -75,7 +72,7 @@ func main() {
 	}
 
 	// host from URL
-	u, err := url.Parse(*goBkmProxyURL)
+	u, err := url.Parse(*proxyURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -84,7 +81,7 @@ func main() {
 	// Environment creation.
 	env := handlers.Env{
 		DB:             datastore,
-		GoBkmProxyURL:  *goBkmProxyURL,
+		GoBkmProxyURL:  *proxyURL,
 		GoBkmProxyHost: u.Host,
 	}
 	// Building a rice box with the static directory.

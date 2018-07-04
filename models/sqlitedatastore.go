@@ -3,9 +3,6 @@ package models
 import (
 	"database/sql"
 
-	"os"
-	"path"
-
 	_ "github.com/mattn/go-sqlite3" // register sqlite3 driver
 	log "github.com/sirupsen/logrus"
 	"github.com/tbellembois/gobkm/types"
@@ -31,19 +28,10 @@ func NewDBstore(dataSourceName string) (*SQLiteDataStore, error) {
 
 	var (
 		db  *sql.DB
-		wd  string
 		err error
 	)
 
-	if wd, err = os.Getwd(); err != nil {
-		log.WithFields(log.Fields{}).Error("NewDBstore:error getting the current working directory")
-		return nil, err
-	}
-	log.WithFields(log.Fields{
-		"wd": wd,
-	}).Debug("NewDBstore")
-
-	if db, err = sql.Open(dbdriver, path.Join(wd, dataSourceName)); err != nil {
+	if db, err = sql.Open(dbdriver, dataSourceName); err != nil {
 		log.WithFields(log.Fields{
 			"dataSourceName": dataSourceName,
 		}).Error("NewDBstore:error opening the database")
