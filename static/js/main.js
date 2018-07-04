@@ -311,6 +311,32 @@ function starCallBack(itemKey, opt, rootMenu, originalEvent) {
 }
 
 //
+// Import callback
+//
+function importCallback(){
+
+    var file = $("#import-file").get(0).files[0],
+    formData = new FormData();
+    formData.append( 'file', file );
+
+    // calling ajax
+    $.ajax({
+        method: "POST",
+        url: "/import/",
+        contentType: false,
+        cache      : false,
+        processData: false,
+        data       : formData,
+    }).done(function(result) {
+        displayMessage("import success", "success");
+        window.setTimeout(function(){location.reload()},2000)
+    }).fail(function() {
+        displayMessage("error !", "alert");
+    }).always(function() {
+    });
+}
+
+//
 // Bookmark edition callback.
 //
 function editOkCallBack(nodeId) {
