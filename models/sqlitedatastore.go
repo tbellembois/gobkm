@@ -406,7 +406,8 @@ func (db *SQLiteDataStore) SearchBookmarks(s string) []*types.Bookmark {
 		LEFT JOIN tag ON bookmarktag.tagId = tag.Id
 		WHERE bookmark.title LIKE ? OR
 		tag.name LIKE ?
-		ORDER BY title`, "%"+s+"%", "%"+s+"%")
+		GROUP BY bookmark.id
+		ORDER BY bookmark.title`, "%"+s+"%", "%"+s+"%")
 	defer func() {
 		if db.err = rows.Close(); db.err != nil {
 			log.WithFields(log.Fields{
