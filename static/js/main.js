@@ -610,7 +610,7 @@ $(function() {
 
     // context menu initialization
     $.contextMenu({
-        selector: '.active',
+        selector: '.gj-list-md-active',
         callback: function(key, options) {
             var m = "clicked: " + key;
             window.console && console.log(m) || alert(m); 
@@ -732,10 +732,12 @@ $(function() {
 
     // Create the tree inside the <div id="tree"> element.
     var tree = $('#tree').tree({
-        uiLibrary: 'bootstrap4',
-        iconsLibrary: 'fontawesome',
-        width: 350,
-        border: true,
+        //uiLibrary: 'bootstrap4',
+        //iconsLibrary: 'fontawesome',
+        uiLibrary: 'materialdesign',
+        iconsLibrary: 'materialicons',
+        //width: 350,
+        border: false,
         primaryKey: 'id',
         //dataSource: '/getBranchNodes/',
         //lazyLoading: true,

@@ -37,8 +37,8 @@
     <!-- Include jQuery -->
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery-ui.min.js"></script>
-    <script src="/js/jquery.contextMenu.min.js"></script>
     <script src="/js/jquery.ui.position.min.js"></script>
+    <script src="/js/jquery.contextMenu.min.js"></script>
     <!-- Include Popper -->
     <script type="text/javascript" src="/js/popper.min.js"></script>
     <!-- Include Bootstrap -->
@@ -46,8 +46,8 @@
     <!-- Include Tooltip -->
     <script type="text/javascript" src="/js/tooltip.min.js"></script>
     <!-- Include Gijgo -->
-    <script type="text/javascript" src="/js/core.js"></script>
-    <script type="text/javascript" src="/js/tree.js"></script>
+    <script type="text/javascript" src="/js/core.min.js"></script>
+    <script type="text/javascript" src="/js/tree.min.js"></script>
     <!-- Include Select2 -->
     <script type="text/javascript" src="/js/select2.full.min.js"></script>
 
@@ -74,61 +74,52 @@
         </span>
     </div>
 
-        <div id="header" class="row collapse show col-xs-12">
+    <div id="header" class="row collapse show col-xs-12">
 
-            <!--
-            Copy to clipboard messages and drop zone
-            -->
-            <div class="row">
-                <div class="col-sm-12">
-
+        <!--
+        Starred bookmarks
+        -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-body card" id="starred-list">
+                    <h5 class="card-title">
+                        <span class="fas fa-star" aria-hidden="true"></span>
+                    </h5>
+                    <ul id="starred">
+                        {{with .Bkms}} {{range .}}
+                        <li id="bookmark-starred--{{.Id}}">
+                            <div class="bookmark">
+                                <img src="{{.Favicon}}" alt="" class="favicon">
+                                <span class="bookmark-starred-link" title="{{.URL}}" onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
+                                </span>
+                                <a href="#" onclick="unStar('-{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
+                            </div>
+                        </li>
+                        {{end}} {{end}}
+                    </ul>
                 </div>
             </div>
+        </div>
 
-            <!--
-            Starred bookmarks
-            -->
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card-body card" id="starred-list">
-                        <h5 class="card-title">
-                            <span class="fas fa-star" aria-hidden="true"></span>
-                        </h5>
-                        <ul id="starred">
-                            {{with .Bkms}} {{range .}}
-                            <li id="bookmark-starred--{{.Id}}">
-                                <div class="bookmark">
-                                    <img src="{{.Favicon}}" alt="" class="favicon">
-                                    <span class="bookmark-starred-link" title="{{.URL}}" onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
-                                    </span>
-                                    <a href="#" onclick="unStar('-{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
-                                </div>
-                            </li>
-                            {{end}} {{end}}
+        <!-- Search form -->
+        <div class="row">
+            <div class="input-group col-sm-12" id="search-box">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                </div>
+                <input type="text" id="search-form-input" class="form-control" placeholder="title or tag" aria-describedby="basic-addon1">
+            </div>
+            <div class="col-sm-12" id="search-result">
+                <div class="card">
+                    <div class="card-body">
+                        <ul id="search-list" class="list-group">
                         </ul>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Search form -->
-            <div class="row">
-                <div class="input-group col-sm-12" id="search-box">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
-                    </div>
-                    <input type="text" id="search-form-input" class="form-control" placeholder="title or tag" aria-describedby="basic-addon1">
-                </div>
-                <div class="col-sm-12" id="search-result">
-                    <div class="card">
-                        <div class="card-body">
-                            <ul id="search-list" class="list-group">
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div> <!-- #header -->
+    </div> <!-- #header -->
 
     <!-- Main tree -->
     <div class="row">

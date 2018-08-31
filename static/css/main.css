@@ -5,7 +5,7 @@ div#drop-zone {
     right: 2px;
     z-index: 99;
     text-align: center;
-    font-size: 4em;
+    font-size: 6em;
 }
 
 /* Close search result list button */
@@ -25,7 +25,6 @@ a#collapser {
 
 /* Search results */
 div#search-result > div.card {
-    width: 350px;
     border: none;
 }
 
