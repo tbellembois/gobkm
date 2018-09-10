@@ -42,6 +42,11 @@ div.icon-link {
     font-size: 1.2em;
 }
 
+/* Bookmarks flyover */
+span[data-role=display]:hover {
+    background-color: rgb(224, 224, 224);
+}
+
 /* Context menu*/
 li.context-menu-item > span {
     font-weight: normal;

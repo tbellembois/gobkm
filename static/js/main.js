@@ -1,3 +1,21 @@
+// scrollto div - credit: https://inkplant.com/code/jquery-scroll-to-div
+function scrollto(dataid) {
+	var etop = $('[data-id=' + dataid + ']').offset().top;
+    $('html, body').animate({
+        scrollTop: etop
+    }, 1000);
+}
+
+// blink div
+function blink(dataid) {
+    $('[data-id=' + dataid + ']').animate({
+        backgroundColor: "yellow",
+    }, 500 );
+    $('[data-id=' + dataid + ']').animate({
+        backgroundColor: "none",
+    }, 1500 );
+}
+
 // search the bookmarks with the given tag
 function searchTag(name) {
     $("input#search-form-input").val(name);
@@ -277,6 +295,9 @@ function pasteCallBack(itemKey, opt, rootMenu, originalEvent) {
         // delete hidden input fields values
         $('input[name="cutted-nodeid"]').val("");
         $('input[name="cutted-nodeisfolder"]').val("");
+        // scrollto div
+        scrollto(topasteNodeId);
+        blink(topasteNodeId);
     }).fail(function() {
         displayMessage("error !", "alert");
     }).always(function() {
@@ -429,6 +450,9 @@ function dzDrop(ev) {
         tree.expand(dn);
         // adding the new node
         tree.addNode({ id: -result.id, text: result.text, url: result.url, hasChildren: false, lazy: false, icon: result.icon }, dn);
+        // scrolling to the new node
+        scrollto(-result.id);
+        blink(-result.id);
     }).always(function() {
     });
 
@@ -565,7 +589,7 @@ $(function() {
     });
 
     //
-    // search input bindding
+    // search input binding
     //
     // https://schier.co/blog/2014/12/08/wait-for-user-to-stop-typing-using-javascript.html
     // Init a timeout variable to be used below
