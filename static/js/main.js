@@ -518,6 +518,17 @@ function nodeDataBoundCallback (e, node, id, record) {
         node.attr("title", title);
     }
     
+    // Appending tags
+    if (record.tag != null) {
+        var d = $("<div></div>").attr("class", "tag");
+        $.each(record.tag, function( i, t ) {
+            console.log(t)
+            var a = $("<span></span>").addClass("badge").addClass("badge-secondary").addClass("badge-pill").text(t.name);
+            d.append(a);
+        });
+        node.find('div[data-role="wrapper"]').append(d);
+    }
+
     // Appending an attribute to the node to identify folders.
     if (record.url != "") {
         node.attr("isfolder", false);
@@ -529,15 +540,6 @@ function nodeDataBoundCallback (e, node, id, record) {
 function selectCallback (e, node) {
     // Deleting search results
     clearSearchResults();
-    // Disabling editing on all other nodes
-    // When cancelling a node edition, the node remains editable
-    var currentpk = node.attr("data-id");
-    $("span.editable").each( function( index, element ){
-        //var pk = $(this).attr("data-pk");
-        //if (pk != currentpk) {
-        //    $(this).editable("disable");
-        //}
-    });
 };
 
 // when the page is loaded
@@ -756,15 +758,10 @@ $(function() {
 
     // Create the tree inside the <div id="tree"> element.
     var tree = $('#tree').tree({
-        //uiLibrary: 'bootstrap4',
-        //iconsLibrary: 'fontawesome',
         uiLibrary: 'materialdesign',
         iconsLibrary: 'materialicons',
-        //width: 350,
         border: false,
         primaryKey: 'id',
-        //dataSource: '/getBranchNodes/',
-        //lazyLoading: true,
         dataSource: '/getTree/',
         lazyLoading: false,
         imageUrlField: 'icon',
