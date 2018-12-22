@@ -1,3 +1,21 @@
+// scrollto div - credit: https://inkplant.com/code/jquery-scroll-to-div
+function scrollto(dataid) {
+	var etop = $('[data-id=' + dataid + ']').offset().top;
+    $('html, body').animate({
+        scrollTop: etop
+    }, 1000);
+}
+
+// blink div
+function blink(dataid) {
+    $('[data-id=' + dataid + ']').animate({
+        backgroundColor: "yellow",
+    }, 500 );
+    $('[data-id=' + dataid + ']').animate({
+        backgroundColor: "none",
+    }, 1500 );
+}
+
 // search the bookmarks with the given tag
 function searchTag(name) {
     $("input#search-form-input").val(name);
@@ -277,6 +295,9 @@ function pasteCallBack(itemKey, opt, rootMenu, originalEvent) {
         // delete hidden input fields values
         $('input[name="cutted-nodeid"]').val("");
         $('input[name="cutted-nodeisfolder"]').val("");
+        // scrollto div
+        scrollto(topasteNodeId);
+        blink(topasteNodeId);
     }).fail(function() {
         displayMessage("error !", "alert");
     }).always(function() {
@@ -429,6 +450,9 @@ function dzDrop(ev) {
         tree.expand(dn);
         // adding the new node
         tree.addNode({ id: -result.id, text: result.text, url: result.url, hasChildren: false, lazy: false, icon: result.icon }, dn);
+        // scrolling to the new node
+        scrollto(-result.id);
+        blink(-result.id);
     }).always(function() {
     });
 
@@ -494,6 +518,17 @@ function nodeDataBoundCallback (e, node, id, record) {
         node.attr("title", title);
     }
     
+    // Appending tags
+    if (record.tag != null) {
+        var d = $("<div></div>").attr("class", "tag");
+        $.each(record.tag, function( i, t ) {
+            console.log(t)
+            var a = $("<span></span>").addClass("badge").addClass("badge-secondary").addClass("badge-pill").text(t.name);
+            d.append(a);
+        });
+        node.find('div[data-role="wrapper"]').append(d);
+    }
+
     // Appending an attribute to the node to identify folders.
     if (record.url != "") {
         node.attr("isfolder", false);
@@ -505,15 +540,6 @@ function nodeDataBoundCallback (e, node, id, record) {
 function selectCallback (e, node) {
     // Deleting search results
     clearSearchResults();
-    // Disabling editing on all other nodes
-    // When cancelling a node edition, the node remains editable
-    var currentpk = node.attr("data-id");
-    $("span.editable").each( function( index, element ){
-        //var pk = $(this).attr("data-pk");
-        //if (pk != currentpk) {
-        //    $(this).editable("disable");
-        //}
-    });
 };
 
 // when the page is loaded
@@ -565,7 +591,7 @@ $(function() {
     });
 
     //
-    // search input bindding
+    // search input binding
     //
     // https://schier.co/blog/2014/12/08/wait-for-user-to-stop-typing-using-javascript.html
     // Init a timeout variable to be used below
@@ -610,7 +636,7 @@ $(function() {
 
     // context menu initialization
     $.contextMenu({
-        selector: '.active',
+        selector: '.gj-list-md-active',
         callback: function(key, options) {
             var m = "clicked: " + key;
             window.console && console.log(m) || alert(m); 
@@ -732,13 +758,10 @@ $(function() {
 
     // Create the tree inside the <div id="tree"> element.
     var tree = $('#tree').tree({
-        uiLibrary: 'bootstrap4',
-        iconsLibrary: 'fontawesome',
-        width: 350,
-        border: true,
+        uiLibrary: 'materialdesign',
+        iconsLibrary: 'materialicons',
+        border: false,
         primaryKey: 'id',
-        //dataSource: '/getBranchNodes/',
-        //lazyLoading: true,
         dataSource: '/getTree/',
         lazyLoading: false,
         imageUrlField: 'icon',

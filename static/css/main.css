@@ -5,7 +5,7 @@ div#drop-zone {
     right: 2px;
     z-index: 99;
     text-align: center;
-    font-size: 4em;
+    font-size: 6em;
 }
 
 /* Close search result list button */
@@ -25,7 +25,6 @@ a#collapser {
 
 /* Search results */
 div#search-result > div.card {
-    width: 350px;
     border: none;
 }
 
@@ -41,6 +40,11 @@ div#search-result > div.card {
 div.icon-link {
     float: right;
     font-size: 1.2em;
+}
+
+/* Bookmarks flyover */
+span[data-role=display]:hover {
+    background-color: rgb(224, 224, 224);
 }
 
 /* Context menu*/

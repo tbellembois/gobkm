@@ -759,29 +759,36 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 	}
 	// Rolling back on errors, or commit.
 	if db.err != nil {
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("UpdateBookmark: UPDATE bookmark error")
 		if db.err = tx.Rollback(); db.err != nil {
 			// Just logging the error.
 			log.WithFields(log.Fields{
 				"err": db.err,
 			}).Error("UpdateBookmark: UPDATE query transaction rollback error")
+			return
 		}
-		log.WithFields(log.Fields{
-			"err": db.err,
-		}).Error("UpdateBookmark: UPDATE query error")
 		return
 	}
 	if db.err = tx.Commit(); db.err != nil {
 		// Just logging the error.
 		log.WithFields(log.Fields{
 			"err": db.err,
-		}).Error("UpdateBookmark: UPDATE query transaction commit error")
+		}).Error("UpdateBookmark: UPDATE bookmark transaction commit error")
 	}
 
 	//
 	// Tags
 	//
 	// lazily deleting current tags
-	db.Exec("DELETE from bookmarktag WHERE bookmarkId IS ?", b.Id)
+	_, db.err = db.Exec("DELETE from bookmarktag WHERE bookmarkId IS ?", b.Id)
+	if db.err != nil {
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("UpdateBookmark: DELETE bookmarktag query error")
+		return
+	}
 	// inserting new tags
 	for _, t := range b.Tags {
 		log.WithFields(log.Fields{"t": t}).Debug("UpdateBookmark")
@@ -798,7 +805,21 @@ func (db *SQLiteDataStore) UpdateBookmark(b *types.Bookmark) {
 
 		// linking the new tag to the bookmark
 		log.WithFields(log.Fields{"b.Id": b.Id, "ntid": ntid}).Debug("UpdateBookmark")
-		db.Exec("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid)
+		_, db.err = db.Exec("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid)
+		if db.err != nil {
+			log.WithFields(log.Fields{
+				"err": db.err,
+			}).Error("UpdateBookmark: INSERT bookmarktag query error")
+			return
+		}
+	}
+	// cleaning orphan tags
+	_, db.err = db.Exec("DELETE FROM tag WHERE tag.id NOT IN (SELECT tagId FROM bookmarktag)")
+	if db.err != nil {
+		log.WithFields(log.Fields{
+			"err": db.err,
+		}).Error("UpdateBookmark: DELETE tag query error")
+		return
 	}
 }
 

@@ -33,7 +33,7 @@ func main() {
 	// Getting the program parameters.
 	listenPort := flag.String("port", "8081", "the port to listen")
 	proxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
-	dbPath:= flag.String("db", "bkm.db", "the full sqlite db path")
+	dbPath := flag.String("db", "bkm.db", "the full sqlite db path")
 	logfile := flag.String("logfile", "", "log to the given file")
 	debug := flag.Bool("debug", false, "debug (verbose log), default is error")
 	flag.Parse()
@@ -124,9 +124,13 @@ func main() {
 
 	// Rice boxes initialization.
 	// Awesome fonts may need to send the Access-Control-Allow-Origin header to "*"
-	fontsBox := rice.MustFindBox("static/webfonts")
-	fontsFileServer := http.StripPrefix("/webfonts/", decoratedHandler(http.FileServer(fontsBox.HTTPBox())))
-	http.Handle("/webfonts/", fontsFileServer)
+	webfontsBox := rice.MustFindBox("static/webfonts")
+	webfontsFileServer := http.StripPrefix("/webfonts/", decoratedHandler(http.FileServer(webfontsBox.HTTPBox())))
+	http.Handle("/webfonts/", webfontsFileServer)
+
+	fontsBox := rice.MustFindBox("static/fonts")
+	fontsFileServer := http.StripPrefix("/fonts/", decoratedHandler(http.FileServer(fontsBox.HTTPBox())))
+	http.Handle("/fonts/", fontsFileServer)
 
 	cssBox := rice.MustFindBox("static/css")
 	cssFileServer := http.StripPrefix("/css/", http.FileServer(cssBox.HTTPBox()))
