@@ -1,12 +1,0 @@
---2018-04-21 16:12:47--  https://github.com/atatanasov/gijgo/blob/master/dist/combined/js/gijgo.js
-Loaded CA certificate '/etc/ssl/certs/ca-certificates.crt'
-Resolving github.com (github.com)... 192.30.253.113, 192.30.253.112
-Connecting to github.com (github.com)|192.30.253.113|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: unspecified [text/html]
-Saving to: 'gijgo.js'
-
-gijgo.js                                  [   <=>                                                                    ] 202.61K   323KB/s               gijgo.js                                  [    <=>                                                                   ] 755.94K   896KB/s               gijgo.js                                  [     <=>                                                                  ]   2.62M  2.51MB/s               gijgo.js                                  [      <=>                                                                 ]   4.15M  3.24MB/s               gijgo.js                                  [       <=>                                                                ]   6.08M  4.49MB/s    in 1.4s    
-
-2018-04-21 16:12:50 (4.49 MB/s) - 'gijgo.js' saved [6371224]
-
