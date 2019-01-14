@@ -519,15 +519,15 @@ function nodeDataBoundCallback (e, node, id, record) {
     }
     
     // Appending tags
-    if (record.tag != null) {
-        var d = $("<div></div>").attr("class", "tag");
-        $.each(record.tag, function( i, t ) {
-            console.log(t)
-            var a = $("<span></span>").addClass("badge").addClass("badge-secondary").addClass("badge-pill").text(t.name);
-            d.append(a);
-        });
-        node.find('div[data-role="wrapper"]').append(d);
-    }
+//    if (record.tag != null) {
+//        var d = $("<div></div>").attr("class", "tag");
+//        $.each(record.tag, function( i, t ) {
+//            //console.log(t)
+//            var a = $("<span></span>").addClass("badge").addClass("badge-light").addClass("badge-pill").text(t.name);
+//            d.append(a);
+//        });
+//        node.find('div[data-role="wrapper"]').append(d);
+//    }
 
     // Appending an attribute to the node to identify folders.
     if (record.url != "") {

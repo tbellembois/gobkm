@@ -1,11 +1,10 @@
 /* Drop zone */
 div#drop-zone {
-    position: fixed;
-    top: 2px;
-    right: 2px;
+    top: 0px;
+    right: 0px;
     z-index: 99;
     text-align: center;
-    font-size: 6em;
+    font-size: 4em;
 }
 
 /* Close search result list button */
@@ -63,4 +62,15 @@ div.edit {
 div#tags > button {
     font-size: 0.7em;
     margin: 2px;
+}
+
+/* Disable spacer */
+span[data-role="spacer"] {
+    position: absolute;
+    left: 0px;
+}
+
+/* Bootstrap card-body */
+.card-body {
+    padding: 0.5em;
 }
