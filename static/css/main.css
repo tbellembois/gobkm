@@ -65,10 +65,10 @@ div#tags > button {
 }
 
 /* Disable spacer */
-span[data-role="spacer"] {
+/*span[data-role="spacer"] {
     position: absolute;
     left: 0px;
-}
+}*/
 
 /* Bootstrap card-body */
 .card-body {
