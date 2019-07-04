@@ -20,174 +20,77 @@
     <meta name="msapplication-TileImage" content="/img/mstile-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/jquery.contextMenu.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/fontawesome-all.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/gijgo.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-
     <!-- Some variables passed by the handler -->
     <script>
         var GoBkmProxyURL = "{{.GoBkmProxyURL}}"
         var GoBkmProxyHost = "{{.GoBkmProxyHost}}"
     </script>
 
-    <!-- Include jQuery -->
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery-ui.min.js"></script>
-    <script src="/js/jquery.ui.position.min.js"></script>
-    <script src="/js/jquery.contextMenu.min.js"></script>
-    <!-- Include Popper -->
-    <script type="text/javascript" src="/js/popper.min.js"></script>
-    <!-- Include Bootstrap -->
-    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    <!-- Include Tooltip -->
-    <script type="text/javascript" src="/js/tooltip.min.js"></script>
-    <!-- Include Gijgo -->
-    <script type="text/javascript" src="/js/core.min.js"></script>
-    <script type="text/javascript" src="/js/tree.min.js"></script>
-    <!-- Include Select2 -->
-    <script type="text/javascript" src="/js/select2.full.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <script src="{{.GoBkmProxyURL}}/js/gjs-common.js"></script>
+
+    <style>
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading {
+            margin: 0;
+        }
+        .ui-li-static.ui-collapsible {
+            padding: 0;
+        }
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading > .ui-btn {
+            border-top-width: 0;
+        }
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading.ui-collapsible-heading-collapsed > .ui-btn,
+        .ui-li-static.ui-collapsible > .ui-collapsible-content {
+            border-bottom-width: 0;
+        }
+    </style>
 
 </head>
 
 <body>
 
-<div class="container-fluid" id="container">
+    <div data-role="page">
 
-    <input type="hidden" name="cutted-nodeid">
-    <input type="hidden" name="cutted-nodeisfolder">
-
-    <div class="row">
-        <div class="col-sm-12 ml-sm-0">
-            <a id="collapser" class="btn btn-light fa-lg" data-toggle="collapse" href="#header" role="button" aria-expanded="false" aria-controls="header">
-                <i id="collapse-button" class="fas fa-angle-double-up"></i>
-            </a>
-        </div>
-    </div>
-
-    <div ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)" id="drop-zone" title="drop new bookmarks here" class="position-absolute">
-        <span class="badge">
-            <i class="fas fa-cloud-download-alt"></i>
-        </span>
-    </div>
-
-    <div id="header" class="row collapse show col-xs-12">
-
-        <!--
-        Starred bookmarks
-        -->
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card-body card" id="starred-list">
-                    <h5 class="card-title">
-                        <span class="fas fa-star" aria-hidden="true"></span>
-                    </h5>
-                    <ul id="starred">
-                        {{with .Bkms}} {{range .}}
-                        <li id="bookmark-starred--{{.Id}}">
-                            <div class="bookmark">
-                                <img src="{{.Favicon}}" alt="" class="favicon">
-                                <span class="bookmark-starred-link" title="{{.URL}}" onclick="window.open('{{.URL}}', '_blank');">{{.Title}}
-                                </span>
-                                <a href="#" onclick="unStar('-{{.Id}}');" class="fas fa-star-half" aria-hidden="true" title="Remove star."></a>
-                            </div>
-                        </li>
-                        {{end}} {{end}}
+        <div class="ui-content">
+                   
+                <ul id="tree" data-role="listview">
+                  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+                    <h2>Birds</h2>
+                    <ul data-role="listview" data-theme="b">
+                      <li><a href="#">Condor</a></li>
+                      <li><a href="#">Eagle</a></li>
+                      <li><a href="#">Sparrow</a></li>
                     </ul>
-                </div>
-            </div>
+                  </li>
+                  <li><a href="#">Humans</a></li>
+                  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+                    <h2>Fish</h2>
+                    <ul data-role="listview" data-theme="b">
+                      <li><a href="#">Salmon</a></li>
+                      <li><a href="#">Pollock</a></li>
+                      <li><a href="#">Trout</a></li>
+                    </ul>
+                  </li>
+                  <li data-role="collapsible" data-iconpos="right" data-inset="false">
+                    <h2>Choose your preference</h2>
+                    <form>
+                      <fieldset data-role="controlgroup" data-type="horizontal">
+                        <label>Birds<input type="checkbox" id="choose-birds-regular"></label>
+                        <label>Humans<input type="checkbox" id="choose-humans-regular"></label>
+                        <label>Fish<input type="checkbox" id="choose-fish-regular"></label>
+                      </fieldset>
+                    </form>
+                  </li>
+
+                </ul>
+
         </div>
 
-        <!-- Search form -->
-        <div class="row">
-            <div class="input-group col-sm-12" id="search-box">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
-                </div>
-                <input type="text" id="search-form-input" class="form-control" placeholder="title or tag" aria-describedby="basic-addon1">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12" id="search-result">
-                <div class="card">
-                    <div class="card-body">
-                        <ul id="search-list" class="list-group">
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div> <!-- #header -->
-
-    <!-- Main tree -->
-    <div class="row">
-        <div id="scrollParent" class="col-sm-12">
-            <div id="tree"></div>
-        </div>
     </div>
-
-    <!-- Tags list -->
-    <div class="row">
-        <div id="tags" class="col-sm-12">
-            <i class="fas fa-tags"></i>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <div id="footer" class="row">
-
-        <!-- Import form -->
-        <div id="action-box" class="col-sm-12">
-            <div id="import-input-box" style="display:none">
-                <form id="import-file-form" action="/import/" method="post" enctype="multipart/form-data">
-                    <div class="input-group">
-                        <input type="file" name="importFile" accept=".html" id="import-file" class="form-control">
-                        <span class="input-group-btn">
-                        <button onclick="importCallback();" class="btn btn-default" type="button"><i class="fas fa-download"></i></button>
-                        </span>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Copyright -->
-        <div id="copyright" class="col-sm-12">
-            <!--
-            <img id="logo" src="/img/favicon.svg" alt="logo" title="GoBkm - Copyright (C) 2006-2016 Thomas Bellembois. Licensed under the GNU GPL, Version 3.0."/>
-            -->
-        </div>
-
-        <!-- Bookmarklets -->
-        <div class="card panel-default row col-sm-12" id="bookmarklet" style="display: none;">
-            <div class="card-body">
-                <h5 class="card-title">bookmarklets</h3>
-                <div id="bookmarklet-app">
-                    <a title="GoBkm application bookmarklet: drop me in bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application</a>
-                </div>
-                <div id="bookmarklet-add">
-                    <a title="GoBkm bookmark current page bookmarklet; drop me in your bookmarks bar." href="javascript:window.open('{{.GoBkmProxyURL}}/bookmarkThis/?target=_self&url=' + encodeURI(location.href) + '&title=' + document.title,'sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm bookmark current page</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Import and export buttons -->
-        <div id="import-export row" class="col-sm-12">
-            <div class="btn-group" role="group" aria-label="...">
-                <button type="button" title="export bookmarks" class="btn btn-default" id="export-box"><i class="fas fa-upload"></i></button>
-                <button type="button" title="import bookmarks" class="btn btn-default" id="import-box"><i class="fas fa-download"></i></button>
-                <button type="button" title="bookmarklets" class="btn btn-default" id="bookmaklet-box" onclick="toggleElement('bookmarklet')"><i class="fas fa-globe"></i></button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- include custom js file -->
-<script src="/js/main.js"></script>
 
 </body>
 

@@ -1,5 +1,6 @@
 package main
 
+//go:generate gopherjs build gopherjs/gjs-common.go -o static/js/gjs-common.js
 //go:generate rice embed-go
 
 import (
@@ -8,7 +9,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/GeertJohan/go.rice"
+	rice "github.com/GeertJohan/go.rice"
 	log "github.com/sirupsen/logrus"
 	"github.com/tbellembois/gobkm/handlers"
 	"github.com/tbellembois/gobkm/models"
@@ -92,12 +93,6 @@ func main() {
 	if env.TplMainData, err = templateBox.String("index.html"); err != nil {
 		log.Fatal(err)
 	}
-	if env.TplAddBookmarkData, err = templateBox.String("addBookmark.html"); err != nil {
-		log.Fatal(err)
-	}
-	if env.TplTestData, err = templateBox.String("test.html"); err != nil {
-		log.Fatal(err)
-	}
 
 	// Handlers initialization.
 	http.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
@@ -124,14 +119,6 @@ func main() {
 
 	// Rice boxes initialization.
 	// Awesome fonts may need to send the Access-Control-Allow-Origin header to "*"
-	webfontsBox := rice.MustFindBox("static/webfonts")
-	webfontsFileServer := http.StripPrefix("/webfonts/", decoratedHandler(http.FileServer(webfontsBox.HTTPBox())))
-	http.Handle("/webfonts/", webfontsFileServer)
-
-	fontsBox := rice.MustFindBox("static/fonts")
-	fontsFileServer := http.StripPrefix("/fonts/", decoratedHandler(http.FileServer(fontsBox.HTTPBox())))
-	http.Handle("/fonts/", fontsFileServer)
-
 	cssBox := rice.MustFindBox("static/css")
 	cssFileServer := http.StripPrefix("/css/", http.FileServer(cssBox.HTTPBox()))
 	http.Handle("/css/", cssFileServer)
