@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/jquery"
 	"github.com/tbellembois/gobkm/types"
 	"honnef.co/go/js/dom"
 	"honnef.co/go/js/xhr"
@@ -15,6 +16,7 @@ var (
 	window   dom.Window
 	document dom.Document
 	rootUL   *dom.HTMLUListElement
+	jQuery   = jquery.NewJQuery
 )
 
 func init() {
@@ -28,26 +30,50 @@ func displayNode(n types.Node, h *dom.HTMLUListElement) {
 
 	switch l {
 	case 0:
-		newLIChildElement := document.CreateElement("li").(*dom.HTMLLIElement)
-		newSPANChildElement := document.CreateElement("span").(*dom.HTMLSpanElement)
-		newSPANChildElement.SetInnerHTML(n.Title)
+		id := fmt.Sprintf("%d", n.Key)
 
+		newLIChildElement := document.CreateElement("li").(*dom.HTMLLIElement)
+		newLIChildElement.SetID(id)
+
+		newIMGChildElement := document.CreateElement("img").(*dom.HTMLImageElement)
+		newIMGChildElement.SetClass("ui-li-icon")
+		newIMGChildElement.SetAttribute("src", n.Icon)
+
+		newSPANChildElement := document.CreateElement("a").(*dom.HTMLAnchorElement)
+		newSPANChildElement.SetAttribute("href", "#")
+		newSPANChildElement.SetInnerHTML(n.Title)
+		newSPANChildElement.SetID(id + "link")
+
+		newLIChildElement.AppendChild(newIMGChildElement)
 		newLIChildElement.AppendChild(newSPANChildElement)
 
 		h.AppendChild(newLIChildElement)
+
+		jQuery(document).On("vclick", id, func(e jquery.Event) {
+			fmt.Println("toto clicked on " + jQuery(e.Target).Val())
+		})
+
 	default:
-		newULChildElement := document.CreateElement("ul").(*dom.HTMLUListElement)
-		newULChildElement.SetAttribute("data-role", "listview")
-		newULChildElement.SetAttribute("data-theme", "b")
+		id := fmt.Sprintf("%d", n.Key)
 
 		newLIChildElement := document.CreateElement("li").(*dom.HTMLLIElement)
 		newLIChildElement.SetAttribute("data-role", "collapsible")
 		newLIChildElement.SetAttribute("data-iconpos", "right")
-		newLIChildElement.SetAttribute("data-inset", "false")
+		newLIChildElement.SetID(id)
 
-		newH2ChildElement := document.CreateElement("h2").(*dom.HTMLHeadingElement)
+		newULChildElement := document.CreateElement("ul").(*dom.HTMLUListElement)
+		newULChildElement.SetAttribute("data-role", "listview")
+		newULChildElement.SetAttribute("data-inset", "true")
+		newULChildElement.SetID(string(n.Key))
+
+		newSPANChildElement := document.CreateElement("span").(*dom.HTMLSpanElement)
+		newSPANChildElement.SetClass("ui-li-count")
+		newSPANChildElement.SetInnerHTML(fmt.Sprintf("%d", l))
+
+		newH2ChildElement := document.CreateElement("h1").(*dom.HTMLHeadingElement)
 		newH2ChildElement.SetInnerHTML(n.Title)
 
+		newH2ChildElement.AppendChild(newSPANChildElement)
 		newLIChildElement.AppendChild(newH2ChildElement)
 		newLIChildElement.AppendChild(newULChildElement)
 
@@ -80,8 +106,9 @@ func getNodes() {
 		displayNode(n, rootUL)
 	}
 
-	// TODO: call
-	//$("tree").trigger("create");
+	// https://stackoverflow.com/questions/6977338/jquery-mobile-listview-refresh
+	jQuery("#tree").Trigger("create")
+
 }
 
 func main() {

@@ -34,19 +34,51 @@
     <script src="{{.GoBkmProxyURL}}/js/gjs-common.js"></script>
 
     <style>
-        .ui-li-static.ui-collapsible > .ui-collapsible-heading {
-            margin: 0;
-        }
-        .ui-li-static.ui-collapsible {
-            padding: 0;
-        }
-        .ui-li-static.ui-collapsible > .ui-collapsible-heading > .ui-btn {
-            border-top-width: 0;
-        }
-        .ui-li-static.ui-collapsible > .ui-collapsible-heading.ui-collapsible-heading-collapsed > .ui-btn,
-        .ui-li-static.ui-collapsible > .ui-collapsible-content {
-            border-bottom-width: 0;
-        }
+ul {
+    list-style-type: none;
+}
+img.ui-li-icon {
+    z-index: 1;
+}
+
+/* Basic settings */
+.ui-li-static.ui-collapsible {
+    padding: 0;
+}
+.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview,
+.ui-li-static.ui-collapsible > .ui-collapsible-heading {
+    margin: 0;
+}
+.ui-li-static.ui-collapsible > .ui-collapsible-content {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 0;
+    border-bottom-width: 0;
+}
+/* collapse vertical borders */
+.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-last-child,
+.ui-li-static.ui-collapsible.ui-collapsible-collapsed > .ui-collapsible-heading > a.ui-btn {
+    border-bottom-width: 0;
+}
+.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child,
+.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child > a.ui-btn,
+.ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn {
+    border-top-width: 0;
+}
+/* Remove right borders */
+.ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
+.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > .ui-li-static,
+.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li > a.ui-btn,
+.ui-li-static.ui-collapsible > .ui-collapsible-content {
+    border-right-width: 0;
+}
+/* Remove left borders */
+/* Here, we need class ui-listview-outer to identify the outermost listview */
+.ui-listview-outer > .ui-li-static.ui-collapsible .ui-li-static.ui-collapsible.ui-collapsible,
+.ui-listview-outer > .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
+.ui-li-static.ui-collapsible > .ui-collapsible-content {
+    border-left-width: 0;
+}
     </style>
 
 </head>
@@ -55,37 +87,10 @@
 
     <div data-role="page">
 
-        <div class="ui-content">
+        <div role="main" class="ui-content">
                    
-                <ul id="tree" data-role="listview">
-                  <li data-role="collapsible" data-iconpos="right" data-inset="false">
-                    <h2>Birds</h2>
-                    <ul data-role="listview" data-theme="b">
-                      <li><a href="#">Condor</a></li>
-                      <li><a href="#">Eagle</a></li>
-                      <li><a href="#">Sparrow</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="#">Humans</a></li>
-                  <li data-role="collapsible" data-iconpos="right" data-inset="false">
-                    <h2>Fish</h2>
-                    <ul data-role="listview" data-theme="b">
-                      <li><a href="#">Salmon</a></li>
-                      <li><a href="#">Pollock</a></li>
-                      <li><a href="#">Trout</a></li>
-                    </ul>
-                  </li>
-                  <li data-role="collapsible" data-iconpos="right" data-inset="false">
-                    <h2>Choose your preference</h2>
-                    <form>
-                      <fieldset data-role="controlgroup" data-type="horizontal">
-                        <label>Birds<input type="checkbox" id="choose-birds-regular"></label>
-                        <label>Humans<input type="checkbox" id="choose-humans-regular"></label>
-                        <label>Fish<input type="checkbox" id="choose-fish-regular"></label>
-                      </fieldset>
-                    </form>
-                  </li>
-
+                <ul id="tree" data-role="listview" data-filter="true" class="ui-listview-outer">
+               
                 </ul>
 
         </div>
@@ -93,5 +98,11 @@
     </div>
 
 </body>
+
+<script>
+$( document ).on( "vclick", "#-245", function() {
+    console.log("test")
+});
+</script>
 
 </html>
