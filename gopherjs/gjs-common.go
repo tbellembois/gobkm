@@ -28,12 +28,12 @@ func createButton(icon string, id string, visibility string) *dom.HTMLButtonElem
 	b := document.CreateElement("button").(*dom.HTMLButtonElement)
 	b.SetAttribute("type", "button")
 	b.SetAttribute("data-role", "none")
-	b.SetClass("btn btn-outline-dark " + visibility)
+	b.SetClass(icon + " btn btn-outline-dark float-right " + visibility)
 	b.SetID(id)
 
 	blabel := document.CreateElement("span").(*dom.HTMLSpanElement)
 	blabel.SetID(id + "menu")
-	blabel.SetClass("mdi mdi-24px mdi-" + icon)
+	blabel.SetClass("mdi mdi-" + icon)
 
 	b.AppendChild(blabel)
 
@@ -84,10 +84,23 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 		jQuery("#"+id+"menu").On("click", func(e jquery.Event) {
 			e.StopPropagation()
 			fmt.Println("clicked link menu " + id)
+			// make all other buttons invisible
+			jQuery(".content-cut").AddClass("invisible")
+			jQuery(".delete").AddClass("invisible")
+			jQuery(".content-paste").AddClass("invisible")
+
 			jQuery("#" + id + "cut").RemoveClass("invisible")
 			jQuery("#" + id + "delete").RemoveClass("invisible")
 		})
-
+		jQuery("#"+id+"cut").On("click", func(e jquery.Event) {
+			e.StopPropagation()
+			fmt.Println("clicked link cut " + id)
+			jQuery("input[type=hidden][name=cutednodeid]").SetVal(id)
+		})
+		jQuery("#"+id+"delete").On("click", func(e jquery.Event) {
+			e.StopPropagation()
+			fmt.Println("clicked link delete " + id)
+		})
 	default:
 		//
 		// e has children
@@ -108,12 +121,19 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 		count.SetInnerHTML(fmt.Sprintf("%d", l))
 
 		menuButton := createButton("menu", id+"menu", "visible")
+		cutButton := createButton("content-cut", id+"cut", "invisible")
+		deleteButton := createButton("delete", id+"delete", "invisible")
+		pasteButton := createButton("content-paste", id+"paste", "invisible")
 
 		folderName := document.CreateElement("h1").(*dom.HTMLHeadingElement)
 		folderName.SetInnerHTML(n.Title)
 
 		folderName.AppendChild(count)
 		folderName.AppendChild(menuButton)
+		folderName.AppendChild(cutButton)
+		folderName.AppendChild(deleteButton)
+		folderName.AppendChild(pasteButton)
+
 		li.AppendChild(folderName)
 		li.AppendChild(ul)
 
@@ -122,8 +142,33 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 		jQuery("#"+id+"menu").On("click", func(e jquery.Event) {
 			e.StopPropagation()
 			fmt.Println("clicked folder menu " + id)
+			// make all other buttons invisible
+			jQuery(".content-cut").AddClass("invisible")
+			jQuery(".delete").AddClass("invisible")
+			jQuery(".content-paste").AddClass("invisible")
+
 			jQuery("#" + id + "cut").RemoveClass("invisible")
 			jQuery("#" + id + "delete").RemoveClass("invisible")
+
+			fmt.Println(jQuery("input[type=hidden][name=cutednodeid]").Val())
+			// something to paste ?
+			if jQuery("input[type=hidden][name=cutednodeid]").Val() != "" {
+				jQuery("#" + id + "paste").RemoveClass("invisible")
+			}
+		})
+		jQuery("#"+id+"cut").On("click", func(e jquery.Event) {
+			e.StopPropagation()
+			fmt.Println("clicked link cut " + id)
+			jQuery("input[type=hidden][name=cutednodeid]").SetVal(id)
+		})
+		jQuery("#"+id+"delete").On("click", func(e jquery.Event) {
+			e.StopPropagation()
+			fmt.Println("clicked link delete " + id)
+		})
+		jQuery("#"+id+"paste").On("click", func(e jquery.Event) {
+			e.StopPropagation()
+			fmt.Println("clicked link paste " + id)
+			jQuery("input[type=hidden][name=cutednodeid]").SetVal("")
 		})
 
 		for _, c := range n.Children {

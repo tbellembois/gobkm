@@ -50,6 +50,26 @@
         button {
             margin-left: 2px;
         }
+        button.menu {
+            position: absolute;
+            top: 2px;
+            right: 44px;
+        }
+        button.content-cut {
+            position: absolute;
+            top: 2px;
+            right: 88px;
+        }
+        button.delete {
+            position: absolute;
+            top: 2px;
+            right: 132px;
+        }
+        button.content-paste {
+            position: absolute;
+            top: 2px;
+            right: 176px;
+        }
 
         /* Basic settings */
         .ui-li-static.ui-collapsible {
@@ -94,6 +114,8 @@
 </head>
 
 <body>
+
+    <input type=hidden name="cutednodeid" />
 
     <div data-role="page" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
 
