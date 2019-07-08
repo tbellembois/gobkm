@@ -26,70 +26,80 @@
         var GoBkmProxyHost = "{{.GoBkmProxyHost}}"
     </script>
 
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/3.7.95/css/materialdesignicons.min.css" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
     <script src="{{.GoBkmProxyURL}}/js/gjs-common.js"></script>
 
     <style>
-ul {
-    list-style-type: none;
-}
-img.ui-li-icon {
-    z-index: 1;
-}
+        ul {
+            list-style-type: none;
+        }
+        img.ui-li-icon {
+            z-index: 1;
+        }
+        button {
+            margin-left: 2px;
+        }
 
-/* Basic settings */
-.ui-li-static.ui-collapsible {
-    padding: 0;
-}
-.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview,
-.ui-li-static.ui-collapsible > .ui-collapsible-heading {
-    margin: 0;
-}
-.ui-li-static.ui-collapsible > .ui-collapsible-content {
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-right: 0;
-    border-bottom-width: 0;
-}
-/* collapse vertical borders */
-.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-last-child,
-.ui-li-static.ui-collapsible.ui-collapsible-collapsed > .ui-collapsible-heading > a.ui-btn {
-    border-bottom-width: 0;
-}
-.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child,
-.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child > a.ui-btn,
-.ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn {
-    border-top-width: 0;
-}
-/* Remove right borders */
-.ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
-.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > .ui-li-static,
-.ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li > a.ui-btn,
-.ui-li-static.ui-collapsible > .ui-collapsible-content {
-    border-right-width: 0;
-}
-/* Remove left borders */
-/* Here, we need class ui-listview-outer to identify the outermost listview */
-.ui-listview-outer > .ui-li-static.ui-collapsible .ui-li-static.ui-collapsible.ui-collapsible,
-.ui-listview-outer > .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
-.ui-li-static.ui-collapsible > .ui-collapsible-content {
-    border-left-width: 0;
-}
+        /* Basic settings */
+        .ui-li-static.ui-collapsible {
+            padding: 0;
+        }
+        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview,
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading {
+            margin: 0;
+        }
+        .ui-li-static.ui-collapsible > .ui-collapsible-content {
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-right: 0;
+            border-bottom-width: 0;
+        }
+        /* collapse vertical borders */
+        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-last-child,
+        .ui-li-static.ui-collapsible.ui-collapsible-collapsed > .ui-collapsible-heading > a.ui-btn {
+            border-bottom-width: 0;
+        }
+        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child,
+        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child > a.ui-btn,
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn {
+            border-top-width: 0;
+        }
+        /* Remove right borders */
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
+        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > .ui-li-static,
+        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li > a.ui-btn,
+        .ui-li-static.ui-collapsible > .ui-collapsible-content {
+            border-right-width: 0;
+        }
+        /* Remove left borders */
+        /* Here, we need class ui-listview-outer to identify the outermost listview */
+        .ui-listview-outer > .ui-li-static.ui-collapsible .ui-li-static.ui-collapsible.ui-collapsible,
+        .ui-listview-outer > .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
+        .ui-li-static.ui-collapsible > .ui-collapsible-content {
+            border-left-width: 0;
+        }
     </style>
 
 </head>
 
 <body>
 
-    <div data-role="page">
+    <div data-role="page" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
 
         <div role="main" class="ui-content">
                    
-                <ul id="tree" data-role="listview" data-filter="true" class="ui-listview-outer">
+                <ul id="tree" data-role="listview" class="ui-listview-outer">
                
                 </ul>
 
@@ -100,9 +110,51 @@ img.ui-li-icon {
 </body>
 
 <script>
-$( document ).on( "vclick", "#-245", function() {
-    console.log("test")
-});
+// $(document).bind("mobileinit", function(){
+//   $.mobile.ignoreContentEnabled = true;
+// });
+function dzAllowDrop(ev) {
+    ev.preventDefault();
+}
+function dzDrop(ev) {
+    ev.preventDefault();
+    
+    // getting the url from dropped bookmark
+    var data
+    dttypes = ev.dataTransfer.types;
+    if ($.inArray("text/uri-list", dttypes) != -1) {
+        data = ev.dataTransfer.getData("text/uri-list");
+    } else if($.inArray("text/x-moz-url", dttypes) != -1) {
+        data = ev.dataTransfer.getData("text/x-moz-url");
+    } else {
+        alert("not supported by your browser");
+        return;
+    }
+    console.log(data);
+    //console.log(ev.dataTransfer.types);
+    // ["text/plain", "text/uri-list"]
+    // ["text/plain", "text/x-moz-url"
+
+    // // calling ajax
+    // $.ajax({
+    //     url: "/addBookmark/",
+    //     data: {
+    //         destinationFolderId: nodeId,
+    //         bookmarkUrl: data
+    //     }
+    // }).done(function(result) {
+    //     displayMessage("added !", "success");
+    //     // expanded the destination node
+    //     tree.expand(dn);
+    //     // adding the new node
+    //     tree.addNode({ id: -result.id, text: result.text, url: result.url, hasChildren: false, lazy: false, icon: result.icon }, dn);
+    //     // scrolling to the new node
+    //     scrollto(-result.id);
+    //     blink(-result.id);
+    // }).always(function() {
+    // });
+
+}
 </script>
 
 </html>

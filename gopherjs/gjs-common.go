@@ -24,66 +24,114 @@ func init() {
 	document = window.Document()
 }
 
-func displayNode(n types.Node, h *dom.HTMLUListElement) {
+func createButton(icon string, id string, visibility string) *dom.HTMLButtonElement {
+	b := document.CreateElement("button").(*dom.HTMLButtonElement)
+	b.SetAttribute("type", "button")
+	b.SetAttribute("data-role", "none")
+	b.SetClass("btn btn-outline-dark " + visibility)
+	b.SetID(id)
+
+	blabel := document.CreateElement("span").(*dom.HTMLSpanElement)
+	blabel.SetID(id + "menu")
+	blabel.SetClass("mdi mdi-24px mdi-" + icon)
+
+	b.AppendChild(blabel)
+
+	return b
+}
+
+func displayNode(n types.Node, e *dom.HTMLUListElement) {
 
 	l := len(n.Children)
 
 	switch l {
 	case 0:
+		//
+		// e has no children
+		//
 		id := fmt.Sprintf("%d", n.Key)
 
-		newLIChildElement := document.CreateElement("li").(*dom.HTMLLIElement)
-		newLIChildElement.SetID(id)
+		li := document.CreateElement("li").(*dom.HTMLLIElement)
+		li.SetAttribute("data-icon", "false")
+		li.SetID(id)
 
-		newIMGChildElement := document.CreateElement("img").(*dom.HTMLImageElement)
-		newIMGChildElement.SetClass("ui-li-icon")
-		newIMGChildElement.SetAttribute("src", n.Icon)
+		favicon := document.CreateElement("img").(*dom.HTMLImageElement)
+		favicon.SetClass("ui-li-icon")
+		favicon.SetAttribute("src", n.Icon)
 
-		newSPANChildElement := document.CreateElement("a").(*dom.HTMLAnchorElement)
-		newSPANChildElement.SetAttribute("href", "#")
-		newSPANChildElement.SetInnerHTML(n.Title)
-		newSPANChildElement.SetID(id + "link")
+		mainSpan := document.CreateElement("span").(*dom.HTMLSpanElement)
 
-		newLIChildElement.AppendChild(newIMGChildElement)
-		newLIChildElement.AppendChild(newSPANChildElement)
+		menuButton := createButton("menu", id+"menu", "visible")
+		cutButton := createButton("content-cut", id+"cut", "invisible")
+		deleteButton := createButton("delete", id+"delete", "invisible")
 
-		h.AppendChild(newLIChildElement)
+		link := document.CreateElement("a").(*dom.HTMLAnchorElement)
+		link.SetAttribute("href", n.URL)
+		link.SetAttribute("target", "_blank")
+		link.SetID(id + "link")
+		link.SetInnerHTML(n.Title)
 
-		jQuery(document).On("vclick", id, func(e jquery.Event) {
-			fmt.Println("toto clicked on " + jQuery(e.Target).Val())
+		mainSpan.AppendChild(link)
+		mainSpan.AppendChild(menuButton)
+		mainSpan.AppendChild(cutButton)
+		mainSpan.AppendChild(deleteButton)
+
+		li.AppendChild(favicon)
+		li.AppendChild(mainSpan)
+
+		e.AppendChild(li)
+
+		jQuery("#"+id+"menu").On("click", func(e jquery.Event) {
+			e.StopPropagation()
+			fmt.Println("clicked link menu " + id)
+			jQuery("#" + id + "cut").RemoveClass("invisible")
+			jQuery("#" + id + "delete").RemoveClass("invisible")
 		})
 
 	default:
+		//
+		// e has children
+		//
 		id := fmt.Sprintf("%d", n.Key)
 
-		newLIChildElement := document.CreateElement("li").(*dom.HTMLLIElement)
-		newLIChildElement.SetAttribute("data-role", "collapsible")
-		newLIChildElement.SetAttribute("data-iconpos", "right")
-		newLIChildElement.SetID(id)
+		li := document.CreateElement("li").(*dom.HTMLLIElement)
+		li.SetAttribute("data-icon", "false")
+		li.SetAttribute("data-role", "collapsible")
+		li.SetID(id)
 
-		newULChildElement := document.CreateElement("ul").(*dom.HTMLUListElement)
-		newULChildElement.SetAttribute("data-role", "listview")
-		newULChildElement.SetAttribute("data-inset", "true")
-		newULChildElement.SetID(string(n.Key))
+		ul := document.CreateElement("ul").(*dom.HTMLUListElement)
+		ul.SetAttribute("data-role", "listview")
+		ul.SetID(string(n.Key))
 
-		newSPANChildElement := document.CreateElement("span").(*dom.HTMLSpanElement)
-		newSPANChildElement.SetClass("ui-li-count")
-		newSPANChildElement.SetInnerHTML(fmt.Sprintf("%d", l))
+		count := document.CreateElement("span").(*dom.HTMLSpanElement)
+		count.SetClass("ui-li-count")
+		count.SetInnerHTML(fmt.Sprintf("%d", l))
 
-		newH2ChildElement := document.CreateElement("h1").(*dom.HTMLHeadingElement)
-		newH2ChildElement.SetInnerHTML(n.Title)
+		menuButton := createButton("menu", id+"menu", "visible")
 
-		newH2ChildElement.AppendChild(newSPANChildElement)
-		newLIChildElement.AppendChild(newH2ChildElement)
-		newLIChildElement.AppendChild(newULChildElement)
+		folderName := document.CreateElement("h1").(*dom.HTMLHeadingElement)
+		folderName.SetInnerHTML(n.Title)
 
-		h.AppendChild(newLIChildElement)
+		folderName.AppendChild(count)
+		folderName.AppendChild(menuButton)
+		li.AppendChild(folderName)
+		li.AppendChild(ul)
+
+		e.AppendChild(li)
+
+		jQuery("#"+id+"menu").On("click", func(e jquery.Event) {
+			e.StopPropagation()
+			fmt.Println("clicked folder menu " + id)
+			jQuery("#" + id + "cut").RemoveClass("invisible")
+			jQuery("#" + id + "delete").RemoveClass("invisible")
+		})
 
 		for _, c := range n.Children {
-			displayNode(*c, newULChildElement)
+			displayNode(*c, ul)
 		}
 
 	}
+
 }
 
 func getNodes() {
@@ -117,6 +165,10 @@ func main() {
 	document.AddEventListener("DOMContentLoaded", false, func(event dom.Event) {
 		event.PreventDefault()
 
+		jQuery(document).On("mobileinit", func(e jquery.Event) {
+			fmt.Println("mobile init")
+		})
+
 		// getting tree div
 		rootUL = document.GetElementByID("tree").(*dom.HTMLUListElement)
 
@@ -127,4 +179,5 @@ func main() {
 
 	// exporting functions to be called from other JS files
 	js.Global.Set("global", map[string]interface{}{})
+
 }
