@@ -211,6 +211,7 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 		addBookmarkButton := createButton("bookmark-plus-outline", id+"addBookmark", "invisible", "float-right")
 
 		folderName := document.CreateElement("h1").(*dom.HTMLHeadingElement)
+		folderName.SetAttribute("data-role", "none")
 		folderName.SetInnerHTML(n.Title)
 
 		folderName.AppendChild(count)
