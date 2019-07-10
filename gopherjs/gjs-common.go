@@ -25,9 +25,10 @@ func init() {
 }
 
 // createButton creates a button with a materialdesign icon
-// icon is the materialdesign icon name without the heading mdi-
-// id is the button id
-// visibility = visible | invisible
+// - icon is the materialdesign icon name without the heading mdi-
+// - id is the button id
+// - visibility = visible | invisible
+// - classes are the additionnal classes for the button
 func createButton(icon string, id string, visibility string, classes ...string) *dom.HTMLButtonElement {
 	b := document.CreateElement("button").(*dom.HTMLButtonElement)
 	b.SetAttribute("type", "button")
@@ -48,6 +49,9 @@ func createButton(icon string, id string, visibility string, classes ...string) 
 	return b
 }
 
+// createAddFolderForm returns a folder creation form
+// with id = id+"createFolder" for the main div
+// and id = id+"createFolderSubmit" for the submit button
 func createAddFolderForm(id string) *dom.HTMLDivElement {
 	dr := document.CreateElement("div").(*dom.HTMLDivElement)
 	dr.SetID(id + "createFolder")
@@ -62,7 +66,7 @@ func createAddFolderForm(id string) *dom.HTMLDivElement {
 	ifoldername.SetAttribute("placeholder", "folder name")
 	// avoiding the propagation of the event to the parent h1
 	// that would lead JQM to toggle the sublist (li)
-	ifoldername.SetAttribute("onclick", "event.stopPropagation()")
+	//ifoldername.SetAttribute("onclick", "event.stopPropagation()")
 	ifoldername.SetClass("form-control")
 	dc1.AppendChild(ifoldername)
 
@@ -75,6 +79,9 @@ func createAddFolderForm(id string) *dom.HTMLDivElement {
 	return dr
 }
 
+// createAddFolderForm returns a bookmark creation form
+// with id = id+"createBookmark" for the main div
+// and id = id+"createBookmarkSubmit" for the submit button
 func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	dr := document.CreateElement("div").(*dom.HTMLDivElement)
 	dr.SetID(id + "createBookmark")
@@ -93,7 +100,7 @@ func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	ibookmarkname.SetAttribute("placeholder", "bookmark name")
 	// avoiding the propagation of the event to the parent h1
 	// that would lead JQM to toggle the sublist (li)
-	ibookmarkname.SetAttribute("onclick", "event.stopPropagation()")
+	//ibookmarkname.SetAttribute("onclick", "event.stopPropagation()")
 	ibookmarkname.SetClass("form-control")
 	dc1.AppendChild(ibookmarkname)
 
@@ -102,7 +109,7 @@ func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	ibookmarkurl.SetAttribute("placeholder", "bookmark URL")
 	// avoiding the propagation of the event to the parent h1
 	// that would lead JQM to toggle the sublist (li)
-	ibookmarkurl.SetAttribute("onclick", "event.stopPropagation()")
+	//ibookmarkurl.SetAttribute("onclick", "event.stopPropagation()")
 	ibookmarkurl.SetClass("form-control")
 	dc2.AppendChild(ibookmarkurl)
 
@@ -110,7 +117,8 @@ func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	ibookmarktags.SetAttribute("placeholder", "tags")
 	// avoiding the propagation of the event to the parent h1
 	// that would lead JQM to toggle the sublist (li)
-	ibookmarktags.SetAttribute("onclick", "event.stopPropagation()")
+	//ibookmarktags.SetAttribute("onclick", "event.stopPropagation()")
+	ibookmarktags.SetAttribute("multiple", "multiple")
 	ibookmarktags.SetClass("form-control")
 	dc3.AppendChild(ibookmarktags)
 
@@ -125,16 +133,19 @@ func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	return dr
 }
 
-// hideAllIcons hide all the actions buttons
+// hideActionButtons hide all the actions buttons
 // except menu
-func hideAllIcons() {
+func hideActionButtons() {
 	jQuery(".content-cut").AddClass("invisible")
 	jQuery(".delete-outline").AddClass("invisible")
 	jQuery(".content-paste").AddClass("invisible")
 	jQuery(".star-outline").AddClass("invisible")
 	jQuery(".folder-plus-outline").AddClass("invisible")
 	jQuery(".bookmark-plus-outline").AddClass("invisible")
+}
 
+// hideForms hide all the create/update forms
+func hideForms() {
 	jQuery(".addFolder").Remove()
 	jQuery(".addBookmark").Remove()
 }
@@ -211,8 +222,20 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 		addBookmarkButton := createButton("bookmark-plus-outline", id+"addBookmark", "invisible", "float-right")
 
 		folderName := document.CreateElement("h1").(*dom.HTMLHeadingElement)
-		folderName.SetAttribute("data-role", "none")
+		//folderName.SetAttribute("data-role", "none")
 		folderName.SetInnerHTML(n.Title)
+		folderName.AddEventListener("click", false, func(event dom.Event) {
+			// getting the href attribute to check if the click was on
+			// the h1 element or on one of its children
+			// if not, stopping the event propagation to prevent toggleing
+			// the li
+			h := event.Target().GetAttribute("href")
+			fmt.Println(h)
+			fmt.Println("eee")
+			if h != "#" {
+				event.StopImmediatePropagation()
+			}
+		})
 
 		folderName.AppendChild(count)
 		folderName.AppendChild(menuButton)
@@ -238,7 +261,8 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 	//
 	jQuery("#"+id+" > h1").On("click", func(e jquery.Event) {
 		fmt.Println("clic on " + id)
-		hideAllIcons()
+		hideActionButtons()
+		hideForms()
 	})
 
 	//
@@ -246,10 +270,11 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 	//
 	// menu
 	jQuery("#"+id+"menu").On("click", func(e jquery.Event) {
-		e.StopPropagation()
+		//e.StopPropagation()
 
-		// make all other buttons invisible
-		hideAllIcons()
+		// make all other buttons and forms invisible
+		hideActionButtons()
+		hideForms()
 
 		jQuery("#" + id + "cut").RemoveClass("invisible")
 		jQuery("#" + id + "delete").RemoveClass("invisible")
@@ -265,49 +290,58 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 
 	// cut
 	jQuery("#"+id+"cut").On("click", func(e jquery.Event) {
-		e.StopPropagation()
+		//e.StopPropagation()
 
 		jQuery("input[type=hidden][name=cutednodeid]").SetVal(id)
 	})
 
 	// delete
 	jQuery("#"+id+"delete").On("click", func(e jquery.Event) {
-		e.StopPropagation()
+		//e.StopPropagation()
 	})
 
 	// paste, addFolder, addBookmark
 	if !isBookmark {
 		jQuery("#"+id+"paste").On("click", func(e jquery.Event) {
-			e.StopPropagation()
+			//e.StopPropagation()
 			fmt.Println("clicked link paste " + id)
 			jQuery("input[type=hidden][name=cutednodeid]").SetVal("")
 		})
 
 		jQuery("#"+id+"addFolder").On("click", func(e jquery.Event) {
-			e.StopPropagation()
+			//e.StopPropagation()
 			fmt.Println("clicked link add folder " + id)
+
+			hideActionButtons()
+			hideForms()
 
 			f := createAddFolderForm(id)
 			jQuery("li#" + id + " > h1").Append(f)
 
 			// add event binding
 			jQuery("#"+id+"createFolderSubmit").On("click", func(e jquery.Event) {
-				e.StopPropagation()
+				//e.StopPropagation()
 
 				fmt.Println("create subfolder of " + id)
 			})
 		})
 
 		jQuery("#"+id+"addBookmark").On("click", func(e jquery.Event) {
-			e.StopPropagation()
+			//e.StopPropagation()
 			fmt.Println("clicked link add bookmark " + id)
+
+			hideActionButtons()
+			hideForms()
 
 			b := createAddBookmarkForm(id)
 			jQuery("li#" + id + " > h1").Append(b)
 
+			// select2ify the form
+			js.Global.Call("select2ify")
+
 			// add event binding
 			jQuery("#"+id+"createBookmarkSubmit").On("click", func(e jquery.Event) {
-				e.StopPropagation()
+				//e.StopPropagation()
 
 				fmt.Println("create bookmark in " + id)
 			})
@@ -317,7 +351,7 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 	// star
 	if isBookmark {
 		jQuery("#"+id+"star").On("click", func(e jquery.Event) {
-			e.StopPropagation()
+			//e.StopPropagation()
 			fmt.Println("clicked link star " + id)
 		})
 	}
