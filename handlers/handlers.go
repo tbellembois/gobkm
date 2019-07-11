@@ -361,17 +361,18 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 	// GET parameters retrieval.
 	folderName := r.URL.Query()["folderName"]
 	parentIDParam := r.URL.Query()["parentId"]
-	if folderName == nil {
-		return
-	}
 	log.WithFields(log.Fields{
 		"folderName":    folderName,
 		"parentIDParam": parentIDParam,
 	}).Debug("AddFolderHandler:Query parameter")
 
+	if folderName == nil {
+		return
+	}
+
 	// Parameters check.
 	if len(folderName[0]) == 0 {
-		failHTTP(w, "AddFolderHandler", "bookmarkUrl empty", http.StatusBadRequest)
+		failHTTP(w, "AddFolderHandler", "folderName empty", http.StatusBadRequest)
 		return
 	}
 
@@ -786,22 +787,21 @@ func (env *Env) getChildren(node *types.Node) types.Node {
 		flds []*types.Folder
 	)
 
-	bks = env.DB.GetFolderBookmarks(node.Key)
-	for _, bk := range bks {
-		node.Children = append(node.Children, &types.Node{Key: -bk.Id, Title: bk.Title, URL: bk.URL, Icon: bk.Favicon, Tags: bk.Tags, Folder: false, Lazy: false})
-	}
 	flds = env.DB.GetFolderSubfolders(node.Key)
-
 	if flds != nil {
 		for _, fld := range flds {
 			log.WithFields(log.Fields{"fld": fld}).Debug("getChildren")
 			n := env.getChildren(&types.Node{Key: fld.Id, Title: fld.Title, Folder: false, Lazy: false})
 			node.Children = append(node.Children, &n)
 		}
-		return *node
-	} else {
-		return *node
 	}
+
+	bks = env.DB.GetFolderBookmarks(node.Key)
+	for _, bk := range bks {
+		node.Children = append(node.Children, &types.Node{Key: -bk.Id, Title: bk.Title, URL: bk.URL, Icon: bk.Favicon, Tags: bk.Tags, Folder: false, Lazy: false})
+	}
+
+	return *node
 }
 
 // GetTreeHandler return the entire bookmark tree

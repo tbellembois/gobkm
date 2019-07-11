@@ -40,44 +40,58 @@
     <script src="{{.GoBkmProxyURL}}/js/gjs-common.js"></script>
 
     <style>
+        @font-face {
+            font-family: 'economicaregular';
+            src: url('../fonts/economica-regular-webfont.woff2') format('woff2'),
+                url('../fonts/economica-regular-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        a {
+            font-family: economicaregular;
+        }
         ul {
             list-style-type: none;
         }
         img.ui-li-icon {
             z-index: 1;
         }
+        span.ui-li-count {
+            right: 3.8em;
+        }
         button {
             margin-left: 2px;
+            z-index: 2;
         }
         button.menu {
             position: absolute;
             top: 2px;
-            right: 44px;
+            right: 2px;
         }
         button.content-cut {
             position: absolute;
             top: 2px;
-            right: 88px;
+            right: 46px;
         }
         button.delete-outline {
             position: absolute;
             top: 2px;
-            right: 132px;
+            right: 90px;
         }
         button.content-paste {
             position: absolute;
             top: 2px;
-            right: 176px;
+            right: 222px;
         }
         button.folder-plus-outline {
             position: absolute;
             top: 2px;
-            right: 220px;
+            right: 178px;
         }
         button.bookmark-plus-outline {
             position: absolute;
             top: 2px;
-            right: 264px;
+            right: 134px;
         }
 
         /* Basic settings */
@@ -131,7 +145,6 @@
         <div role="main" class="ui-content">
                    
                 <ul id="tree" data-role="listview" class="ui-listview-outer">
-               
                 </ul>
 
         </div>

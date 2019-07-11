@@ -131,6 +131,10 @@ func main() {
 	imgFileServer := http.StripPrefix("/img/", http.FileServer(imgBox.HTTPBox()))
 	http.Handle("/img/", imgFileServer)
 
+	fontsBox := rice.MustFindBox("static/fonts")
+	fontsFileServer := http.StripPrefix("/fonts/", http.FileServer(fontsBox.HTTPBox()))
+	http.Handle("/fonts/", fontsFileServer)
+
 	manifestBox := rice.MustFindBox("static/manifest")
 	manifestFileServer := http.StripPrefix("/manifest/", http.FileServer(manifestBox.HTTPBox()))
 	http.Handle("/manifest/", manifestFileServer)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -24,6 +25,170 @@ func init() {
 	document = window.Document()
 }
 
+// TODO: use types.Node instead
+type folder struct {
+	folderName string
+	parentId   string
+}
+
+func getBranchNodes(parentId string) []types.Node {
+	var (
+		data  []byte
+		err   error
+		nodes []types.Node
+	)
+
+	if data, err = xhr.Send("GET", "/getBranchNodes/?parentId="+parentId, nil); err != nil {
+		errors.New("error getting nodes of  " + parentId)
+	}
+
+	// decoding response
+	if err = json.NewDecoder(strings.NewReader(string(data))).Decode(&nodes); err != nil {
+		fmt.Println("error decoding the JSON")
+	}
+
+	return nodes
+}
+
+func createFolder(folderName string, parentId string) error {
+	var (
+		//data []byte
+		err error
+		//node types.Node
+	)
+
+	if _, err = xhr.Send("GET", "/addFolder/?folderName="+folderName+"&parentId="+parentId, nil); err != nil {
+		return errors.New("error creating folder " + folderName)
+	}
+
+	// removing create form
+	jQuery("#" + parentId + "createFolder").Remove()
+
+	ul := document.GetElementByID(parentId + "ul").(*dom.HTMLUListElement)
+	ul.SetInnerHTML("")
+
+	// getting children nodes
+	cnodes := getBranchNodes(parentId)
+	for _, n := range cnodes {
+		displayNode(n, ul)
+	}
+
+	// // decoding response to extract the new folder id
+	// node = types.Node{}
+	// if err = json.NewDecoder(strings.NewReader(string(data))).Decode(&node); err != nil {
+	// 	fmt.Println("error decoding the JSON")
+	// }
+	// fid := fmt.Sprintf("%d", node.Key)
+
+	// // creating folder node
+	// f, _ := createFolderNode(fid, node.Title, "0")
+	// // appending to the parent ul as the first child
+	// jQuery("#" + parentId + "ul").Prepend(f)
+
+	// // binding button events
+	// bindButtonEvents(fid, false)
+
+	// refreshing JQM
+	//jQuery("#tree").Trigger("create")
+
+	return nil
+}
+
+func deleteFolder(itemId string) error {
+	var (
+		err error
+	)
+
+	if _, err = xhr.Send("GET", "/deleteFolder/?itemId="+itemId, nil); err != nil {
+		return errors.New("error deleting folder " + itemId)
+	}
+
+	return nil
+}
+
+func createBookmarkNode(id, title, URL, icon string) *dom.HTMLLIElement {
+	li := document.CreateElement("li").(*dom.HTMLLIElement)
+	li.SetAttribute("data-icon", "false")
+	li.SetID(id)
+
+	favicon := document.CreateElement("img").(*dom.HTMLImageElement)
+	favicon.SetClass("ui-li-icon")
+	favicon.SetAttribute("src", icon)
+
+	mainSpan := document.CreateElement("span").(*dom.HTMLSpanElement)
+
+	menuButton := createButton("menu", id+"menu", "visible", "float-right")
+	cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
+	deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
+	starButton := createButton("star-outline", id+"delete", "invisible", "float-right")
+
+	link := document.CreateElement("a").(*dom.HTMLAnchorElement)
+	link.SetAttribute("href", URL)
+	link.SetAttribute("target", "_blank")
+	link.SetID(id + "link")
+	link.SetInnerHTML(title)
+
+	mainSpan.AppendChild(link)
+	mainSpan.AppendChild(menuButton)
+	mainSpan.AppendChild(cutButton)
+	mainSpan.AppendChild(deleteButton)
+	mainSpan.AppendChild(starButton)
+
+	li.AppendChild(favicon)
+	li.AppendChild(mainSpan)
+
+	return li
+}
+
+func createFolderNode(id, title, count string) (*dom.HTMLLIElement, *dom.HTMLUListElement) {
+
+	li := document.CreateElement("li").(*dom.HTMLLIElement)
+	li.SetAttribute("data-icon", "false")
+	li.SetAttribute("data-role", "collapsible")
+	li.SetID(id)
+
+	ul := document.CreateElement("ul").(*dom.HTMLUListElement)
+	ul.SetAttribute("data-role", "listview")
+	ul.SetID(id + "ul")
+
+	c := document.CreateElement("span").(*dom.HTMLSpanElement)
+	c.SetClass("ui-li-count")
+	c.SetInnerHTML(count)
+
+	menuButton := createButton("menu", id+"menu", "visible", "float-right")
+	cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
+	deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
+	pasteButton := createButton("content-paste", id+"paste", "invisible", "float-right")
+	addFolderButton := createButton("folder-plus-outline", id+"addFolder", "invisible", "float-right")
+	addBookmarkButton := createButton("bookmark-plus-outline", id+"addBookmark", "invisible", "float-right")
+
+	folderName := document.CreateElement("h1").(*dom.HTMLHeadingElement)
+	folderName.SetInnerHTML(title)
+	folderName.AddEventListener("click", false, func(event dom.Event) {
+		// getting the href attribute to check if the click was on
+		// the h1 element or on one of its children
+		// if not, stopping the event propagation to prevent toggleing
+		// the li
+		h := event.Target().GetAttribute("href")
+		if h != "#" {
+			event.StopImmediatePropagation()
+		}
+	})
+
+	folderName.AppendChild(c)
+	folderName.AppendChild(menuButton)
+	folderName.AppendChild(cutButton)
+	folderName.AppendChild(deleteButton)
+	folderName.AppendChild(pasteButton)
+	folderName.AppendChild(addFolderButton)
+	folderName.AppendChild(addBookmarkButton)
+
+	li.AppendChild(folderName)
+	li.AppendChild(ul)
+
+	return li, ul
+}
+
 // createButton creates a button with a materialdesign icon
 // - icon is the materialdesign icon name without the heading mdi-
 // - id is the button id
@@ -33,7 +198,7 @@ func createButton(icon string, id string, visibility string, classes ...string) 
 	b := document.CreateElement("button").(*dom.HTMLButtonElement)
 	b.SetAttribute("type", "button")
 	b.SetAttribute("data-role", "none")
-	b.SetClass(icon + " btn btn-outline-dark " + visibility)
+	b.SetClass(icon + " btn btn-outline-dark bg-light " + visibility)
 	b.SetID(id)
 
 	for _, c := range classes {
@@ -57,11 +222,12 @@ func createAddFolderForm(id string) *dom.HTMLDivElement {
 	dr.SetID(id + "createFolder")
 	dr.SetClass("row addFolder mt-2 mb-2 ml-5 mr-5")
 	dc1 := document.CreateElement("div").(*dom.HTMLDivElement)
-	dc1.SetClass("col col-sm-11")
+	dc1.SetClass("col col-11")
 	dc2 := document.CreateElement("div").(*dom.HTMLDivElement)
-	dc2.SetClass("col col-sm-1")
+	dc2.SetClass("col col-1")
 
 	ifoldername := document.CreateElement("input").(*dom.HTMLInputElement)
+	ifoldername.SetID(id + "createFolderInput")
 	ifoldername.SetAttribute("type", "text")
 	ifoldername.SetAttribute("placeholder", "folder name")
 	// avoiding the propagation of the event to the parent h1
@@ -87,13 +253,13 @@ func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	dr.SetID(id + "createBookmark")
 	dr.SetClass("row addBookmark mt-2 mb-2 ml-5 mr-5")
 	dc1 := document.CreateElement("div").(*dom.HTMLDivElement)
-	dc1.SetClass("col col-sm-12")
+	dc1.SetClass("col col-12")
 	dc2 := document.CreateElement("div").(*dom.HTMLDivElement)
-	dc2.SetClass("col col-sm-12")
+	dc2.SetClass("col col-12")
 	dc3 := document.CreateElement("div").(*dom.HTMLDivElement)
-	dc3.SetClass("col col-sm-12")
+	dc3.SetClass("col col-12")
 	dc4 := document.CreateElement("div").(*dom.HTMLDivElement)
-	dc4.SetClass("col col-sm-1")
+	dc4.SetClass("col col-1")
 
 	ibookmarkname := document.CreateElement("input").(*dom.HTMLInputElement)
 	ibookmarkname.SetAttribute("type", "text")
@@ -150,112 +316,7 @@ func hideForms() {
 	jQuery(".addBookmark").Remove()
 }
 
-// displayNode recursively display a Node as an JQM listview widget
-func displayNode(n types.Node, e *dom.HTMLUListElement) {
-
-	// Node keys are negative for bookmarks and positive for folders
-	id := fmt.Sprintf("%d", n.Key)
-	isBookmark := n.Key < 0
-
-	switch isBookmark {
-	case true:
-		//
-		// bookmark
-		//
-		li := document.CreateElement("li").(*dom.HTMLLIElement)
-		li.SetAttribute("data-icon", "false")
-		li.SetID(id)
-
-		favicon := document.CreateElement("img").(*dom.HTMLImageElement)
-		favicon.SetClass("ui-li-icon")
-		favicon.SetAttribute("src", n.Icon)
-
-		mainSpan := document.CreateElement("span").(*dom.HTMLSpanElement)
-
-		menuButton := createButton("menu", id+"menu", "visible", "float-right")
-		cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
-		deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
-		starButton := createButton("star-outline", id+"delete", "invisible", "float-right")
-
-		link := document.CreateElement("a").(*dom.HTMLAnchorElement)
-		link.SetAttribute("href", n.URL)
-		link.SetAttribute("target", "_blank")
-		link.SetID(id + "link")
-		link.SetInnerHTML(n.Title)
-
-		mainSpan.AppendChild(link)
-		mainSpan.AppendChild(menuButton)
-		mainSpan.AppendChild(cutButton)
-		mainSpan.AppendChild(deleteButton)
-		mainSpan.AppendChild(starButton)
-
-		li.AppendChild(favicon)
-		li.AppendChild(mainSpan)
-
-		e.AppendChild(li)
-
-	default:
-		//
-		// folder
-		//
-		// children count
-		c := len(n.Children)
-
-		li := document.CreateElement("li").(*dom.HTMLLIElement)
-		li.SetAttribute("data-icon", "false")
-		li.SetAttribute("data-role", "collapsible")
-		li.SetID(id)
-
-		ul := document.CreateElement("ul").(*dom.HTMLUListElement)
-		ul.SetAttribute("data-role", "listview")
-		ul.SetID(string(n.Key))
-
-		count := document.CreateElement("span").(*dom.HTMLSpanElement)
-		count.SetClass("ui-li-count")
-		count.SetInnerHTML(fmt.Sprintf("%d", c))
-
-		menuButton := createButton("menu", id+"menu", "visible", "float-right")
-		cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
-		deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
-		pasteButton := createButton("content-paste", id+"paste", "invisible", "float-right")
-		addFolderButton := createButton("folder-plus-outline", id+"addFolder", "invisible", "float-right")
-		addBookmarkButton := createButton("bookmark-plus-outline", id+"addBookmark", "invisible", "float-right")
-
-		folderName := document.CreateElement("h1").(*dom.HTMLHeadingElement)
-		//folderName.SetAttribute("data-role", "none")
-		folderName.SetInnerHTML(n.Title)
-		folderName.AddEventListener("click", false, func(event dom.Event) {
-			// getting the href attribute to check if the click was on
-			// the h1 element or on one of its children
-			// if not, stopping the event propagation to prevent toggleing
-			// the li
-			h := event.Target().GetAttribute("href")
-			fmt.Println(h)
-			fmt.Println("eee")
-			if h != "#" {
-				event.StopImmediatePropagation()
-			}
-		})
-
-		folderName.AppendChild(count)
-		folderName.AppendChild(menuButton)
-		folderName.AppendChild(cutButton)
-		folderName.AppendChild(deleteButton)
-		folderName.AppendChild(pasteButton)
-		folderName.AppendChild(addFolderButton)
-		folderName.AppendChild(addBookmarkButton)
-
-		li.AppendChild(folderName)
-		li.AppendChild(ul)
-
-		e.AppendChild(li)
-
-		for _, c := range n.Children {
-			displayNode(*c, ul)
-		}
-
-	}
-
+func bindButtonEvents(id string, isBookmark bool) {
 	//
 	// folder click event binding
 	//
@@ -322,7 +383,11 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 			jQuery("#"+id+"createFolderSubmit").On("click", func(e jquery.Event) {
 				//e.StopPropagation()
 
-				fmt.Println("create subfolder of " + id)
+				folderName := jQuery("#" + id + "createFolderInput").Val()
+
+				fmt.Println("create subfolder " + folderName + " of " + id)
+
+				go createFolder(folderName, id)
 			})
 		})
 
@@ -355,7 +420,38 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 			fmt.Println("clicked link star " + id)
 		})
 	}
+}
 
+// displayNode recursively display a Node as an JQM listview widget
+func displayNode(n types.Node, e *dom.HTMLUListElement) {
+
+	// Node keys are negative for bookmarks and positive for folders
+	id := fmt.Sprintf("%d", n.Key)
+	isBookmark := n.Key < 0
+
+	switch isBookmark {
+	case true:
+		//
+		// bookmark
+		//
+		f := createBookmarkNode(id, n.Title, n.URL, n.Icon)
+		e.AppendChild(f)
+
+	default:
+		//
+		// folder
+		//
+		// children count
+		c := len(n.Children)
+		b, u := createFolderNode(id, n.Title, fmt.Sprintf("%d", c))
+		e.AppendChild(b)
+
+		for _, c := range n.Children {
+			displayNode(*c, u)
+		}
+	}
+
+	bindButtonEvents(id, isBookmark)
 }
 
 func getNodes() {

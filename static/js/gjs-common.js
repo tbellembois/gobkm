@@ -35738,8 +35738,9 @@ $packages["honnef.co/go/js/xhr"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, json, fmt, js, jquery, types, dom, xhr, strings, ptrType, ptrType$1, ptrType$2, ptrType$3, ptrType$4, sliceType, ptrType$5, sliceType$1, ptrType$6, ptrType$7, ptrType$8, ptrType$9, funcType, sliceType$2, sliceType$3, ptrType$10, mapType, window, document, rootUL, jQuery, init, createButton, createAddFolderForm, createAddBookmarkForm, hideActionButtons, hideForms, displayNode, getNodes, main;
+	var $pkg = {}, $init, json, errors, fmt, js, jquery, types, dom, xhr, strings, ptrType, sliceType, sliceType$1, ptrType$1, sliceType$2, ptrType$2, ptrType$3, ptrType$4, sliceType$3, ptrType$5, ptrType$6, ptrType$7, ptrType$8, ptrType$9, ptrType$10, funcType, mapType, window, document, rootUL, jQuery, init, getBranchNodes, createFolder, createBookmarkNode, createFolderNode, createButton, createAddFolderForm, createAddBookmarkForm, hideActionButtons, hideForms, bindButtonEvents, displayNode, getNodes, main;
 	json = $packages["encoding/json"];
+	errors = $packages["errors"];
 	fmt = $packages["fmt"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	jquery = $packages["github.com/gopherjs/jquery"];
@@ -35748,21 +35749,21 @@ $packages["main"] = (function() {
 	xhr = $packages["honnef.co/go/js/xhr"];
 	strings = $packages["strings"];
 	ptrType = $ptrType(dom.HTMLUListElement);
-	ptrType$1 = $ptrType(dom.HTMLButtonElement);
-	ptrType$2 = $ptrType(dom.HTMLSpanElement);
-	ptrType$3 = $ptrType(dom.HTMLDivElement);
-	ptrType$4 = $ptrType(dom.HTMLInputElement);
-	sliceType = $sliceType($String);
-	ptrType$5 = $ptrType(dom.HTMLSelectElement);
-	sliceType$1 = $sliceType($emptyInterface);
-	ptrType$6 = $ptrType(dom.HTMLLIElement);
-	ptrType$7 = $ptrType(dom.HTMLImageElement);
-	ptrType$8 = $ptrType(dom.HTMLAnchorElement);
-	ptrType$9 = $ptrType(dom.HTMLHeadingElement);
+	sliceType = $sliceType($Uint8);
+	sliceType$1 = $sliceType(types.Node);
+	ptrType$1 = $ptrType(sliceType$1);
+	sliceType$2 = $sliceType($emptyInterface);
+	ptrType$2 = $ptrType(dom.HTMLLIElement);
+	ptrType$3 = $ptrType(dom.HTMLImageElement);
+	ptrType$4 = $ptrType(dom.HTMLSpanElement);
+	sliceType$3 = $sliceType($String);
+	ptrType$5 = $ptrType(dom.HTMLAnchorElement);
+	ptrType$6 = $ptrType(dom.HTMLHeadingElement);
+	ptrType$7 = $ptrType(dom.HTMLButtonElement);
+	ptrType$8 = $ptrType(dom.HTMLDivElement);
+	ptrType$9 = $ptrType(dom.HTMLInputElement);
+	ptrType$10 = $ptrType(dom.HTMLSelectElement);
 	funcType = $funcType([jquery.Event], [], false);
-	sliceType$2 = $sliceType($Uint8);
-	sliceType$3 = $sliceType(types.Node);
-	ptrType$10 = $ptrType(sliceType$3);
 	mapType = $mapType($String, $emptyInterface);
 	init = function() {
 		var _r, $s, $r;
@@ -35773,14 +35774,162 @@ $packages["main"] = (function() {
 		$s = -1; return;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: init }; } $f._r = _r; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	getBranchNodes = function(parentId) {
+		var _r, _r$1, _r$2, _tuple, data, err, nodes, parentId, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple = $f._tuple; data = $f.data; err = $f.err; nodes = $f.nodes; parentId = $f.parentId; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		nodes = [nodes];
+		data = sliceType.nil;
+		err = $ifaceNil;
+		nodes[0] = sliceType$1.nil;
+		_r = xhr.Send("GET", "/getBranchNodes/?parentId=" + parentId, sliceType.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_tuple = _r;
+		data = _tuple[0];
+		err = _tuple[1];
+		if (!($interfaceIsEqual(err, $ifaceNil))) {
+			errors.New("error getting nodes of  " + parentId);
+		}
+		_r$1 = json.NewDecoder(strings.NewReader(($bytesToString(data)))).Decode((nodes.$ptr || (nodes.$ptr = new ptrType$1(function() { return this.$target[0]; }, function($v) { this.$target[0] = $v; }, nodes)))); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		err = _r$1;
+		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 3; continue; }
+		/* */ $s = 4; continue;
+		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 3:
+			_r$2 = fmt.Println(new sliceType$2([new $String("error decoding the JSON")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+			_r$2;
+		/* } */ case 4:
+		$s = -1; return nodes[0];
+		/* */ } return; } if ($f === undefined) { $f = { $blk: getBranchNodes }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tuple = _tuple; $f.data = data; $f.err = err; $f.nodes = nodes; $f.parentId = parentId; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	createFolder = function(folderName, parentId) {
+		var _i, _r, _r$1, _r$2, _r$3, _r$4, _ref, _tuple, cnodes, err, folderName, n, parentId, ul, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _ref = $f._ref; _tuple = $f._tuple; cnodes = $f.cnodes; err = $f.err; folderName = $f.folderName; n = $f.n; parentId = $f.parentId; ul = $f.ul; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		err = $ifaceNil;
+		_r = xhr.Send("GET", "/addFolder/?folderName=" + folderName + "&parentId=" + parentId, sliceType.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_tuple = _r;
+		err = _tuple[1];
+		if (!($interfaceIsEqual(err, $ifaceNil))) {
+			$s = -1; return errors.New("error creating folder " + folderName);
+		}
+		_r$1 = jQuery(new sliceType$2([new $String("#" + parentId + "createFolder")])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$2 = $clone(_r$1, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$2;
+		_r$3 = document.GetElementByID(parentId + "ul"); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		ul = $assertType(_r$3, ptrType);
+		ul.BasicHTMLElement.BasicElement.SetInnerHTML("");
+		_r$4 = getBranchNodes(parentId); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		cnodes = _r$4;
+		_ref = cnodes;
+		_i = 0;
+		/* while (true) { */ case 6:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 7; continue; }
+			n = $clone(((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]), types.Node);
+			$r = displayNode($clone(n, types.Node), ul); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 6; continue; case 7:
+		$s = -1; return $ifaceNil;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createFolder }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._ref = _ref; $f._tuple = _tuple; $f.cnodes = cnodes; $f.err = err; $f.folderName = folderName; $f.n = n; $f.parentId = parentId; $f.ul = ul; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	createBookmarkNode = function(id, title, URL, icon) {
+		var URL, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, cutButton, deleteButton, favicon, icon, id, li, link, mainSpan, menuButton, starButton, title, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; URL = $f.URL; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; cutButton = $f.cutButton; deleteButton = $f.deleteButton; favicon = $f.favicon; icon = $f.icon; id = $f.id; li = $f.li; link = $f.link; mainSpan = $f.mainSpan; menuButton = $f.menuButton; starButton = $f.starButton; title = $f.title; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = document.CreateElement("li"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		li = $assertType(_r, ptrType$2);
+		li.BasicHTMLElement.BasicElement.SetAttribute("data-icon", "false");
+		li.BasicHTMLElement.BasicElement.SetID(id);
+		_r$1 = document.CreateElement("img"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		favicon = $assertType(_r$1, ptrType$3);
+		favicon.BasicHTMLElement.BasicElement.SetClass("ui-li-icon");
+		favicon.BasicHTMLElement.BasicElement.SetAttribute("src", icon);
+		_r$2 = document.CreateElement("span"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		mainSpan = $assertType(_r$2, ptrType$4);
+		_r$3 = createButton("menu", id + "menu", "visible", new sliceType$3(["float-right"])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		menuButton = _r$3;
+		_r$4 = createButton("content-cut", id + "cut", "invisible", new sliceType$3(["float-right"])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		cutButton = _r$4;
+		_r$5 = createButton("delete-outline", id + "delete", "invisible", new sliceType$3(["float-right"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		deleteButton = _r$5;
+		_r$6 = createButton("star-outline", id + "delete", "invisible", new sliceType$3(["float-right"])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		starButton = _r$6;
+		_r$7 = document.CreateElement("a"); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		link = $assertType(_r$7, ptrType$5);
+		link.BasicHTMLElement.BasicElement.SetAttribute("href", URL);
+		link.BasicHTMLElement.BasicElement.SetAttribute("target", "_blank");
+		link.BasicHTMLElement.BasicElement.SetID(id + "link");
+		link.BasicHTMLElement.BasicElement.SetInnerHTML(title);
+		$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(link); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(starButton); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = li.BasicHTMLElement.BasicElement.BasicNode.AppendChild(favicon); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = li.BasicHTMLElement.BasicElement.BasicNode.AppendChild(mainSpan); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$s = -1; return li;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createBookmarkNode }; } $f.URL = URL; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f.cutButton = cutButton; $f.deleteButton = deleteButton; $f.favicon = favicon; $f.icon = icon; $f.id = id; $f.li = li; $f.link = link; $f.mainSpan = mainSpan; $f.menuButton = menuButton; $f.starButton = starButton; $f.title = title; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	createFolderNode = function(id, title, count) {
+		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, addBookmarkButton, addFolderButton, c, count, cutButton, deleteButton, folderName, id, li, menuButton, pasteButton, title, ul, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; addBookmarkButton = $f.addBookmarkButton; addFolderButton = $f.addFolderButton; c = $f.c; count = $f.count; cutButton = $f.cutButton; deleteButton = $f.deleteButton; folderName = $f.folderName; id = $f.id; li = $f.li; menuButton = $f.menuButton; pasteButton = $f.pasteButton; title = $f.title; ul = $f.ul; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = document.CreateElement("li"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		li = $assertType(_r, ptrType$2);
+		li.BasicHTMLElement.BasicElement.SetAttribute("data-icon", "false");
+		li.BasicHTMLElement.BasicElement.SetAttribute("data-role", "collapsible");
+		li.BasicHTMLElement.BasicElement.SetID(id);
+		_r$1 = document.CreateElement("ul"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		ul = $assertType(_r$1, ptrType);
+		ul.BasicHTMLElement.BasicElement.SetAttribute("data-role", "listview");
+		ul.BasicHTMLElement.BasicElement.SetID(id + "ul");
+		_r$2 = document.CreateElement("span"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		c = $assertType(_r$2, ptrType$4);
+		c.BasicHTMLElement.BasicElement.SetClass("ui-li-count");
+		c.BasicHTMLElement.BasicElement.SetInnerHTML(count);
+		_r$3 = createButton("menu", id + "menu", "visible", new sliceType$3(["float-right"])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		menuButton = _r$3;
+		_r$4 = createButton("content-cut", id + "cut", "invisible", new sliceType$3(["float-right"])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		cutButton = _r$4;
+		_r$5 = createButton("delete-outline", id + "delete", "invisible", new sliceType$3(["float-right"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		deleteButton = _r$5;
+		_r$6 = createButton("content-paste", id + "paste", "invisible", new sliceType$3(["float-right"])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		pasteButton = _r$6;
+		_r$7 = createButton("folder-plus-outline", id + "addFolder", "invisible", new sliceType$3(["float-right"])); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		addFolderButton = _r$7;
+		_r$8 = createButton("bookmark-plus-outline", id + "addBookmark", "invisible", new sliceType$3(["float-right"])); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		addBookmarkButton = _r$8;
+		_r$9 = document.CreateElement("h1"); /* */ $s = 10; case 10: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+		folderName = $assertType(_r$9, ptrType$6);
+		folderName.BasicHTMLElement.BasicElement.SetInnerHTML(title);
+		folderName.BasicHTMLElement.BasicElement.BasicNode.AddEventListener("click", false, (function $b(event) {
+			var _r$10, _r$11, event, h, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$10 = $f._r$10; _r$11 = $f._r$11; event = $f.event; h = $f.h; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r$10 = event.Target(); /* */ $s = 1; case 1: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+			_r$11 = _r$10.GetAttribute("href"); /* */ $s = 2; case 2: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+			h = _r$11;
+			/* */ if (!(h === "#")) { $s = 3; continue; }
+			/* */ $s = 4; continue;
+			/* if (!(h === "#")) { */ case 3:
+				$r = event.StopImmediatePropagation(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* } */ case 4:
+			$s = -1; return;
+			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$10 = _r$10; $f._r$11 = _r$11; $f.event = event; $f.h = h; $f.$s = $s; $f.$r = $r; return $f;
+		}));
+		$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(c); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(pasteButton); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addFolderButton); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addBookmarkButton); /* */ $s = 17; case 17: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = li.BasicHTMLElement.BasicElement.BasicNode.AppendChild(folderName); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = li.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ul); /* */ $s = 19; case 19: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$s = -1; return [li, ul];
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createFolderNode }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.addBookmarkButton = addBookmarkButton; $f.addFolderButton = addFolderButton; $f.c = c; $f.count = count; $f.cutButton = cutButton; $f.deleteButton = deleteButton; $f.folderName = folderName; $f.id = id; $f.li = li; $f.menuButton = menuButton; $f.pasteButton = pasteButton; $f.title = title; $f.ul = ul; $f.$s = $s; $f.$r = $r; return $f;
+	};
 	createButton = function(icon, id, visibility, classes) {
 		var _i, _r, _r$1, _ref, b, blabel, c, classes, icon, id, visibility, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; b = $f.b; blabel = $f.blabel; c = $f.c; classes = $f.classes; icon = $f.icon; id = $f.id; visibility = $f.visibility; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = document.CreateElement("button"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		b = $assertType(_r, ptrType$1);
+		b = $assertType(_r, ptrType$7);
 		b.BasicHTMLElement.BasicElement.SetAttribute("type", "button");
 		b.BasicHTMLElement.BasicElement.SetAttribute("data-role", "none");
-		b.BasicHTMLElement.BasicElement.SetClass(icon + " btn btn-outline-dark " + visibility);
+		b.BasicHTMLElement.BasicElement.SetClass(icon + " btn btn-outline-dark bg-light " + visibility);
 		b.BasicHTMLElement.BasicElement.SetID(id);
 		_ref = classes;
 		_i = 0;
@@ -35791,7 +35940,7 @@ $packages["main"] = (function() {
 			_i++;
 		}
 		_r$1 = document.CreateElement("span"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		blabel = $assertType(_r$1, ptrType$2);
+		blabel = $assertType(_r$1, ptrType$4);
 		blabel.BasicHTMLElement.BasicElement.SetID(id);
 		blabel.BasicHTMLElement.BasicElement.SetClass("mdi mdi-" + icon);
 		$r = b.BasicHTMLElement.BasicElement.BasicNode.AppendChild(blabel); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -35802,22 +35951,23 @@ $packages["main"] = (function() {
 		var _r, _r$1, _r$2, _r$3, _r$4, dc1, dc2, dr, id, ifoldername, submit, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; dc1 = $f.dc1; dc2 = $f.dc2; dr = $f.dr; id = $f.id; ifoldername = $f.ifoldername; submit = $f.submit; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = document.CreateElement("div"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		dr = $assertType(_r, ptrType$3);
+		dr = $assertType(_r, ptrType$8);
 		dr.BasicHTMLElement.BasicElement.SetID(id + "createFolder");
 		dr.BasicHTMLElement.BasicElement.SetClass("row addFolder mt-2 mb-2 ml-5 mr-5");
 		_r$1 = document.CreateElement("div"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		dc1 = $assertType(_r$1, ptrType$3);
-		dc1.BasicHTMLElement.BasicElement.SetClass("col col-sm-11");
+		dc1 = $assertType(_r$1, ptrType$8);
+		dc1.BasicHTMLElement.BasicElement.SetClass("col col-11");
 		_r$2 = document.CreateElement("div"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		dc2 = $assertType(_r$2, ptrType$3);
-		dc2.BasicHTMLElement.BasicElement.SetClass("col col-sm-1");
+		dc2 = $assertType(_r$2, ptrType$8);
+		dc2.BasicHTMLElement.BasicElement.SetClass("col col-1");
 		_r$3 = document.CreateElement("input"); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		ifoldername = $assertType(_r$3, ptrType$4);
+		ifoldername = $assertType(_r$3, ptrType$9);
+		ifoldername.BasicHTMLElement.BasicElement.SetID(id + "createFolderInput");
 		ifoldername.BasicHTMLElement.BasicElement.SetAttribute("type", "text");
 		ifoldername.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "folder name");
 		ifoldername.BasicHTMLElement.BasicElement.SetClass("form-control");
 		$r = dc1.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ifoldername); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_r$4 = createButton("check", id + "createFolderSubmit", "visible", new sliceType(["float-left"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$4 = createButton("check", id + "createFolderSubmit", "visible", new sliceType$3(["float-left"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		submit = _r$4;
 		$r = dc2.BasicHTMLElement.BasicElement.BasicNode.AppendChild(submit); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc1); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -35829,40 +35979,40 @@ $packages["main"] = (function() {
 		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, dc1, dc2, dc3, dc4, dr, ibookmarkname, ibookmarktags, ibookmarkurl, id, submit, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; dc1 = $f.dc1; dc2 = $f.dc2; dc3 = $f.dc3; dc4 = $f.dc4; dr = $f.dr; ibookmarkname = $f.ibookmarkname; ibookmarktags = $f.ibookmarktags; ibookmarkurl = $f.ibookmarkurl; id = $f.id; submit = $f.submit; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = document.CreateElement("div"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		dr = $assertType(_r, ptrType$3);
+		dr = $assertType(_r, ptrType$8);
 		dr.BasicHTMLElement.BasicElement.SetID(id + "createBookmark");
 		dr.BasicHTMLElement.BasicElement.SetClass("row addBookmark mt-2 mb-2 ml-5 mr-5");
 		_r$1 = document.CreateElement("div"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		dc1 = $assertType(_r$1, ptrType$3);
-		dc1.BasicHTMLElement.BasicElement.SetClass("col col-sm-12");
+		dc1 = $assertType(_r$1, ptrType$8);
+		dc1.BasicHTMLElement.BasicElement.SetClass("col col-12");
 		_r$2 = document.CreateElement("div"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		dc2 = $assertType(_r$2, ptrType$3);
-		dc2.BasicHTMLElement.BasicElement.SetClass("col col-sm-12");
+		dc2 = $assertType(_r$2, ptrType$8);
+		dc2.BasicHTMLElement.BasicElement.SetClass("col col-12");
 		_r$3 = document.CreateElement("div"); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		dc3 = $assertType(_r$3, ptrType$3);
-		dc3.BasicHTMLElement.BasicElement.SetClass("col col-sm-12");
+		dc3 = $assertType(_r$3, ptrType$8);
+		dc3.BasicHTMLElement.BasicElement.SetClass("col col-12");
 		_r$4 = document.CreateElement("div"); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		dc4 = $assertType(_r$4, ptrType$3);
-		dc4.BasicHTMLElement.BasicElement.SetClass("col col-sm-1");
+		dc4 = $assertType(_r$4, ptrType$8);
+		dc4.BasicHTMLElement.BasicElement.SetClass("col col-1");
 		_r$5 = document.CreateElement("input"); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-		ibookmarkname = $assertType(_r$5, ptrType$4);
+		ibookmarkname = $assertType(_r$5, ptrType$9);
 		ibookmarkname.BasicHTMLElement.BasicElement.SetAttribute("type", "text");
 		ibookmarkname.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "bookmark name");
 		ibookmarkname.BasicHTMLElement.BasicElement.SetClass("form-control");
 		$r = dc1.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ibookmarkname); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		_r$6 = document.CreateElement("input"); /* */ $s = 8; case 8: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		ibookmarkurl = $assertType(_r$6, ptrType$4);
+		ibookmarkurl = $assertType(_r$6, ptrType$9);
 		ibookmarkurl.BasicHTMLElement.BasicElement.SetAttribute("type", "text");
 		ibookmarkurl.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "bookmark URL");
 		ibookmarkurl.BasicHTMLElement.BasicElement.SetClass("form-control");
 		$r = dc2.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ibookmarkurl); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		_r$7 = document.CreateElement("select"); /* */ $s = 10; case 10: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-		ibookmarktags = $assertType(_r$7, ptrType$5);
+		ibookmarktags = $assertType(_r$7, ptrType$10);
 		ibookmarktags.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "tags");
 		ibookmarktags.BasicHTMLElement.BasicElement.SetAttribute("multiple", "multiple");
 		ibookmarktags.BasicHTMLElement.BasicElement.SetClass("form-control");
 		$r = dc3.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ibookmarktags); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_r$8 = createButton("check", id + "createBookmarkSubmit", "visible", new sliceType(["float-left"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		_r$8 = createButton("check", id + "createBookmarkSubmit", "visible", new sliceType$3(["float-left"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
 		submit = _r$8;
 		$r = dc4.BasicHTMLElement.BasicElement.BasicNode.AppendChild(submit); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc1); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -35875,22 +36025,22 @@ $packages["main"] = (function() {
 	hideActionButtons = function() {
 		var _r, _r$1, _r$10, _r$11, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_r = jQuery(new sliceType$1([new $String(".content-cut")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_r = jQuery(new sliceType$2([new $String(".content-cut")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = $clone(_r, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
-		_r$2 = jQuery(new sliceType$1([new $String(".delete-outline")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$2 = jQuery(new sliceType$2([new $String(".delete-outline")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$3 = $clone(_r$2, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		_r$3;
-		_r$4 = jQuery(new sliceType$1([new $String(".content-paste")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$4 = jQuery(new sliceType$2([new $String(".content-paste")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		_r$5 = $clone(_r$4, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		_r$5;
-		_r$6 = jQuery(new sliceType$1([new $String(".star-outline")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		_r$6 = jQuery(new sliceType$2([new $String(".star-outline")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
 		_r$7 = $clone(_r$6, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
 		_r$7;
-		_r$8 = jQuery(new sliceType$1([new $String(".folder-plus-outline")])); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		_r$8 = jQuery(new sliceType$2([new $String(".folder-plus-outline")])); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
 		_r$9 = $clone(_r$8, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 10; case 10: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
 		_r$9;
-		_r$10 = jQuery(new sliceType$1([new $String(".bookmark-plus-outline")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+		_r$10 = jQuery(new sliceType$2([new $String(".bookmark-plus-outline")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
 		_r$11 = $clone(_r$10, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 12; case 12: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
 		_r$11;
 		$s = -1; return;
@@ -35899,302 +36049,236 @@ $packages["main"] = (function() {
 	hideForms = function() {
 		var _r, _r$1, _r$2, _r$3, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_r = jQuery(new sliceType$1([new $String(".addFolder")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = $clone(_r, jquery.JQuery).Remove(new sliceType$1([])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r = jQuery(new sliceType$2([new $String(".addFolder")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_r$1 = $clone(_r, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
-		_r$2 = jQuery(new sliceType$1([new $String(".addBookmark")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		_r$3 = $clone(_r$2, jquery.JQuery).Remove(new sliceType$1([])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$2 = jQuery(new sliceType$2([new $String(".addBookmark")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$3 = $clone(_r$2, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		_r$3;
 		$s = -1; return;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: hideForms }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	displayNode = function(n, e) {
-		var _1, _i, _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$20, _r$21, _r$22, _r$23, _r$24, _r$25, _r$26, _r$27, _r$28, _r$29, _r$3, _r$30, _r$31, _r$32, _r$33, _r$34, _r$35, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, addBookmarkButton, addFolderButton, c, c$1, count, cutButton, cutButton$1, deleteButton, deleteButton$1, e, favicon, folderName, id, isBookmark, li, li$1, link, mainSpan, menuButton, menuButton$1, n, pasteButton, starButton, ul, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; _r$27 = $f._r$27; _r$28 = $f._r$28; _r$29 = $f._r$29; _r$3 = $f._r$3; _r$30 = $f._r$30; _r$31 = $f._r$31; _r$32 = $f._r$32; _r$33 = $f._r$33; _r$34 = $f._r$34; _r$35 = $f._r$35; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; addBookmarkButton = $f.addBookmarkButton; addFolderButton = $f.addFolderButton; c = $f.c; c$1 = $f.c$1; count = $f.count; cutButton = $f.cutButton; cutButton$1 = $f.cutButton$1; deleteButton = $f.deleteButton; deleteButton$1 = $f.deleteButton$1; e = $f.e; favicon = $f.favicon; folderName = $f.folderName; id = $f.id; isBookmark = $f.isBookmark; li = $f.li; li$1 = $f.li$1; link = $f.link; mainSpan = $f.mainSpan; menuButton = $f.menuButton; menuButton$1 = $f.menuButton$1; n = $f.n; pasteButton = $f.pasteButton; starButton = $f.starButton; ul = $f.ul; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+	bindButtonEvents = function(id, isBookmark) {
+		var _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, id, isBookmark, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; id = $f.id; isBookmark = $f.isBookmark; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		id = [id];
-		_r = fmt.Sprintf("%d", new sliceType$1([new $Int(n.Key)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		id[0] = _r;
+		_r = jQuery(new sliceType$2([new $String("#" + id[0] + " > h1")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_r$1 = $clone(_r, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e) {
+			var _r$1, e, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$1 = $f._r$1; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r$1 = fmt.Println(new sliceType$2([new $String("clic on " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			_r$1;
+			$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$s = -1; return;
+			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$1 = _r$1; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(id))])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1;
+		_r$2 = jQuery(new sliceType$2([new $String("#" + id[0] + "menu")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$3 = $clone(_r$2, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e) {
+			var _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, e, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			$r = hideActionButtons(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = hideForms(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_r$3 = jQuery(new sliceType$2([new $String("#" + id[0] + "cut")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			_r$4 = $clone(_r$3, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 4; case 4: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			_r$4;
+			_r$5 = jQuery(new sliceType$2([new $String("#" + id[0] + "delete")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+			_r$6 = $clone(_r$5, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 6; case 6: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+			_r$6;
+			_r$7 = jQuery(new sliceType$2([new $String("#" + id[0] + "star-outline")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+			_r$8 = $clone(_r$7, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 8; case 8: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+			_r$8;
+			_r$9 = jQuery(new sliceType$2([new $String("#" + id[0] + "addFolder")])); /* */ $s = 9; case 9: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+			_r$10 = $clone(_r$9, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 10; case 10: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+			_r$10;
+			_r$11 = jQuery(new sliceType$2([new $String("#" + id[0] + "addBookmark")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+			_r$12 = $clone(_r$11, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 12; case 12: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
+			_r$12;
+			_r$13 = jQuery(new sliceType$2([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 15; case 15: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+			_r$14 = $clone(_r$13, jquery.JQuery).Val(); /* */ $s = 16; case 16: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+			/* */ if (!(_r$14 === "")) { $s = 13; continue; }
+			/* */ $s = 14; continue;
+			/* if (!(_r$14 === "")) { */ case 13:
+				_r$15 = jQuery(new sliceType$2([new $String("#" + id[0] + "paste")])); /* */ $s = 17; case 17: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+				_r$16 = $clone(_r$15, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 18; case 18: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+				_r$16;
+			/* } */ case 14:
+			$s = -1; return;
+			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(id))])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$3;
+		_r$4 = jQuery(new sliceType$2([new $String("#" + id[0] + "cut")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$5 = $clone(_r$4, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e) {
+			var _r$5, _r$6, e, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$5 = $f._r$5; _r$6 = $f._r$6; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			_r$5 = jQuery(new sliceType$2([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+			_r$6 = $clone(_r$5, jquery.JQuery).SetVal(new $String(id[0])); /* */ $s = 2; case 2: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+			_r$6;
+			$s = -1; return;
+			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$5 = _r$5; $f._r$6 = _r$6; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(id))])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		_r$5;
+		_r$6 = jQuery(new sliceType$2([new $String("#" + id[0] + "delete")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		_r$7 = $clone(_r$6, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function(e) {
+			var e;
+		}; })(id))])); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		_r$7;
+		/* */ if (!isBookmark) { $s = 9; continue; }
+		/* */ $s = 10; continue;
+		/* if (!isBookmark) { */ case 9:
+			_r$8 = jQuery(new sliceType$2([new $String("#" + id[0] + "paste")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+			_r$9 = $clone(_r$8, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e) {
+				var _r$10, _r$11, _r$9, e, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$9 = $f._r$9; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				_r$9 = fmt.Println(new sliceType$2([new $String("clicked link paste " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+				_r$9;
+				_r$10 = jQuery(new sliceType$2([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 2; case 2: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+				_r$11 = $clone(_r$10, jquery.JQuery).SetVal(new $String("")); /* */ $s = 3; case 3: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+				_r$11;
+				$s = -1; return;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$9 = _r$9; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(id))])); /* */ $s = 12; case 12: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+			_r$9;
+			_r$10 = jQuery(new sliceType$2([new $String("#" + id[0] + "addFolder")])); /* */ $s = 13; case 13: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+			_r$11 = $clone(_r$10, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e) {
+				var _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, e, f, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; e = $f.e; f = $f.f; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				_r$11 = fmt.Println(new sliceType$2([new $String("clicked link add folder " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+				_r$11;
+				$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_r$12 = createAddFolderForm(id[0]); /* */ $s = 4; case 4: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
+				f = _r$12;
+				_r$13 = jQuery(new sliceType$2([new $String("li#" + id[0] + " > h1")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+				_r$14 = $clone(_r$13, jquery.JQuery).Append(new sliceType$2([f])); /* */ $s = 6; case 6: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+				_r$14;
+				_r$15 = jQuery(new sliceType$2([new $String("#" + id[0] + "createFolderSubmit")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+				_r$16 = $clone(_r$15, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e$1) {
+					var _r$16, _r$17, _r$18, e$1, folderName, $s, $r;
+					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; e$1 = $f.e$1; folderName = $f.folderName; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+					_r$16 = jQuery(new sliceType$2([new $String("#" + id[0] + "createFolderInput")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+					_r$17 = $clone(_r$16, jquery.JQuery).Val(); /* */ $s = 2; case 2: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
+					folderName = _r$17;
+					_r$18 = fmt.Println(new sliceType$2([new $String("create subfolder " + folderName + " of " + id[0])])); /* */ $s = 3; case 3: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+					_r$18;
+					$go(createFolder, [folderName, id[0]]);
+					$s = -1; return;
+					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f.e$1 = e$1; $f.folderName = folderName; $f.$s = $s; $f.$r = $r; return $f;
+				}; })(id))])); /* */ $s = 8; case 8: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+				_r$16;
+				$s = -1; return;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f.e = e; $f.f = f; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(id))])); /* */ $s = 14; case 14: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+			_r$11;
+			_r$12 = jQuery(new sliceType$2([new $String("#" + id[0] + "addBookmark")])); /* */ $s = 15; case 15: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
+			_r$13 = $clone(_r$12, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e) {
+				var _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, b, e, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; b = $f.b; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				_r$13 = fmt.Println(new sliceType$2([new $String("clicked link add bookmark " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+				_r$13;
+				$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_r$14 = createAddBookmarkForm(id[0]); /* */ $s = 4; case 4: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+				b = _r$14;
+				_r$15 = jQuery(new sliceType$2([new $String("li#" + id[0] + " > h1")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+				_r$16 = $clone(_r$15, jquery.JQuery).Append(new sliceType$2([b])); /* */ $s = 6; case 6: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+				_r$16;
+				$global.select2ify();
+				_r$17 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkSubmit")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
+				_r$18 = $clone(_r$17, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e$1) {
+					var _r$18, e$1, $s, $r;
+					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$18 = $f._r$18; e$1 = $f.e$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+					_r$18 = fmt.Println(new sliceType$2([new $String("create bookmark in " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+					_r$18;
+					$s = -1; return;
+					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$18 = _r$18; $f.e$1 = e$1; $f.$s = $s; $f.$r = $r; return $f;
+				}; })(id))])); /* */ $s = 8; case 8: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+				_r$18;
+				$s = -1; return;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f.b = b; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(id))])); /* */ $s = 16; case 16: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+			_r$13;
+		/* } */ case 10:
+		/* */ if (isBookmark) { $s = 17; continue; }
+		/* */ $s = 18; continue;
+		/* if (isBookmark) { */ case 17:
+			_r$14 = jQuery(new sliceType$2([new $String("#" + id[0] + "star")])); /* */ $s = 19; case 19: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+			_r$15 = $clone(_r$14, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id) { return function $b(e) {
+				var _r$15, e, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$15 = $f._r$15; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				_r$15 = fmt.Println(new sliceType$2([new $String("clicked link star " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+				_r$15;
+				$s = -1; return;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$15 = _r$15; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(id))])); /* */ $s = 20; case 20: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+			_r$15;
+		/* } */ case 18:
+		$s = -1; return;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: bindButtonEvents }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.id = id; $f.isBookmark = isBookmark; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	displayNode = function(n, e) {
+		var _1, _arg, _arg$1, _arg$2, _i, _r, _r$1, _r$2, _r$3, _ref, _tuple, b, c, c$1, e, f, id, isBookmark, n, u, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _ref = $f._ref; _tuple = $f._tuple; b = $f.b; c = $f.c; c$1 = $f.c$1; e = $f.e; f = $f.f; id = $f.id; isBookmark = $f.isBookmark; n = $f.n; u = $f.u; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = fmt.Sprintf("%d", new sliceType$2([new $Int(n.Key)])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		id = _r;
 		isBookmark = n.Key < 0;
 			_1 = isBookmark;
 			/* */ if (_1) { $s = 3; continue; }
 			/* */ $s = 4; continue;
 			/* if (_1) { */ case 3:
-				_r$1 = document.CreateElement("li"); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-				li = $assertType(_r$1, ptrType$6);
-				li.BasicHTMLElement.BasicElement.SetAttribute("data-icon", "false");
-				li.BasicHTMLElement.BasicElement.SetID(id[0]);
-				_r$2 = document.CreateElement("img"); /* */ $s = 7; case 7: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-				favicon = $assertType(_r$2, ptrType$7);
-				favicon.BasicHTMLElement.BasicElement.SetClass("ui-li-icon");
-				favicon.BasicHTMLElement.BasicElement.SetAttribute("src", n.Icon);
-				_r$3 = document.CreateElement("span"); /* */ $s = 8; case 8: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-				mainSpan = $assertType(_r$3, ptrType$2);
-				_r$4 = createButton("menu", id[0] + "menu", "visible", new sliceType(["float-right"])); /* */ $s = 9; case 9: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-				menuButton = _r$4;
-				_r$5 = createButton("content-cut", id[0] + "cut", "invisible", new sliceType(["float-right"])); /* */ $s = 10; case 10: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-				cutButton = _r$5;
-				_r$6 = createButton("delete-outline", id[0] + "delete", "invisible", new sliceType(["float-right"])); /* */ $s = 11; case 11: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-				deleteButton = _r$6;
-				_r$7 = createButton("star-outline", id[0] + "delete", "invisible", new sliceType(["float-right"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-				starButton = _r$7;
-				_r$8 = document.CreateElement("a"); /* */ $s = 13; case 13: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-				link = $assertType(_r$8, ptrType$8);
-				link.BasicHTMLElement.BasicElement.SetAttribute("href", n.URL);
-				link.BasicHTMLElement.BasicElement.SetAttribute("target", "_blank");
-				link.BasicHTMLElement.BasicElement.SetID(id[0] + "link");
-				link.BasicHTMLElement.BasicElement.SetInnerHTML(n.Title);
-				$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(link); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton); /* */ $s = 17; case 17: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = mainSpan.BasicHTMLElement.BasicElement.BasicNode.AppendChild(starButton); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = li.BasicHTMLElement.BasicElement.BasicNode.AppendChild(favicon); /* */ $s = 19; case 19: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = li.BasicHTMLElement.BasicElement.BasicNode.AppendChild(mainSpan); /* */ $s = 20; case 20: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = e.BasicHTMLElement.BasicElement.BasicNode.AppendChild(li); /* */ $s = 21; case 21: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_r$1 = createBookmarkNode(id, n.Title, n.URL, n.Icon); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+				f = _r$1;
+				$r = e.BasicHTMLElement.BasicElement.BasicNode.AppendChild(f); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				$s = 5; continue;
 			/* } else { */ case 4:
 				c = n.Children.$length;
-				_r$9 = document.CreateElement("li"); /* */ $s = 22; case 22: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-				li$1 = $assertType(_r$9, ptrType$6);
-				li$1.BasicHTMLElement.BasicElement.SetAttribute("data-icon", "false");
-				li$1.BasicHTMLElement.BasicElement.SetAttribute("data-role", "collapsible");
-				li$1.BasicHTMLElement.BasicElement.SetID(id[0]);
-				_r$10 = document.CreateElement("ul"); /* */ $s = 23; case 23: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
-				ul = $assertType(_r$10, ptrType);
-				ul.BasicHTMLElement.BasicElement.SetAttribute("data-role", "listview");
-				ul.BasicHTMLElement.BasicElement.SetID(($encodeRune(n.Key)));
-				_r$11 = document.CreateElement("span"); /* */ $s = 24; case 24: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
-				count = $assertType(_r$11, ptrType$2);
-				count.BasicHTMLElement.BasicElement.SetClass("ui-li-count");
-				_r$12 = fmt.Sprintf("%d", new sliceType$1([new $Int(c)])); /* */ $s = 25; case 25: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
-				$r = count.BasicHTMLElement.BasicElement.SetInnerHTML(_r$12); /* */ $s = 26; case 26: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				_r$13 = createButton("menu", id[0] + "menu", "visible", new sliceType(["float-right"])); /* */ $s = 27; case 27: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
-				menuButton$1 = _r$13;
-				_r$14 = createButton("content-cut", id[0] + "cut", "invisible", new sliceType(["float-right"])); /* */ $s = 28; case 28: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
-				cutButton$1 = _r$14;
-				_r$15 = createButton("delete-outline", id[0] + "delete", "invisible", new sliceType(["float-right"])); /* */ $s = 29; case 29: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
-				deleteButton$1 = _r$15;
-				_r$16 = createButton("content-paste", id[0] + "paste", "invisible", new sliceType(["float-right"])); /* */ $s = 30; case 30: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
-				pasteButton = _r$16;
-				_r$17 = createButton("folder-plus-outline", id[0] + "addFolder", "invisible", new sliceType(["float-right"])); /* */ $s = 31; case 31: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
-				addFolderButton = _r$17;
-				_r$18 = createButton("bookmark-plus-outline", id[0] + "addBookmark", "invisible", new sliceType(["float-right"])); /* */ $s = 32; case 32: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
-				addBookmarkButton = _r$18;
-				_r$19 = document.CreateElement("h1"); /* */ $s = 33; case 33: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
-				folderName = $assertType(_r$19, ptrType$9);
-				folderName.BasicHTMLElement.BasicElement.SetInnerHTML(n.Title);
-				folderName.BasicHTMLElement.BasicElement.BasicNode.AddEventListener("click", false, (function(id) { return function $b(event) {
-					var _r$20, _r$21, _r$22, _r$23, event, h, $s, $r;
-					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; event = $f.event; h = $f.h; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-					_r$20 = event.Target(); /* */ $s = 1; case 1: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
-					_r$21 = _r$20.GetAttribute("href"); /* */ $s = 2; case 2: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-					h = _r$21;
-					_r$22 = fmt.Println(new sliceType$1([new $String(h)])); /* */ $s = 3; case 3: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
-					_r$22;
-					_r$23 = fmt.Println(new sliceType$1([new $String("eee")])); /* */ $s = 4; case 4: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
-					_r$23;
-					/* */ if (!(h === "#")) { $s = 5; continue; }
-					/* */ $s = 6; continue;
-					/* if (!(h === "#")) { */ case 5:
-						$r = event.StopImmediatePropagation(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-					/* } */ case 6:
-					$s = -1; return;
-					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f.event = event; $f.h = h; $f.$s = $s; $f.$r = $r; return $f;
-				}; })(id));
-				$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(count); /* */ $s = 34; case 34: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton$1); /* */ $s = 35; case 35: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton$1); /* */ $s = 36; case 36: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton$1); /* */ $s = 37; case 37: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(pasteButton); /* */ $s = 38; case 38: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addFolderButton); /* */ $s = 39; case 39: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = folderName.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addBookmarkButton); /* */ $s = 40; case 40: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = li$1.BasicHTMLElement.BasicElement.BasicNode.AppendChild(folderName); /* */ $s = 41; case 41: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = li$1.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ul); /* */ $s = 42; case 42: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = e.BasicHTMLElement.BasicElement.BasicNode.AppendChild(li$1); /* */ $s = 43; case 43: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_arg = id;
+				_arg$1 = n.Title;
+				_r$2 = fmt.Sprintf("%d", new sliceType$2([new $Int(c)])); /* */ $s = 8; case 8: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+				_arg$2 = _r$2;
+				_r$3 = createFolderNode(_arg, _arg$1, _arg$2); /* */ $s = 9; case 9: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+				_tuple = _r$3;
+				b = _tuple[0];
+				u = _tuple[1];
+				$r = e.BasicHTMLElement.BasicElement.BasicNode.AppendChild(b); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				_ref = n.Children;
 				_i = 0;
-				/* while (true) { */ case 44:
-					/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 45; continue; }
+				/* while (true) { */ case 11:
+					/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 12; continue; }
 					c$1 = ((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]);
-					$r = displayNode($clone(c$1, types.Node), ul); /* */ $s = 46; case 46: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+					$r = displayNode($clone(c$1, types.Node), u); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 					_i++;
-				/* } */ $s = 44; continue; case 45:
+				/* } */ $s = 11; continue; case 12:
 			/* } */ case 5:
 		case 2:
-		_r$20 = jQuery(new sliceType$1([new $String("#" + id[0] + " > h1")])); /* */ $s = 47; case 47: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
-		_r$21 = $clone(_r$20, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$1) {
-			var _r$21, e$1, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$21 = $f._r$21; e$1 = $f.e$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_r$21 = fmt.Println(new sliceType$1([new $String("clic on " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-			_r$21;
-			$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$s = -1; return;
-			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$21 = _r$21; $f.e$1 = e$1; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(id))])); /* */ $s = 48; case 48: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-		_r$21;
-		_r$22 = jQuery(new sliceType$1([new $String("#" + id[0] + "menu")])); /* */ $s = 49; case 49: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
-		_r$23 = $clone(_r$22, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$1) {
-			var _r$23, _r$24, _r$25, _r$26, _r$27, _r$28, _r$29, _r$30, _r$31, _r$32, _r$33, _r$34, _r$35, _r$36, e$1, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; _r$27 = $f._r$27; _r$28 = $f._r$28; _r$29 = $f._r$29; _r$30 = $f._r$30; _r$31 = $f._r$31; _r$32 = $f._r$32; _r$33 = $f._r$33; _r$34 = $f._r$34; _r$35 = $f._r$35; _r$36 = $f._r$36; e$1 = $f.e$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			$r = hideActionButtons(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = hideForms(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			_r$23 = jQuery(new sliceType$1([new $String("#" + id[0] + "cut")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
-			_r$24 = $clone(_r$23, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 4; case 4: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
-			_r$24;
-			_r$25 = jQuery(new sliceType$1([new $String("#" + id[0] + "delete")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
-			_r$26 = $clone(_r$25, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 6; case 6: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
-			_r$26;
-			_r$27 = jQuery(new sliceType$1([new $String("#" + id[0] + "star-outline")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$27 = _r$27.$blk(); } if (_r$27 && _r$27.$blk !== undefined) { break s; }
-			_r$28 = $clone(_r$27, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 8; case 8: if($c) { $c = false; _r$28 = _r$28.$blk(); } if (_r$28 && _r$28.$blk !== undefined) { break s; }
-			_r$28;
-			_r$29 = jQuery(new sliceType$1([new $String("#" + id[0] + "addFolder")])); /* */ $s = 9; case 9: if($c) { $c = false; _r$29 = _r$29.$blk(); } if (_r$29 && _r$29.$blk !== undefined) { break s; }
-			_r$30 = $clone(_r$29, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 10; case 10: if($c) { $c = false; _r$30 = _r$30.$blk(); } if (_r$30 && _r$30.$blk !== undefined) { break s; }
-			_r$30;
-			_r$31 = jQuery(new sliceType$1([new $String("#" + id[0] + "addBookmark")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$31 = _r$31.$blk(); } if (_r$31 && _r$31.$blk !== undefined) { break s; }
-			_r$32 = $clone(_r$31, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 12; case 12: if($c) { $c = false; _r$32 = _r$32.$blk(); } if (_r$32 && _r$32.$blk !== undefined) { break s; }
-			_r$32;
-			_r$33 = jQuery(new sliceType$1([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 15; case 15: if($c) { $c = false; _r$33 = _r$33.$blk(); } if (_r$33 && _r$33.$blk !== undefined) { break s; }
-			_r$34 = $clone(_r$33, jquery.JQuery).Val(); /* */ $s = 16; case 16: if($c) { $c = false; _r$34 = _r$34.$blk(); } if (_r$34 && _r$34.$blk !== undefined) { break s; }
-			/* */ if (!(_r$34 === "")) { $s = 13; continue; }
-			/* */ $s = 14; continue;
-			/* if (!(_r$34 === "")) { */ case 13:
-				_r$35 = jQuery(new sliceType$1([new $String("#" + id[0] + "paste")])); /* */ $s = 17; case 17: if($c) { $c = false; _r$35 = _r$35.$blk(); } if (_r$35 && _r$35.$blk !== undefined) { break s; }
-				_r$36 = $clone(_r$35, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 18; case 18: if($c) { $c = false; _r$36 = _r$36.$blk(); } if (_r$36 && _r$36.$blk !== undefined) { break s; }
-				_r$36;
-			/* } */ case 14:
-			$s = -1; return;
-			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$32 = _r$32; $f._r$33 = _r$33; $f._r$34 = _r$34; $f._r$35 = _r$35; $f._r$36 = _r$36; $f.e$1 = e$1; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(id))])); /* */ $s = 50; case 50: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
-		_r$23;
-		_r$24 = jQuery(new sliceType$1([new $String("#" + id[0] + "cut")])); /* */ $s = 51; case 51: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
-		_r$25 = $clone(_r$24, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$1) {
-			var _r$25, _r$26, e$1, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$25 = $f._r$25; _r$26 = $f._r$26; e$1 = $f.e$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-			_r$25 = jQuery(new sliceType$1([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
-			_r$26 = $clone(_r$25, jquery.JQuery).SetVal(new $String(id[0])); /* */ $s = 2; case 2: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
-			_r$26;
-			$s = -1; return;
-			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$25 = _r$25; $f._r$26 = _r$26; $f.e$1 = e$1; $f.$s = $s; $f.$r = $r; return $f;
-		}; })(id))])); /* */ $s = 52; case 52: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
-		_r$25;
-		_r$26 = jQuery(new sliceType$1([new $String("#" + id[0] + "delete")])); /* */ $s = 53; case 53: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
-		_r$27 = $clone(_r$26, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function(e$1) {
-			var e$1;
-		}; })(id))])); /* */ $s = 54; case 54: if($c) { $c = false; _r$27 = _r$27.$blk(); } if (_r$27 && _r$27.$blk !== undefined) { break s; }
-		_r$27;
-		/* */ if (!isBookmark) { $s = 55; continue; }
-		/* */ $s = 56; continue;
-		/* if (!isBookmark) { */ case 55:
-			_r$28 = jQuery(new sliceType$1([new $String("#" + id[0] + "paste")])); /* */ $s = 57; case 57: if($c) { $c = false; _r$28 = _r$28.$blk(); } if (_r$28 && _r$28.$blk !== undefined) { break s; }
-			_r$29 = $clone(_r$28, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$1) {
-				var _r$29, _r$30, _r$31, e$1, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$29 = $f._r$29; _r$30 = $f._r$30; _r$31 = $f._r$31; e$1 = $f.e$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-				_r$29 = fmt.Println(new sliceType$1([new $String("clicked link paste " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$29 = _r$29.$blk(); } if (_r$29 && _r$29.$blk !== undefined) { break s; }
-				_r$29;
-				_r$30 = jQuery(new sliceType$1([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 2; case 2: if($c) { $c = false; _r$30 = _r$30.$blk(); } if (_r$30 && _r$30.$blk !== undefined) { break s; }
-				_r$31 = $clone(_r$30, jquery.JQuery).SetVal(new $String("")); /* */ $s = 3; case 3: if($c) { $c = false; _r$31 = _r$31.$blk(); } if (_r$31 && _r$31.$blk !== undefined) { break s; }
-				_r$31;
-				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$29 = _r$29; $f._r$30 = _r$30; $f._r$31 = _r$31; $f.e$1 = e$1; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(id))])); /* */ $s = 58; case 58: if($c) { $c = false; _r$29 = _r$29.$blk(); } if (_r$29 && _r$29.$blk !== undefined) { break s; }
-			_r$29;
-			_r$30 = jQuery(new sliceType$1([new $String("#" + id[0] + "addFolder")])); /* */ $s = 59; case 59: if($c) { $c = false; _r$30 = _r$30.$blk(); } if (_r$30 && _r$30.$blk !== undefined) { break s; }
-			_r$31 = $clone(_r$30, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$1) {
-				var _r$31, _r$32, _r$33, _r$34, _r$35, _r$36, e$1, f, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$31 = $f._r$31; _r$32 = $f._r$32; _r$33 = $f._r$33; _r$34 = $f._r$34; _r$35 = $f._r$35; _r$36 = $f._r$36; e$1 = $f.e$1; f = $f.f; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-				_r$31 = fmt.Println(new sliceType$1([new $String("clicked link add folder " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$31 = _r$31.$blk(); } if (_r$31 && _r$31.$blk !== undefined) { break s; }
-				_r$31;
-				$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				_r$32 = createAddFolderForm(id[0]); /* */ $s = 4; case 4: if($c) { $c = false; _r$32 = _r$32.$blk(); } if (_r$32 && _r$32.$blk !== undefined) { break s; }
-				f = _r$32;
-				_r$33 = jQuery(new sliceType$1([new $String("li#" + id[0] + " > h1")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$33 = _r$33.$blk(); } if (_r$33 && _r$33.$blk !== undefined) { break s; }
-				_r$34 = $clone(_r$33, jquery.JQuery).Append(new sliceType$1([f])); /* */ $s = 6; case 6: if($c) { $c = false; _r$34 = _r$34.$blk(); } if (_r$34 && _r$34.$blk !== undefined) { break s; }
-				_r$34;
-				_r$35 = jQuery(new sliceType$1([new $String("#" + id[0] + "createFolderSubmit")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$35 = _r$35.$blk(); } if (_r$35 && _r$35.$blk !== undefined) { break s; }
-				_r$36 = $clone(_r$35, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$2) {
-					var _r$36, e$2, $s, $r;
-					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$36 = $f._r$36; e$2 = $f.e$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-					_r$36 = fmt.Println(new sliceType$1([new $String("create subfolder of " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$36 = _r$36.$blk(); } if (_r$36 && _r$36.$blk !== undefined) { break s; }
-					_r$36;
-					$s = -1; return;
-					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$36 = _r$36; $f.e$2 = e$2; $f.$s = $s; $f.$r = $r; return $f;
-				}; })(id))])); /* */ $s = 8; case 8: if($c) { $c = false; _r$36 = _r$36.$blk(); } if (_r$36 && _r$36.$blk !== undefined) { break s; }
-				_r$36;
-				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$31 = _r$31; $f._r$32 = _r$32; $f._r$33 = _r$33; $f._r$34 = _r$34; $f._r$35 = _r$35; $f._r$36 = _r$36; $f.e$1 = e$1; $f.f = f; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(id))])); /* */ $s = 60; case 60: if($c) { $c = false; _r$31 = _r$31.$blk(); } if (_r$31 && _r$31.$blk !== undefined) { break s; }
-			_r$31;
-			_r$32 = jQuery(new sliceType$1([new $String("#" + id[0] + "addBookmark")])); /* */ $s = 61; case 61: if($c) { $c = false; _r$32 = _r$32.$blk(); } if (_r$32 && _r$32.$blk !== undefined) { break s; }
-			_r$33 = $clone(_r$32, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$1) {
-				var _r$33, _r$34, _r$35, _r$36, _r$37, _r$38, b, e$1, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$33 = $f._r$33; _r$34 = $f._r$34; _r$35 = $f._r$35; _r$36 = $f._r$36; _r$37 = $f._r$37; _r$38 = $f._r$38; b = $f.b; e$1 = $f.e$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-				_r$33 = fmt.Println(new sliceType$1([new $String("clicked link add bookmark " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$33 = _r$33.$blk(); } if (_r$33 && _r$33.$blk !== undefined) { break s; }
-				_r$33;
-				$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				_r$34 = createAddBookmarkForm(id[0]); /* */ $s = 4; case 4: if($c) { $c = false; _r$34 = _r$34.$blk(); } if (_r$34 && _r$34.$blk !== undefined) { break s; }
-				b = _r$34;
-				_r$35 = jQuery(new sliceType$1([new $String("li#" + id[0] + " > h1")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$35 = _r$35.$blk(); } if (_r$35 && _r$35.$blk !== undefined) { break s; }
-				_r$36 = $clone(_r$35, jquery.JQuery).Append(new sliceType$1([b])); /* */ $s = 6; case 6: if($c) { $c = false; _r$36 = _r$36.$blk(); } if (_r$36 && _r$36.$blk !== undefined) { break s; }
-				_r$36;
-				$global.select2ify();
-				_r$37 = jQuery(new sliceType$1([new $String("#" + id[0] + "createBookmarkSubmit")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$37 = _r$37.$blk(); } if (_r$37 && _r$37.$blk !== undefined) { break s; }
-				_r$38 = $clone(_r$37, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$2) {
-					var _r$38, e$2, $s, $r;
-					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$38 = $f._r$38; e$2 = $f.e$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-					_r$38 = fmt.Println(new sliceType$1([new $String("create bookmark in " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$38 = _r$38.$blk(); } if (_r$38 && _r$38.$blk !== undefined) { break s; }
-					_r$38;
-					$s = -1; return;
-					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$38 = _r$38; $f.e$2 = e$2; $f.$s = $s; $f.$r = $r; return $f;
-				}; })(id))])); /* */ $s = 8; case 8: if($c) { $c = false; _r$38 = _r$38.$blk(); } if (_r$38 && _r$38.$blk !== undefined) { break s; }
-				_r$38;
-				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$33 = _r$33; $f._r$34 = _r$34; $f._r$35 = _r$35; $f._r$36 = _r$36; $f._r$37 = _r$37; $f._r$38 = _r$38; $f.b = b; $f.e$1 = e$1; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(id))])); /* */ $s = 62; case 62: if($c) { $c = false; _r$33 = _r$33.$blk(); } if (_r$33 && _r$33.$blk !== undefined) { break s; }
-			_r$33;
-		/* } */ case 56:
-		/* */ if (isBookmark) { $s = 63; continue; }
-		/* */ $s = 64; continue;
-		/* if (isBookmark) { */ case 63:
-			_r$34 = jQuery(new sliceType$1([new $String("#" + id[0] + "star")])); /* */ $s = 65; case 65: if($c) { $c = false; _r$34 = _r$34.$blk(); } if (_r$34 && _r$34.$blk !== undefined) { break s; }
-			_r$35 = $clone(_r$34, jquery.JQuery).On(new sliceType$1([new $String("click"), new funcType((function(id) { return function $b(e$1) {
-				var _r$35, e$1, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$35 = $f._r$35; e$1 = $f.e$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-				_r$35 = fmt.Println(new sliceType$1([new $String("clicked link star " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$35 = _r$35.$blk(); } if (_r$35 && _r$35.$blk !== undefined) { break s; }
-				_r$35;
-				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$35 = _r$35; $f.e$1 = e$1; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(id))])); /* */ $s = 66; case 66: if($c) { $c = false; _r$35 = _r$35.$blk(); } if (_r$35 && _r$35.$blk !== undefined) { break s; }
-			_r$35;
-		/* } */ case 64:
+		$r = bindButtonEvents(id, isBookmark); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$s = -1; return;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: displayNode }; } $f._1 = _1; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$3 = _r$3; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$32 = _r$32; $f._r$33 = _r$33; $f._r$34 = _r$34; $f._r$35 = _r$35; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.addBookmarkButton = addBookmarkButton; $f.addFolderButton = addFolderButton; $f.c = c; $f.c$1 = c$1; $f.count = count; $f.cutButton = cutButton; $f.cutButton$1 = cutButton$1; $f.deleteButton = deleteButton; $f.deleteButton$1 = deleteButton$1; $f.e = e; $f.favicon = favicon; $f.folderName = folderName; $f.id = id; $f.isBookmark = isBookmark; $f.li = li; $f.li$1 = li$1; $f.link = link; $f.mainSpan = mainSpan; $f.menuButton = menuButton; $f.menuButton$1 = menuButton$1; $f.n = n; $f.pasteButton = pasteButton; $f.starButton = starButton; $f.ul = ul; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: displayNode }; } $f._1 = _1; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._ref = _ref; $f._tuple = _tuple; $f.b = b; $f.c = c; $f.c$1 = c$1; $f.e = e; $f.f = f; $f.id = id; $f.isBookmark = isBookmark; $f.n = n; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	getNodes = function() {
 		var _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _ref, _tuple, data, err, n, nodes, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; _tuple = $f._tuple; data = $f.data; err = $f.err; n = $f.n; nodes = $f.nodes; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		nodes = [nodes];
-		data = sliceType$2.nil;
+		data = sliceType.nil;
 		err = $ifaceNil;
-		nodes[0] = sliceType$3.nil;
-		_r = xhr.Send("GET", "/getTree/", sliceType$2.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		nodes[0] = sliceType$1.nil;
+		_r = xhr.Send("GET", "/getTree/", sliceType.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_tuple = _r;
 		data = _tuple[0];
 		err = _tuple[1];
 		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 2; continue; }
 		/* */ $s = 3; continue;
 		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 2:
-			_r$1 = fmt.Println(new sliceType$1([new $String("error getting the bookmarks")])); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			_r$1 = fmt.Println(new sliceType$2([new $String("error getting the bookmarks")])); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			_r$1;
 		/* } */ case 3:
-		_r$2 = json.NewDecoder(strings.NewReader(($bytesToString(data)))).Decode((nodes.$ptr || (nodes.$ptr = new ptrType$10(function() { return this.$target[0]; }, function($v) { this.$target[0] = $v; }, nodes)))); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$2 = json.NewDecoder(strings.NewReader(($bytesToString(data)))).Decode((nodes.$ptr || (nodes.$ptr = new ptrType$1(function() { return this.$target[0]; }, function($v) { this.$target[0] = $v; }, nodes)))); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		err = _r$2;
 		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 6; continue; }
 		/* */ $s = 7; continue;
 		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 6:
-			_r$3 = fmt.Println(new sliceType$1([new $String("error decoding the JSON")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			_r$3 = fmt.Println(new sliceType$2([new $String("error decoding the JSON")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 			_r$3;
 		/* } */ case 7:
 		_ref = nodes[0];
@@ -36205,8 +36289,8 @@ $packages["main"] = (function() {
 			$r = displayNode($clone(n, types.Node), rootUL); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_i++;
 		/* } */ $s = 9; continue; case 10:
-		_r$4 = jQuery(new sliceType$1([new $String("#tree")])); /* */ $s = 12; case 12: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		_r$5 = $clone(_r$4, jquery.JQuery).Trigger(new sliceType$1([new $String("create")])); /* */ $s = 13; case 13: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		_r$4 = jQuery(new sliceType$2([new $String("#tree")])); /* */ $s = 12; case 12: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$5 = $clone(_r$4, jquery.JQuery).Trigger(new sliceType$2([new $String("create")])); /* */ $s = 13; case 13: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		_r$5;
 		$s = -1; return;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: getNodes }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._tuple = _tuple; $f.data = data; $f.err = err; $f.n = n; $f.nodes = nodes; $f.$s = $s; $f.$r = $r; return $f;
@@ -36233,24 +36317,25 @@ $packages["main"] = (function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = json.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = fmt.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = js.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = jquery.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = types.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = dom.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = xhr.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = errors.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = fmt.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = js.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = jquery.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = types.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dom.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = xhr.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strings.$init(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		window = $ifaceNil;
 		document = $ifaceNil;
 		rootUL = ptrType.nil;
 		jQuery = jquery.NewJQuery;
-		$r = init(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		/* */ if ($pkg === $mainPkg) { $s = 10; continue; }
-		/* */ $s = 11; continue;
-		/* if ($pkg === $mainPkg) { */ case 10:
-			$r = main(); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = init(); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ if ($pkg === $mainPkg) { $s = 11; continue; }
+		/* */ $s = 12; continue;
+		/* if ($pkg === $mainPkg) { */ case 11:
+			$r = main(); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$mainFinished = true;
-		/* } */ case 11:
+		/* } */ case 12:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
