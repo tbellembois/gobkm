@@ -16,7 +16,7 @@ import (
 var (
 	window   dom.Window
 	document dom.Document
-	rootUL   *dom.HTMLUListElement
+	rootDiv  *dom.HTMLDivElement
 	jQuery   = jquery.NewJQuery
 )
 
@@ -64,13 +64,14 @@ func createFolder(folderName string, parentId string) error {
 	// removing create form
 	jQuery("#" + parentId + "createFolder").Remove()
 
-	ul := document.GetElementByID(parentId + "ul").(*dom.HTMLUListElement)
-	ul.SetInnerHTML("")
+	parentD := document.GetElementByID(parentId + "folderBody").(*dom.HTMLDivElement)
+	parentD.SetInnerHTML("")
 
 	// getting children nodes
 	cnodes := getBranchNodes(parentId)
 	for _, n := range cnodes {
-		displayNode(n, ul)
+		nid := fmt.Sprintf("%d", n.Key)
+		displayNode(n, parentD, nid)
 	}
 
 	// // decoding response to extract the new folder id
@@ -106,54 +107,81 @@ func deleteFolder(itemId string) error {
 	return nil
 }
 
-func createBookmarkNode(id, title, URL, icon string) *dom.HTMLLIElement {
-	li := document.CreateElement("li").(*dom.HTMLLIElement)
-	li.SetAttribute("data-icon", "false")
-	li.SetID(id)
+func createBookmarkNode(id, title, URL, icon string) *dom.HTMLDivElement {
 
-	favicon := document.CreateElement("img").(*dom.HTMLImageElement)
-	favicon.SetClass("ui-li-icon")
-	favicon.SetAttribute("src", icon)
+	mainDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	mainDiv.SetClass("row")
+	mainDiv.SetID(id + "bookmarkMainDiv")
 
-	mainSpan := document.CreateElement("span").(*dom.HTMLSpanElement)
+	linkDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	linkDiv.SetClass("col col-10")
 
-	menuButton := createButton("menu", id+"menu", "visible", "float-right")
-	cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
-	deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
-	starButton := createButton("star-outline", id+"delete", "invisible", "float-right")
+	buttonDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	buttonDiv.SetClass("col col-2")
 
 	link := document.CreateElement("a").(*dom.HTMLAnchorElement)
 	link.SetAttribute("href", URL)
 	link.SetAttribute("target", "_blank")
-	link.SetID(id + "link")
+	link.SetID(id + "bookmarkLink")
 	link.SetInnerHTML(title)
 
-	mainSpan.AppendChild(link)
-	mainSpan.AppendChild(menuButton)
-	mainSpan.AppendChild(cutButton)
-	mainSpan.AppendChild(deleteButton)
-	mainSpan.AppendChild(starButton)
+	favicon := document.CreateElement("img").(*dom.HTMLImageElement)
+	favicon.SetClass("favicon")
+	favicon.SetAttribute("src", icon)
 
-	li.AppendChild(favicon)
-	li.AppendChild(mainSpan)
+	menuButton := createButton("menu", id+"menu", "visible", "float-right")
+	cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
+	deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
+	starButton := createButton("star-outline", id+"star", "invisible", "float-right")
 
-	return li
+	linkDiv.AppendChild(favicon)
+	linkDiv.AppendChild(link)
+
+	buttonDiv.AppendChild(menuButton)
+	buttonDiv.AppendChild(cutButton)
+	buttonDiv.AppendChild(deleteButton)
+	buttonDiv.AppendChild(starButton)
+
+	mainDiv.AppendChild(linkDiv)
+	mainDiv.AppendChild(buttonDiv)
+
+	return mainDiv
 }
 
-func createFolderNode(id, title, count string) (*dom.HTMLLIElement, *dom.HTMLUListElement) {
+func createFolderNode(id, parentid, title, count string) (*dom.HTMLDivElement, *dom.HTMLDivElement) {
 
-	li := document.CreateElement("li").(*dom.HTMLLIElement)
-	li.SetAttribute("data-icon", "false")
-	li.SetAttribute("data-role", "collapsible")
-	li.SetID(id)
+	mainDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	mainDiv.SetClass("card")
+	mainDiv.SetID(id + "folderMainDiv")
 
-	ul := document.CreateElement("ul").(*dom.HTMLUListElement)
-	ul.SetAttribute("data-role", "listview")
-	ul.SetID(id + "ul")
+	actionDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	actionDiv.SetID(id + "actionDiv")
 
-	c := document.CreateElement("span").(*dom.HTMLSpanElement)
-	c.SetClass("ui-li-count")
-	c.SetInnerHTML(count)
+	titleDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	titleDiv.SetClass("card-header")
+	titleDiv.SetID("heading" + id)
+
+	childrenDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	childrenDiv.SetClass("collapse")
+	childrenDiv.SetAttribute("aria-labelledby", "heading"+id)
+	childrenDiv.SetAttribute("data-parent", "#collapse"+parentid)
+	childrenDiv.SetID("collapse" + id)
+
+	titleH := document.CreateElement("h5").(*dom.HTMLHeadingElement)
+	titleH.SetClass("mb-0")
+
+	titleB := document.CreateElement("button").(*dom.HTMLButtonElement)
+	titleB.SetClass("btn btn-link")
+	titleB.SetAttribute("data-toggle", "collapse")
+	titleB.SetAttribute("data-target", "#collapse"+id)
+	titleB.SetInnerHTML(title + " (" + count + ")")
+	titleB.SetID(id + "folderLink")
+
+	titleH.AppendChild(titleB)
+
+	childrenBody := document.CreateElement("div").(*dom.HTMLDivElement)
+	childrenBody.SetClass("card-body")
+	childrenBody.SetID(id + "folderBody")
 
 	menuButton := createButton("menu", id+"menu", "visible", "float-right")
 	cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
@@ -162,31 +190,21 @@ func createFolderNode(id, title, count string) (*dom.HTMLLIElement, *dom.HTMLULi
 	addFolderButton := createButton("folder-plus-outline", id+"addFolder", "invisible", "float-right")
 	addBookmarkButton := createButton("bookmark-plus-outline", id+"addBookmark", "invisible", "float-right")
 
-	folderName := document.CreateElement("h1").(*dom.HTMLHeadingElement)
-	folderName.SetInnerHTML(title)
-	folderName.AddEventListener("click", false, func(event dom.Event) {
-		// getting the href attribute to check if the click was on
-		// the h1 element or on one of its children
-		// if not, stopping the event propagation to prevent toggleing
-		// the li
-		h := event.Target().GetAttribute("href")
-		if h != "#" {
-			event.StopImmediatePropagation()
-		}
-	})
+	titleDiv.AppendChild(titleH)
+	titleDiv.AppendChild(menuButton)
+	titleDiv.AppendChild(cutButton)
+	titleDiv.AppendChild(deleteButton)
+	titleDiv.AppendChild(pasteButton)
+	titleDiv.AppendChild(addFolderButton)
+	titleDiv.AppendChild(addBookmarkButton)
 
-	folderName.AppendChild(c)
-	folderName.AppendChild(menuButton)
-	folderName.AppendChild(cutButton)
-	folderName.AppendChild(deleteButton)
-	folderName.AppendChild(pasteButton)
-	folderName.AppendChild(addFolderButton)
-	folderName.AppendChild(addBookmarkButton)
+	childrenDiv.AppendChild(childrenBody)
 
-	li.AppendChild(folderName)
-	li.AppendChild(ul)
+	mainDiv.AppendChild(titleDiv)
+	mainDiv.AppendChild(actionDiv)
+	mainDiv.AppendChild(childrenDiv)
 
-	return li, ul
+	return mainDiv, childrenBody
 }
 
 // createButton creates a button with a materialdesign icon
@@ -320,7 +338,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 	//
 	// folder click event binding
 	//
-	jQuery("#"+id+" > h1").On("click", func(e jquery.Event) {
+	jQuery("#"+id+"folderLink").On("click", func(e jquery.Event) {
 		fmt.Println("clic on " + id)
 		hideActionButtons()
 		hideForms()
@@ -352,13 +370,14 @@ func bindButtonEvents(id string, isBookmark bool) {
 	// cut
 	jQuery("#"+id+"cut").On("click", func(e jquery.Event) {
 		//e.StopPropagation()
-
+		fmt.Println("clicked cut " + id)
 		jQuery("input[type=hidden][name=cutednodeid]").SetVal(id)
 	})
 
 	// delete
 	jQuery("#"+id+"delete").On("click", func(e jquery.Event) {
 		//e.StopPropagation()
+		fmt.Println("clicked delete " + id)
 	})
 
 	// paste, addFolder, addBookmark
@@ -377,7 +396,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 			hideForms()
 
 			f := createAddFolderForm(id)
-			jQuery("li#" + id + " > h1").Append(f)
+			jQuery("#" + id + "actionDiv").Append(f)
 
 			// add event binding
 			jQuery("#"+id+"createFolderSubmit").On("click", func(e jquery.Event) {
@@ -399,7 +418,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 			hideForms()
 
 			b := createAddBookmarkForm(id)
-			jQuery("li#" + id + " > h1").Append(b)
+			jQuery("#" + id + "actionDiv").Append(b)
 
 			// select2ify the form
 			js.Global.Call("select2ify")
@@ -423,7 +442,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 }
 
 // displayNode recursively display a Node as an JQM listview widget
-func displayNode(n types.Node, e *dom.HTMLUListElement) {
+func displayNode(n types.Node, e *dom.HTMLDivElement, parentId string) {
 
 	// Node keys are negative for bookmarks and positive for folders
 	id := fmt.Sprintf("%d", n.Key)
@@ -443,11 +462,11 @@ func displayNode(n types.Node, e *dom.HTMLUListElement) {
 		//
 		// children count
 		c := len(n.Children)
-		b, u := createFolderNode(id, n.Title, fmt.Sprintf("%d", c))
+		b, u := createFolderNode(id, parentId, n.Title, fmt.Sprintf("%d", c))
 		e.AppendChild(b)
 
 		for _, c := range n.Children {
-			displayNode(*c, u)
+			displayNode(*c, u, id)
 		}
 	}
 
@@ -471,7 +490,7 @@ func getNodes() {
 	}
 
 	for _, n := range nodes {
-		displayNode(n, rootUL)
+		displayNode(n, rootDiv, "1")
 	}
 
 	// https://stackoverflow.com/questions/6977338/jquery-mobile-listview-refresh
@@ -486,7 +505,7 @@ func main() {
 		event.PreventDefault()
 
 		// getting tree div
-		rootUL = document.GetElementByID("tree").(*dom.HTMLUListElement)
+		rootDiv = document.GetElementByID("collapse1").(*dom.HTMLDivElement)
 
 		// get remote folders and bookmarks
 		go getNodes()
