@@ -246,38 +246,27 @@ func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 // AddBookmarkHandler handles the bookmarks creation with drag and drop.
 func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-		destinationFolderID int
-		err                 error
-		bookmarkURLDecoded  string // the URL encoded string
+		err error
+		b   types.Bookmark
 	)
-	// GET parameters retrieval.
-	bookmarkURL := r.URL.Query()["bookmarkUrl"]
-	destinationFolderIDParam := r.URL.Query()["destinationFolderId"]
+
+	if err := r.ParseForm(); err != nil {
+		failHTTP(w, "AddBookmarkHandler", "form parsing error", http.StatusBadRequest)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	if err = decoder.Decode(&b); err != nil {
+		failHTTP(w, "AddBookmarkHandler", "form decoding error", http.StatusBadRequest)
+	}
 	log.WithFields(log.Fields{
-		"bookmarkUrl":              bookmarkURL,
-		"destinationFolderIdParam": destinationFolderIDParam,
+		"b": b,
 	}).Debug("AddBookmarkHandler:Query parameter")
 
-	// Parameters check.
-	if len(bookmarkURL) == 0 || len(destinationFolderIDParam) == 0 {
-		failHTTP(w, "AddBookmarkHandler", "bookmarkUrl empty", http.StatusBadRequest)
-		return
-	}
-	// Decoding the URL
-	if bookmarkURLDecoded, err = url.QueryUnescape(bookmarkURL[0]); err != nil {
-		failHTTP(w, "AddBookmarkHandler", "URL decode error", http.StatusInternalServerError)
-		return
-	}
-	// destinationFolderId int convertion.
-	if destinationFolderID, err = strconv.Atoi(destinationFolderIDParam[0]); err != nil {
-		failHTTP(w, "AddBookmarkHandler", "destinationFolderId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
-
 	// Getting the destination folder.
-	dstFld := env.DB.GetFolder(destinationFolderID)
+	dstFld := env.DB.GetFolder(b.Folder.Id)
 	// Creating a new Bookmark.
-	newBookmark := types.Bookmark{Title: bookmarkURLDecoded, URL: bookmarkURLDecoded, Folder: dstFld}
+	newBookmark := types.Bookmark{Title: b.Title, URL: b.URL, Folder: dstFld}
 	// Saving the bookmark into the DB, getting its id.
 	bookmarkID := env.DB.SaveBookmark(&newBookmark)
 	// Datastore error check
@@ -291,7 +280,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	go env.UpdateBookmarkFavicon(&newBookmark)
 
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(types.Node{Key: int(bookmarkID), Title: bookmarkURLDecoded, URL: bookmarkURLDecoded, Folder: false, Lazy: false}); err != nil {
+	if err = json.NewEncoder(w).Encode(types.Node{Key: int(bookmarkID), Title: b.Title, URL: b.URL, Folder: false, Lazy: false}); err != nil {
 		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -354,38 +343,32 @@ func (env *Env) AddBookmarkBookmarkletHandler(w http.ResponseWriter, r *http.Req
 // AddFolderHandler handles the folders creation.
 func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-		err      error
-		parentID int
+		err error
+		f   types.Folder
 	)
 
-	// GET parameters retrieval.
-	folderName := r.URL.Query()["folderName"]
-	parentIDParam := r.URL.Query()["parentId"]
+	if err := r.ParseForm(); err != nil {
+		failHTTP(w, "AddFolderHandler", "form parsing error", http.StatusBadRequest)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	if err = decoder.Decode(&f); err != nil {
+		failHTTP(w, "AddFolderHandler", "form decoding error", http.StatusBadRequest)
+	}
 	log.WithFields(log.Fields{
-		"folderName":    folderName,
-		"parentIDParam": parentIDParam,
+		"f": f,
 	}).Debug("AddFolderHandler:Query parameter")
 
-	if folderName == nil {
-		return
-	}
-
-	// Parameters check.
-	if len(folderName[0]) == 0 {
-		failHTTP(w, "AddFolderHandler", "folderName empty", http.StatusBadRequest)
-		return
-	}
-
-	// parentId int convertion.
-	if parentID, err = strconv.Atoi(parentIDParam[0]); err != nil {
-		failHTTP(w, "AddFolderHandler", "parentID Atoi conversion", http.StatusInternalServerError)
+	// Leaving on empty folder name.
+	if f.Title == "" {
 		return
 	}
 
 	// Getting the root folder.
-	parentFolder := env.DB.GetFolder(parentID)
+	parentFolder := env.DB.GetFolder(f.Parent.Id)
 	// Creating a new Folder.
-	newFolder := types.Folder{Title: folderName[0], Parent: parentFolder}
+	newFolder := types.Folder{Title: f.Title, Parent: parentFolder}
 	// Saving the folder into the DB, getting its id.
 	folderID := env.DB.SaveFolder(&newFolder)
 	// Datastore error check.
@@ -396,7 +379,7 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	//if err = json.NewEncoder(w).Encode(types.Folder{Id: int(folderID), Title: folderName[0], Parent: parentFolder}); err != nil {
-	if err = json.NewEncoder(w).Encode(types.Node{Key: int(folderID), Title: folderName[0], Folder: true, Lazy: true}); err != nil {
+	if err = json.NewEncoder(w).Encode(types.Node{Key: int(folderID), Title: f.Title, Folder: true, Lazy: true}); err != nil {
 		failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
 }

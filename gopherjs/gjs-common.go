@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -25,12 +26,8 @@ func init() {
 	document = window.Document()
 }
 
-// TODO: use types.Node instead
-type folder struct {
-	folderName string
-	parentId   string
-}
-
+// getBranchNodes remotely gets the children nodes of the
+// node with id "parentId"
 func getBranchNodes(parentId string) []types.Node {
 	var (
 		data  []byte
@@ -50,51 +47,72 @@ func getBranchNodes(parentId string) []types.Node {
 	return nodes
 }
 
-func createFolder(folderName string, parentId string) error {
+// createBookmark remotely creates the bookmark b
+func createBookmark(b types.Bookmark) error {
 	var (
-		//data []byte
-		err error
-		//node types.Node
+		err     error
+		payload []byte
 	)
 
-	if _, err = xhr.Send("GET", "/addFolder/?folderName="+folderName+"&parentId="+parentId, nil); err != nil {
-		return errors.New("error creating folder " + folderName)
+	// TODO: deal with errors
+	payload, _ = json.Marshal(b)
+
+	if _, err = xhr.Send("POST", "/addBookmark/", payload); err != nil {
+		return errors.New("error creating bookmark " + b.Title)
 	}
 
 	// removing create form
-	jQuery("#" + parentId + "createFolder").Remove()
+	jQuery(fmt.Sprintf("#%dcreateBookmark", b.Folder.Id)).Remove()
 
-	parentD := document.GetElementByID(parentId + "folderBody").(*dom.HTMLDivElement)
+	// getting and cleaning the bookmark parent directory div
+	parentD := document.GetElementByID(fmt.Sprintf("%dfolderBody", b.Folder.Id)).(*dom.HTMLDivElement)
 	parentD.SetInnerHTML("")
 
-	// getting children nodes
-	cnodes := getBranchNodes(parentId)
+	// lazily getting the bookmark parent folder children nodes
+	// and refreshing them
+	cnodes := getBranchNodes(fmt.Sprintf("%d", b.Folder.Id))
 	for _, n := range cnodes {
 		nid := fmt.Sprintf("%d", n.Key)
 		displayNode(n, parentD, nid)
 	}
 
-	// // decoding response to extract the new folder id
-	// node = types.Node{}
-	// if err = json.NewDecoder(strings.NewReader(string(data))).Decode(&node); err != nil {
-	// 	fmt.Println("error decoding the JSON")
-	// }
-	// fid := fmt.Sprintf("%d", node.Key)
+	return nil
+}
 
-	// // creating folder node
-	// f, _ := createFolderNode(fid, node.Title, "0")
-	// // appending to the parent ul as the first child
-	// jQuery("#" + parentId + "ul").Prepend(f)
+// createFolder remotely creates the folder f
+func createFolder(f types.Folder) error {
+	var (
+		err     error
+		payload []byte
+	)
 
-	// // binding button events
-	// bindButtonEvents(fid, false)
+	// TODO: deal with errors
+	payload, _ = json.Marshal(f)
 
-	// refreshing JQM
-	//jQuery("#tree").Trigger("create")
+	if _, err = xhr.Send("POST", "/addFolder/", payload); err != nil {
+		return errors.New("error creating folder " + f.Title)
+	}
+
+	// removing create form
+	jQuery(fmt.Sprintf("#%dcreateFolder", f.Parent.Id)).Remove()
+
+	// getting and cleaning the folder parent directory div
+	parentD := document.GetElementByID(fmt.Sprintf("%dfolderBody", f.Parent.Id)).(*dom.HTMLDivElement)
+	parentD.SetInnerHTML("")
+
+	// lazily getting the folder parent folder children nodes
+	// and refreshing them
+	cnodes := getBranchNodes(fmt.Sprintf("%d", f.Parent.Id))
+	for _, n := range cnodes {
+		nid := fmt.Sprintf("%d", n.Key)
+		displayNode(n, parentD, nid)
+	}
 
 	return nil
 }
 
+// createBookmark remotely deletes the folder
+// with id "itemId"
 func deleteFolder(itemId string) error {
 	var (
 		err error
@@ -104,13 +122,16 @@ func deleteFolder(itemId string) error {
 		return errors.New("error deleting folder " + itemId)
 	}
 
+	jQuery("div#" + itemId + "folderMainDiv").Remove()
+
 	return nil
 }
 
+// createBookmarkNode creates a bookmark HTML element
 func createBookmarkNode(id, title, URL, icon string) *dom.HTMLDivElement {
 
 	mainDiv := document.CreateElement("div").(*dom.HTMLDivElement)
-	mainDiv.SetClass("row")
+	mainDiv.SetClass("row bookmark")
 	mainDiv.SetID(id + "bookmarkMainDiv")
 
 	linkDiv := document.CreateElement("div").(*dom.HTMLDivElement)
@@ -129,10 +150,10 @@ func createBookmarkNode(id, title, URL, icon string) *dom.HTMLDivElement {
 	favicon.SetClass("favicon")
 	favicon.SetAttribute("src", icon)
 
-	menuButton := createButton("menu", id+"menu", "visible", "float-right")
-	cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
-	deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
-	starButton := createButton("star-outline", id+"star", "invisible", "float-right")
+	menuButton := createButton("menu", id+"menu", "visible", "bookmarkbtn", "float-right")
+	cutButton := createButton("content-cut", id+"cut", "invisible", "bookmarkbtn", "float-right")
+	deleteButton := createButton("delete-outline", id+"delete", "invisible", "bookmarkbtn", "float-right")
+	starButton := createButton("star-outline", id+"star", "invisible", "bookmarkbtn", "float-right")
 
 	linkDiv.AppendChild(favicon)
 	linkDiv.AppendChild(link)
@@ -148,6 +169,7 @@ func createBookmarkNode(id, title, URL, icon string) *dom.HTMLDivElement {
 	return mainDiv
 }
 
+// createFolderNode creates a folder HTML element
 func createFolderNode(id, parentid, title, count string) (*dom.HTMLDivElement, *dom.HTMLDivElement) {
 
 	mainDiv := document.CreateElement("div").(*dom.HTMLDivElement)
@@ -183,12 +205,12 @@ func createFolderNode(id, parentid, title, count string) (*dom.HTMLDivElement, *
 	childrenBody.SetClass("card-body")
 	childrenBody.SetID(id + "folderBody")
 
-	menuButton := createButton("menu", id+"menu", "visible", "float-right")
-	cutButton := createButton("content-cut", id+"cut", "invisible", "float-right")
-	deleteButton := createButton("delete-outline", id+"delete", "invisible", "float-right")
-	pasteButton := createButton("content-paste", id+"paste", "invisible", "float-right")
-	addFolderButton := createButton("folder-plus-outline", id+"addFolder", "invisible", "float-right")
-	addBookmarkButton := createButton("bookmark-plus-outline", id+"addBookmark", "invisible", "float-right")
+	menuButton := createButton("menu", id+"menu", "visible", "folderbtn", "float-right")
+	cutButton := createButton("content-cut", id+"cut", "invisible", "folderbtn", "float-right")
+	deleteButton := createButton("delete-outline", id+"delete", "invisible", "folderbtn", "float-right")
+	pasteButton := createButton("content-paste", id+"paste", "invisible", "folderbtn", "float-right")
+	addFolderButton := createButton("folder-plus-outline", id+"addFolder", "invisible", "folderbtn", "float-right")
+	addBookmarkButton := createButton("bookmark-plus-outline", id+"addBookmark", "invisible", "folderbtn", "float-right")
 
 	titleDiv.AppendChild(titleH)
 	titleDiv.AppendChild(menuButton)
@@ -248,9 +270,6 @@ func createAddFolderForm(id string) *dom.HTMLDivElement {
 	ifoldername.SetID(id + "createFolderInput")
 	ifoldername.SetAttribute("type", "text")
 	ifoldername.SetAttribute("placeholder", "folder name")
-	// avoiding the propagation of the event to the parent h1
-	// that would lead JQM to toggle the sublist (li)
-	//ifoldername.SetAttribute("onclick", "event.stopPropagation()")
 	ifoldername.SetClass("form-control")
 	dc1.AppendChild(ifoldername)
 
@@ -282,28 +301,22 @@ func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	ibookmarkname := document.CreateElement("input").(*dom.HTMLInputElement)
 	ibookmarkname.SetAttribute("type", "text")
 	ibookmarkname.SetAttribute("placeholder", "bookmark name")
-	// avoiding the propagation of the event to the parent h1
-	// that would lead JQM to toggle the sublist (li)
-	//ibookmarkname.SetAttribute("onclick", "event.stopPropagation()")
 	ibookmarkname.SetClass("form-control")
+	ibookmarkname.SetID(id + "createBookmarkInputName")
 	dc1.AppendChild(ibookmarkname)
 
 	ibookmarkurl := document.CreateElement("input").(*dom.HTMLInputElement)
 	ibookmarkurl.SetAttribute("type", "text")
 	ibookmarkurl.SetAttribute("placeholder", "bookmark URL")
-	// avoiding the propagation of the event to the parent h1
-	// that would lead JQM to toggle the sublist (li)
-	//ibookmarkurl.SetAttribute("onclick", "event.stopPropagation()")
 	ibookmarkurl.SetClass("form-control")
+	ibookmarkurl.SetID(id + "createBookmarkInputUrl")
 	dc2.AppendChild(ibookmarkurl)
 
 	ibookmarktags := document.CreateElement("select").(*dom.HTMLSelectElement)
 	ibookmarktags.SetAttribute("placeholder", "tags")
-	// avoiding the propagation of the event to the parent h1
-	// that would lead JQM to toggle the sublist (li)
-	//ibookmarktags.SetAttribute("onclick", "event.stopPropagation()")
 	ibookmarktags.SetAttribute("multiple", "multiple")
 	ibookmarktags.SetClass("form-control")
+	ibookmarktags.SetID(id + "createBookmarkInputTags")
 	dc3.AppendChild(ibookmarktags)
 
 	submit := createButton("check", id+"createBookmarkSubmit", "visible", "float-left")
@@ -334,7 +347,13 @@ func hideForms() {
 	jQuery(".addBookmark").Remove()
 }
 
+// bindButtonEvents binds all the events
+// for the folder or bookmark (isbookmark = true)
+// with the given id
 func bindButtonEvents(id string, isBookmark bool) {
+
+	idInt, _ := strconv.Atoi(id)
+
 	//
 	// folder click event binding
 	//
@@ -378,6 +397,8 @@ func bindButtonEvents(id string, isBookmark bool) {
 	jQuery("#"+id+"delete").On("click", func(e jquery.Event) {
 		//e.StopPropagation()
 		fmt.Println("clicked delete " + id)
+
+		go deleteFolder(id)
 	})
 
 	// paste, addFolder, addBookmark
@@ -404,9 +425,9 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 				folderName := jQuery("#" + id + "createFolderInput").Val()
 
-				fmt.Println("create subfolder " + folderName + " of " + id)
+				fmt.Println("create folder " + folderName + " of " + id)
 
-				go createFolder(folderName, id)
+				go createFolder(types.Folder{Title: folderName, Parent: &types.Folder{Id: idInt}})
 			})
 		})
 
@@ -417,15 +438,36 @@ func bindButtonEvents(id string, isBookmark bool) {
 			hideActionButtons()
 			hideForms()
 
-			b := createAddBookmarkForm(id)
-			jQuery("#" + id + "actionDiv").Append(b)
+			jQuery("#" + id + "actionDiv").Append(createAddBookmarkForm(id))
 
 			// select2ify the form
-			js.Global.Call("select2ify")
+			js.Global.Call("select2ify", id)
 
 			// add event binding
 			jQuery("#"+id+"createBookmarkSubmit").On("click", func(e jquery.Event) {
 				//e.StopPropagation()
+
+				b := types.Bookmark{}
+				b.Title = jQuery("#" + id + "createBookmarkInputName").Val()
+				b.URL = jQuery("#" + id + "createBookmarkInputUrl").Val()
+				b.Folder = &types.Folder{Id: idInt}
+
+				ts := make([]*types.Tag, 0)
+
+				tags := jQuery("#"+id+"createBookmarkInputTags").Call("select2", "data")
+
+				tags.Each(func(i int, data interface{}) {
+					// TODO: deal with errors
+					id, _ := strconv.Atoi(data.(map[string]interface{})["id"].(string))
+					text := data.(map[string]interface{})["text"].(string)
+					ts = append(ts, &types.Tag{
+						Id:   id,
+						Name: text,
+					})
+				})
+				b.Tags = ts
+
+				go createBookmark(b)
 
 				fmt.Println("create bookmark in " + id)
 			})

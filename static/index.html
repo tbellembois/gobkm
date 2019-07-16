@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
 
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
       
@@ -45,90 +45,81 @@
             font-weight: normal;
             font-style: normal;
         }
-        a {
+        a, button.btn {
             font-family: economicaregular;
+            font-size: 16px;
         }
-        ul {
-            list-style-type: none;
+        .bookmark {
+          height: 40px;
+          padding: 12px;
         }
-        img.ui-li-icon {
-            z-index: 1;
-        }
-        span.ui-li-count {
-            right: 3.8em;
+        .card-body {
+          padding-top: 0px;
+          padding-bottom: 0px;
         }
         button {
             margin-left: 2px;
             z-index: 2;
         }
-        button.menu {
+        button.menu.folderbtn {
             position: absolute;
-            top: 2px;
+            top: 12px;
             right: 2px;
         }
-        button.content-cut {
+        button.content-cut.folderbtn {
             position: absolute;
-            top: 2px;
+            top: 12px;
             right: 46px;
         }
-        button.delete-outline {
+        button.delete-outline.folderbtn {
             position: absolute;
-            top: 2px;
+            top: 12px;
             right: 90px;
         }
-        button.content-paste {
+        button.content-paste.folderbtn {
             position: absolute;
-            top: 2px;
+            top: 12px;
             right: 222px;
         }
-        button.folder-plus-outline {
+        button.folder-plus-outline.folderbtn {
             position: absolute;
-            top: 2px;
+            top: 12px;
             right: 178px;
         }
-        button.bookmark-plus-outline {
+        button.bookmark-plus-outline.folderbtn {
             position: absolute;
-            top: 2px;
+            top: 12px;
             right: 134px;
         }
-
-        /* Basic settings */
-        .ui-li-static.ui-collapsible {
-            padding: 0;
+        button.menu.bookmarkbtn {
+            position: absolute;
+            top: -12px;
+            right: 2px;
         }
-        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview,
-        .ui-li-static.ui-collapsible > .ui-collapsible-heading {
-            margin: 0;
+        button.content-cut.bookmarkbtn {
+            position: absolute;
+            top: -12px;
+            right: 46px;
         }
-        .ui-li-static.ui-collapsible > .ui-collapsible-content {
-            padding-top: 0;
-            padding-bottom: 0;
-            padding-right: 0;
-            border-bottom-width: 0;
+        button.delete-outline.bookmarkbtn {
+            position: absolute;
+            top: -12px;
+            right: 90px;
         }
-        /* collapse vertical borders */
-        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-last-child,
-        .ui-li-static.ui-collapsible.ui-collapsible-collapsed > .ui-collapsible-heading > a.ui-btn {
-            border-bottom-width: 0;
+        button.content-paste.bookmarkbtn {
+            position: absolute;
+            top: -12px;
+            right: 222px;
         }
-        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child,
-        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li.ui-first-child > a.ui-btn,
-        .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn {
-            border-top-width: 0;
+        button.folder-plus-outline.bookmarkbtn {
+            position: absolute;
+            top: -12px;
+            right: 178px;
         }
-        /* Remove right borders */
-        .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
-        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > .ui-li-static,
-        .ui-li-static.ui-collapsible > .ui-collapsible-content > .ui-listview > li > a.ui-btn,
-        .ui-li-static.ui-collapsible > .ui-collapsible-content {
-            border-right-width: 0;
-        }
-        /* Remove left borders */
-        /* Here, we need class ui-listview-outer to identify the outermost listview */
-        .ui-listview-outer > .ui-li-static.ui-collapsible .ui-li-static.ui-collapsible.ui-collapsible,
-        .ui-listview-outer > .ui-li-static.ui-collapsible > .ui-collapsible-heading > a.ui-btn,
-        .ui-li-static.ui-collapsible > .ui-collapsible-content {
-            border-left-width: 0;
+        button.bookmark-plus-outline.bookmarkbtn {
+            position: absolute;
+            top: -12px;
+            right: 134px;
         }
     </style>
 
@@ -280,8 +271,8 @@ function dzDrop(ev) {
     // });
 
 }
-function select2ify() { 
-    $('select').select2({
+function select2ify(id) { 
+    $('select#' + id + "createBookmarkInputTags").select2({
         placeholder: 'select or enter tag(s)',
         tags: true,
         ajax: {

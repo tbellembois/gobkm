@@ -7,21 +7,21 @@ import (
 
 // Folder containing the bookmarks
 type Folder struct {
-	Id                int
-	Title             string
-	Parent            *Folder
-	NbChildrenFolders int
+	Id                int     `json:"id"`
+	Title             string  `json:"title"`
+	Parent            *Folder `json:"parent"`
+	NbChildrenFolders int     `json:"nbchildrenfolders"`
 }
 
 // Bookmark
 type Bookmark struct {
-	Id      int
-	Title   string
-	URL     string
-	Favicon string // base64 encoded image
-	Starred bool
-	Folder  *Folder
-	Tags    []*Tag
+	Id      int     `json:"id"`
+	Title   string  `json:"title"`
+	URL     string  `json:"url"`
+	Favicon string  `json:"favicon"` // base64 encoded image
+	Starred bool    `json:"starred"`
+	Folder  *Folder `json:"folder"`
+	Tags    []*Tag  `json:"tags"`
 }
 
 // Tag
