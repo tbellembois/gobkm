@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -45,6 +46,66 @@ func getBranchNodes(parentId string) []types.Node {
 	}
 
 	return nodes
+}
+
+// starBookmark star the bookmark with the
+// given id
+func starBookmark(id string) error {
+	var (
+		err  error
+		data []byte
+		b    types.Bookmark
+	)
+
+	if data, err = xhr.Send("GET", "/starBookmark/?star=true&bookmarkId="+id, nil); err != nil {
+		return errors.New("error starring bookmark " + id)
+	}
+
+	datar := bytes.NewReader(data)
+	decoder := json.NewDecoder(datar)
+
+	if err = decoder.Decode(&b); err != nil {
+		return errors.New("error decoding reponse from star " + id)
+	}
+
+	document.GetElementByID("star").AppendChild(createStarredBookmarkNode(id, b.Title, b.URL, b.Favicon))
+
+	jQuery(fmt.Sprintf("span#%sstarspan", id)).RemoveClass("mdi-star-outline")
+	jQuery(fmt.Sprintf("span#%sstarspan", id)).AddClass("mdi-star")
+
+	// TODO: change event
+
+	return nil
+}
+
+// unstarBookmark star the bookmark with the
+// given id
+func unstarBookmark(id string) error {
+	var (
+		err  error
+		data []byte
+		b    types.Bookmark
+	)
+
+	if data, err = xhr.Send("GET", "/starBookmark/?star=false&bookmarkId="+id, nil); err != nil {
+		return errors.New("error unstarring bookmark " + id)
+	}
+
+	datar := bytes.NewReader(data)
+	decoder := json.NewDecoder(datar)
+
+	if err = decoder.Decode(&b); err != nil {
+		return errors.New("error decoding reponse from star " + id)
+	}
+
+	jQuery(fmt.Sprintf("button#%sstarred", id)).Remove()
+
+	jQuery(fmt.Sprintf("span#%sunstarspan", id)).RemoveClass("mdi-star")
+	jQuery(fmt.Sprintf("span#%sunstarspan", id)).AddClass("mdi-star-outline")
+
+	// TODO: change event
+
+	return nil
 }
 
 // createBookmark remotely creates the bookmark b
@@ -223,6 +284,7 @@ func deleteBookmark(itemId string) error {
 func createStarredBookmarkNode(id, title, URL, icon string) *dom.HTMLButtonElement {
 
 	buttonDiv := document.CreateElement("button").(*dom.HTMLButtonElement)
+	buttonDiv.SetID(id + "starred")
 	buttonDiv.SetClass("btn btn-outline-dark")
 	buttonDiv.SetInnerHTML(title)
 	buttonDiv.AddEventListener("click", false, func(event dom.Event) {
@@ -240,7 +302,7 @@ func createStarredBookmarkNode(id, title, URL, icon string) *dom.HTMLButtonEleme
 }
 
 // createBookmarkNode creates a bookmark HTML element
-func createBookmarkNode(id, title, URL, icon string) *dom.HTMLDivElement {
+func createBookmarkNode(id, title, URL, icon string, starred bool) *dom.HTMLDivElement {
 
 	mainDiv := document.CreateElement("div").(*dom.HTMLDivElement)
 	mainDiv.SetClass("row bookmark")
@@ -265,8 +327,12 @@ func createBookmarkNode(id, title, URL, icon string) *dom.HTMLDivElement {
 	menuButton := createButton("menu", id+"menu", "visible", "bookmarkbtn", "float-right")
 	cutButton := createButton("content-cut", id+"cut", "invisible", "bookmarkbtn", "float-right")
 	deleteButton := createButton("delete-outline", id+"delete", "invisible", "bookmarkbtn", "float-right")
-	deleteButton.SetAttribute("data-toggle", "confirmation")
-	starButton := createButton("star-outline", id+"star", "invisible", "bookmarkbtn", "float-right")
+	var starButton *dom.HTMLButtonElement
+	if starred {
+		starButton = createButton("star", id+"unstar", "invisible", "bookmarkbtn", "float-right")
+	} else {
+		starButton = createButton("star-outline", id+"star", "invisible", "bookmarkbtn", "float-right")
+	}
 
 	linkDiv.AppendChild(favicon)
 	linkDiv.AppendChild(link)
@@ -359,7 +425,7 @@ func createButton(icon string, id string, visibility string, classes ...string) 
 	}
 
 	blabel := document.CreateElement("span").(*dom.HTMLSpanElement)
-	blabel.SetID(id)
+	blabel.SetID(id + "span")
 	blabel.SetClass("mdi mdi-" + icon)
 
 	b.AppendChild(blabel)
@@ -450,6 +516,7 @@ func hideActionButtons() {
 	jQuery(".delete-outline").AddClass("invisible")
 	jQuery(".content-paste").AddClass("invisible")
 	jQuery(".star-outline").AddClass("invisible")
+	jQuery(".star").AddClass("invisible")
 	jQuery(".folder-plus-outline").AddClass("invisible")
 	jQuery(".bookmark-plus-outline").AddClass("invisible")
 }
@@ -497,7 +564,8 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 		jQuery("#" + id + "cut").RemoveClass("invisible")
 		jQuery("#" + id + "delete").RemoveClass("invisible")
-		jQuery("#" + id + "star-outline").RemoveClass("invisible")
+		jQuery("#" + id + "star").RemoveClass("invisible")
+		jQuery("#" + id + "unstar").RemoveClass("invisible")
 		jQuery("#" + id + "addFolder").RemoveClass("invisible")
 		jQuery("#" + id + "addBookmark").RemoveClass("invisible")
 
@@ -630,6 +698,14 @@ func bindButtonEvents(id string, isBookmark bool) {
 		jQuery("#"+id+"star").On("click", func(e jquery.Event) {
 			//e.StopPropagation()
 			fmt.Println("clicked link star " + id)
+
+			go starBookmark(id)
+		})
+		jQuery("#"+id+"unstar").On("click", func(e jquery.Event) {
+			//e.StopPropagation()
+			fmt.Println("clicked link unstar " + id)
+
+			go unstarBookmark(id)
 		})
 	}
 }
@@ -651,7 +727,7 @@ func displayNode(n types.Node, e *dom.HTMLDivElement, parentId string) {
 		//
 		// bookmark
 		//
-		f := createBookmarkNode(id, n.Title, n.URL, n.Icon)
+		f := createBookmarkNode(id, n.Title, n.URL, n.Icon, n.Starred)
 		e.AppendChild(f)
 
 	default:
