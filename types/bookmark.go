@@ -38,6 +38,7 @@ type Node struct {
 	Folder   bool    `json:"hasChildren"`
 	Lazy     bool    `json:"lazy"`
 	Icon     string  `json:"icon"`
+	Starred  bool    `json:"starred"`
 	Children []*Node `json:"children"`
 	Tags     []*Tag  `json:"tag"`
 }

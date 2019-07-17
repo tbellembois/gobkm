@@ -640,42 +640,31 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 // MoveBookmarkHandler handles the bookmarks move.
 func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-		bookmarkID          int
-		destinationFolderID int
-		err                 error
+		err error
+		b   types.Bookmark
 	)
-	// GET parameters retrieval.
-	bookmarkIDParam := r.URL.Query()["sourceItemId"]
-	destinationFolderIDParam := r.URL.Query()["destinationItemId"]
+
+	if err := r.ParseForm(); err != nil {
+		failHTTP(w, "MoveBookmarkHandler", "form parsing error", http.StatusBadRequest)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	if err = decoder.Decode(&b); err != nil {
+		failHTTP(w, "MoveBookmarkHandler", "form decoding error", http.StatusBadRequest)
+	}
 	log.WithFields(log.Fields{
-		"bookmarkIdParam":          bookmarkIDParam,
-		"destinationFolderIdParam": destinationFolderIDParam,
+		"b": b,
 	}).Debug("MoveBookmarkHandler:Query parameter")
 
-	// Parameters check.
-	if len(bookmarkIDParam) == 0 || len(destinationFolderIDParam) == 0 {
-		failHTTP(w, "MoveBookmarkHandler", "bookmarkIdParam or destinationFolderIdParam empty", http.StatusBadRequest)
-		return
-	}
-	// bookmarkId and destinationFolderId int convertion.
-	if bookmarkID, err = strconv.Atoi(bookmarkIDParam[0]); err != nil {
-		failHTTP(w, "MoveBookmarkHandler", "bookmarkId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
-
 	// the id in the view in negative, reverting
-	bookmarkID = -bookmarkID
-
-	if destinationFolderID, err = strconv.Atoi(destinationFolderIDParam[0]); err != nil {
-		failHTTP(w, "MoveBookmarkHandler", "destinationFolderId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
+	bookmarkID := -b.Id
 
 	// Getting the bookmark
 	bkm := env.DB.GetBookmark(bookmarkID)
 	// and the destination folder if it exists.
-	if destinationFolderID != 0 {
-		dstFld := env.DB.GetFolder(destinationFolderID)
+	if b.Folder.Id != 0 {
+		dstFld := env.DB.GetFolder(b.Folder.Id)
 		log.WithFields(log.Fields{
 			"srcBkm": bkm,
 			"dstFld": dstFld,
@@ -705,38 +694,28 @@ func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 // MoveFolderHandler handles the folders move.
 func (env *Env) MoveFolderHandler(w http.ResponseWriter, r *http.Request) {
 	var (
-		sourceFolderID      int
-		destinationFolderID int
-		err                 error
+		err error
+		f   types.Folder
 	)
-	// GET parameters retrieval.
-	sourceFolderIDParam := r.URL.Query()["sourceItemId"]
-	destinationFolderIDParam := r.URL.Query()["destinationItemId"]
+
+	if err := r.ParseForm(); err != nil {
+		failHTTP(w, "MoveFolderHandler", "form parsing error", http.StatusBadRequest)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	if err = decoder.Decode(&f); err != nil {
+		failHTTP(w, "MoveFolderHandler", "form decoding error", http.StatusBadRequest)
+	}
 	log.WithFields(log.Fields{
-		"sourceFolderIdParam":      sourceFolderIDParam,
-		"destinationFolderIdParam": destinationFolderIDParam,
+		"f": f,
 	}).Debug("MoveFolderHandler:Query parameter")
 
-	// Parameters check.
-	if len(sourceFolderIDParam) == 0 || len(destinationFolderIDParam) == 0 {
-		failHTTP(w, "MoveFolderHandler", "sourceFolderIdParam or destinationFolderIdParam empty", http.StatusBadRequest)
-		return
-	}
-	// sourceFolderId and destinationFolderId convertion.
-	if sourceFolderID, err = strconv.Atoi(sourceFolderIDParam[0]); err != nil {
-		failHTTP(w, "MoveFolderHandler", "sourceFolderId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
-	if destinationFolderID, err = strconv.Atoi(destinationFolderIDParam[0]); err != nil {
-		failHTTP(w, "MoveFolderHandler", "destinationFolderId Atoi conversion", http.StatusInternalServerError)
-		return
-	}
-
 	// Getting the source folder.
-	srcFld := env.DB.GetFolder(sourceFolderID)
+	srcFld := env.DB.GetFolder(f.Id)
 	// and the destination folder if it exists.
-	if destinationFolderID != 0 {
-		dstFld := env.DB.GetFolder(destinationFolderID)
+	if f.Parent.Id != 0 {
+		dstFld := env.DB.GetFolder(f.Parent.Id)
 		log.WithFields(log.Fields{
 			"srcFld": srcFld,
 			"dstFld": dstFld,
@@ -781,7 +760,7 @@ func (env *Env) getChildren(node *types.Node) types.Node {
 
 	bks = env.DB.GetFolderBookmarks(node.Key)
 	for _, bk := range bks {
-		node.Children = append(node.Children, &types.Node{Key: -bk.Id, Title: bk.Title, URL: bk.URL, Icon: bk.Favicon, Tags: bk.Tags, Folder: false, Lazy: false})
+		node.Children = append(node.Children, &types.Node{Key: -bk.Id, Title: bk.Title, URL: bk.URL, Starred: bk.Starred, Icon: bk.Favicon, Tags: bk.Tags, Folder: false, Lazy: false})
 	}
 
 	return *node
@@ -827,7 +806,7 @@ func (env *Env) GetTreeHandler(w http.ResponseWriter, r *http.Request) {
 		bkm.Title = html.EscapeString(bkm.Title)
 
 		// negating the node id to have unique ids in the view between folders and bookmarks
-		newNode := types.Node{Key: -bkm.Id, Title: bkm.Title, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL, Children: nil}
+		newNode := types.Node{Key: -bkm.Id, Title: bkm.Title, Starred: bkm.Starred, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL, Children: nil}
 		nodesMap = append(nodesMap, &newNode)
 	}
 
@@ -932,7 +911,7 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 	// Adding them into a map.
 	var nodesMap []*types.Node
 	for _, fld := range flds {
-		newNode := types.Node{Key: fld.Id, Title: fld.Title, Folder: true, Lazy: true}
+		newNode := env.getChildren(&types.Node{Key: fld.Id, Title: fld.Title, Folder: true, Lazy: true})
 		nodesMap = append(nodesMap, &newNode)
 	}
 
@@ -955,7 +934,7 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 		bkm.Title = html.EscapeString(bkm.Title)
 
 		// negating the node id to have unique ids in the view between folders and bookmarks
-		newNode := types.Node{Key: -bkm.Id, Title: bkm.Title, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL, Children: nil}
+		newNode := types.Node{Key: -bkm.Id, Title: bkm.Title, Starred: bkm.Starred, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL, Children: nil}
 		nodesMap = append(nodesMap, &newNode)
 	}
 

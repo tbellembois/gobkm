@@ -79,6 +79,82 @@ func createBookmark(b types.Bookmark) error {
 	return nil
 }
 
+// moveBookmark remotely moves the bookmark b
+func moveBookmark(b types.Bookmark) error {
+	var (
+		err     error
+		payload []byte
+	)
+
+	// TODO: deal with errors
+	payload, _ = json.Marshal(b)
+
+	if _, err = xhr.Send("PUT", "/moveBookmark/", payload); err != nil {
+		return errors.New("error moving bookmark " + b.Title)
+	}
+
+	// getting the cutted bookmark id
+	cuttedid := jQuery("input[type=hidden][name=cutednodeid]").Val()
+
+	// deleting the old bookmark div
+	jQuery(fmt.Sprintf("#%sbookmarkMainDiv", cuttedid)).Remove()
+
+	// getting and cleaning the folder parent directory div
+	parentD := document.GetElementByID(fmt.Sprintf("%dfolderBody", b.Folder.Id)).(*dom.HTMLDivElement)
+	parentD.SetInnerHTML("")
+
+	// lazily getting the folder parent folder children nodes
+	// and refreshing them
+	cnodes := getBranchNodes(fmt.Sprintf("%d", b.Folder.Id))
+	for _, n := range cnodes {
+		nid := fmt.Sprintf("%d", n.Key)
+		displayNode(n, parentD, nid)
+	}
+
+	// resetting the cutednodeid
+	jQuery("input[type=hidden][name=cutednodeid]").SetVal("")
+
+	return nil
+}
+
+// moveFolder remotely moves the folder f
+func moveFolder(f types.Folder) error {
+	var (
+		err     error
+		payload []byte
+	)
+
+	// TODO: deal with errors
+	payload, _ = json.Marshal(f)
+
+	if _, err = xhr.Send("PUT", "/moveFolder/", payload); err != nil {
+		return errors.New("error moving folder " + f.Title)
+	}
+
+	// getting the cutted folder id
+	cuttedid := jQuery("input[type=hidden][name=cutednodeid]").Val()
+
+	// deleting the old folder div
+	jQuery(fmt.Sprintf("#%sfolderMainDiv", cuttedid)).Remove()
+
+	// getting and cleaning the folder parent directory div
+	parentD := document.GetElementByID(fmt.Sprintf("%dfolderBody", f.Parent.Id)).(*dom.HTMLDivElement)
+	parentD.SetInnerHTML("")
+
+	// lazily getting the folder parent folder children nodes
+	// and refreshing them
+	cnodes := getBranchNodes(fmt.Sprintf("%d", f.Parent.Id))
+	for _, n := range cnodes {
+		nid := fmt.Sprintf("%d", n.Key)
+		displayNode(n, parentD, nid)
+	}
+
+	// resetting the cutednodeid
+	jQuery("input[type=hidden][name=cutednodeid]").SetVal("")
+
+	return nil
+}
+
 // createFolder remotely creates the folder f
 func createFolder(f types.Folder) error {
 	var (
@@ -111,20 +187,56 @@ func createFolder(f types.Folder) error {
 	return nil
 }
 
-// createBookmark remotely deletes the folder
+// deleteFolder remotely deletes the folder
 // with id "itemId"
 func deleteFolder(itemId string) error {
 	var (
 		err error
 	)
 
-	if _, err = xhr.Send("GET", "/deleteFolder/?itemId="+itemId, nil); err != nil {
+	if _, err = xhr.Send("DELETE", "/deleteFolder/?itemId="+itemId, nil); err != nil {
 		return errors.New("error deleting folder " + itemId)
 	}
 
 	jQuery("div#" + itemId + "folderMainDiv").Remove()
 
 	return nil
+}
+
+// deleteBookmark remotely deletes the bookmark
+// with id "itemId"
+func deleteBookmark(itemId string) error {
+	var (
+		err error
+	)
+
+	if _, err = xhr.Send("DELETE", "/deleteBookmark/?itemId="+itemId, nil); err != nil {
+		return errors.New("error deleting bookmark " + itemId)
+	}
+
+	jQuery("div#" + itemId + "bookmarkMainDiv").Remove()
+
+	return nil
+}
+
+// createStarredBookmarkNode creates a starred bookmark HTML element
+func createStarredBookmarkNode(id, title, URL, icon string) *dom.HTMLButtonElement {
+
+	buttonDiv := document.CreateElement("button").(*dom.HTMLButtonElement)
+	buttonDiv.SetClass("btn btn-outline-dark")
+	buttonDiv.SetInnerHTML(title)
+	buttonDiv.AddEventListener("click", false, func(event dom.Event) {
+		window.Open(URL, "", "")
+	})
+
+	// favicon := document.CreateElement("img").(*dom.HTMLImageElement)
+	// favicon.SetClass("favicon")
+	// favicon.SetAttribute("src", icon)
+
+	//buttonDiv.AppendChild(favicon)
+
+	return buttonDiv
+
 }
 
 // createBookmarkNode creates a bookmark HTML element
@@ -153,6 +265,7 @@ func createBookmarkNode(id, title, URL, icon string) *dom.HTMLDivElement {
 	menuButton := createButton("menu", id+"menu", "visible", "bookmarkbtn", "float-right")
 	cutButton := createButton("content-cut", id+"cut", "invisible", "bookmarkbtn", "float-right")
 	deleteButton := createButton("delete-outline", id+"delete", "invisible", "bookmarkbtn", "float-right")
+	deleteButton.SetAttribute("data-toggle", "confirmation")
 	starButton := createButton("star-outline", id+"star", "invisible", "bookmarkbtn", "float-right")
 
 	linkDiv.AppendChild(favicon)
@@ -347,6 +460,12 @@ func hideForms() {
 	jQuery(".addBookmark").Remove()
 }
 
+// resetConfirmButtons reset all delete confirm buttons
+func resetConfirmButtons() {
+	jQuery("span.mdi-check").AddClass("mdi-delete-outline")
+	jQuery("span.mdi-check").RemoveClass("mdi-check")
+}
+
 // bindButtonEvents binds all the events
 // for the folder or bookmark (isbookmark = true)
 // with the given id
@@ -361,6 +480,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		fmt.Println("clic on " + id)
 		hideActionButtons()
 		hideForms()
+		resetConfirmButtons()
 	})
 
 	//
@@ -373,6 +493,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		// make all other buttons and forms invisible
 		hideActionButtons()
 		hideForms()
+		resetConfirmButtons()
 
 		jQuery("#" + id + "cut").RemoveClass("invisible")
 		jQuery("#" + id + "delete").RemoveClass("invisible")
@@ -391,6 +512,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		//e.StopPropagation()
 		fmt.Println("clicked cut " + id)
 		jQuery("input[type=hidden][name=cutednodeid]").SetVal(id)
+		hideActionButtons()
 	})
 
 	// delete
@@ -398,7 +520,17 @@ func bindButtonEvents(id string, isBookmark bool) {
 		//e.StopPropagation()
 		fmt.Println("clicked delete " + id)
 
-		go deleteFolder(id)
+		if jQuery("#" + id + "delete > span").HasClass("mdi-check") {
+			if strings.Index(id, "-") == -1 {
+				go deleteFolder(id)
+			} else {
+				go deleteBookmark(id)
+			}
+		} else {
+			jQuery("#" + id + "delete > span").RemoveClass("mdi-delete-outline")
+			jQuery("#" + id + "delete > span").AddClass("mdi-check")
+		}
+
 	})
 
 	// paste, addFolder, addBookmark
@@ -406,7 +538,24 @@ func bindButtonEvents(id string, isBookmark bool) {
 		jQuery("#"+id+"paste").On("click", func(e jquery.Event) {
 			//e.StopPropagation()
 			fmt.Println("clicked link paste " + id)
-			jQuery("input[type=hidden][name=cutednodeid]").SetVal("")
+
+			// getting the cutted folder id
+			cuttedid := jQuery("input[type=hidden][name=cutednodeid]").Val()
+			cuttedidInt, _ := strconv.Atoi(cuttedid)
+
+			if strings.Index(cuttedid, "-") == -1 {
+				// passing the folder with its new parent to the moveFolder function
+				// we do not need the folder name
+				fmt.Println("move folder")
+				go moveFolder(types.Folder{Id: cuttedidInt, Parent: &types.Folder{Id: idInt}})
+			} else {
+				// passing the folder with its new parent to the moveFolder function
+				// we do not need the folder name
+				fmt.Println("move bookmark")
+				go moveBookmark(types.Bookmark{Id: cuttedidInt, Folder: &types.Folder{Id: idInt}})
+			}
+
+			hideActionButtons()
 		})
 
 		jQuery("#"+id+"addFolder").On("click", func(e jquery.Event) {
@@ -415,6 +564,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 			hideActionButtons()
 			hideForms()
+			resetConfirmButtons()
 
 			f := createAddFolderForm(id)
 			jQuery("#" + id + "actionDiv").Append(f)
@@ -437,6 +587,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 			hideActionButtons()
 			hideForms()
+			resetConfirmButtons()
 
 			jQuery("#" + id + "actionDiv").Append(createAddBookmarkForm(id))
 
@@ -489,6 +640,11 @@ func displayNode(n types.Node, e *dom.HTMLDivElement, parentId string) {
 	// Node keys are negative for bookmarks and positive for folders
 	id := fmt.Sprintf("%d", n.Key)
 	isBookmark := n.Key < 0
+
+	// building starred bookmark list
+	if n.Starred {
+		document.GetElementByID("star").AppendChild(createStarredBookmarkNode(id, n.Title, n.URL, n.Icon))
+	}
 
 	switch isBookmark {
 	case true:
