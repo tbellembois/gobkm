@@ -68,12 +68,12 @@ func starBookmark(id string) error {
 		return errors.New("error decoding reponse from star " + id)
 	}
 
+	// adding bookmark to the star div
 	document.GetElementByID("star").AppendChild(createStarredBookmarkNode(id, b.Title, b.URL, b.Favicon))
 
+	// changing bookmark star icon
 	jQuery(fmt.Sprintf("span#%sstarspan", id)).RemoveClass("mdi-star-outline")
 	jQuery(fmt.Sprintf("span#%sstarspan", id)).AddClass("mdi-star")
-
-	// TODO: change event
 
 	return nil
 }
@@ -98,12 +98,12 @@ func unstarBookmark(id string) error {
 		return errors.New("error decoding reponse from star " + id)
 	}
 
+	// removing bookmark from the star div
 	jQuery(fmt.Sprintf("button#%sstarred", id)).Remove()
 
-	jQuery(fmt.Sprintf("span#%sunstarspan", id)).RemoveClass("mdi-star")
-	jQuery(fmt.Sprintf("span#%sunstarspan", id)).AddClass("mdi-star-outline")
-
-	// TODO: change event
+	// changing bookmark star icon
+	jQuery(fmt.Sprintf("span#%sstarspan", id)).RemoveClass("mdi-star")
+	jQuery(fmt.Sprintf("span#%sstarspan", id)).AddClass("mdi-star-outline")
 
 	return nil
 }
@@ -329,7 +329,7 @@ func createBookmarkNode(id, title, URL, icon string, starred bool) *dom.HTMLDivE
 	deleteButton := createButton("delete-outline", id+"delete", "invisible", "bookmarkbtn", "float-right")
 	var starButton *dom.HTMLButtonElement
 	if starred {
-		starButton = createButton("star", id+"unstar", "invisible", "bookmarkbtn", "float-right")
+		starButton = createButton("star", id+"star", "invisible", "bookmarkbtn", "float-right")
 	} else {
 		starButton = createButton("star-outline", id+"star", "invisible", "bookmarkbtn", "float-right")
 	}
@@ -354,6 +354,9 @@ func createFolderNode(id, parentid, title, count string) (*dom.HTMLDivElement, *
 	mainDiv := document.CreateElement("div").(*dom.HTMLDivElement)
 	mainDiv.SetClass("card")
 	mainDiv.SetID(id + "folderMainDiv")
+
+	// mainDiv.SetAttribute("ondrop", "dzDrop(event)")
+	// mainDiv.SetAttribute("ondragover", "dzAllowDrop(event)")
 
 	actionDiv := document.CreateElement("div").(*dom.HTMLDivElement)
 	actionDiv.SetID(id + "actionDiv")
@@ -549,13 +552,34 @@ func bindButtonEvents(id string, isBookmark bool) {
 		hideForms()
 		resetConfirmButtons()
 	})
+	jQuery("#"+id+"bookmarkMainDiv").On("click", func(e jquery.Event) {
+		fmt.Println("clic on " + id)
+		hideActionButtons()
+		hideForms()
+		resetConfirmButtons()
+	})
+	jQuery("#"+id+"folderMainDiv").On("click", func(e jquery.Event) {
+		fmt.Println("clic on " + id)
+		hideActionButtons()
+		hideForms()
+		resetConfirmButtons()
+	})
+	jQuery("#"+id+"folderMainDiv").On("customdrop", func(e jquery.Event) {
+		e.StopPropagation()
+		fmt.Println("customdrop on " + id)
+
+		bkmurl := jQuery("input[name=droppedurl]").Val()
+		// TODO deal with errors
+		fldid, _ := strconv.Atoi(id)
+		go createBookmark(types.Bookmark{Title: bkmurl, URL: bkmurl, Folder: &types.Folder{Id: fldid}})
+	})
 
 	//
 	// buttons event binding
 	//
 	// menu
 	jQuery("#"+id+"menu").On("click", func(e jquery.Event) {
-		//e.StopPropagation()
+		e.StopPropagation()
 
 		// make all other buttons and forms invisible
 		hideActionButtons()
@@ -565,7 +589,6 @@ func bindButtonEvents(id string, isBookmark bool) {
 		jQuery("#" + id + "cut").RemoveClass("invisible")
 		jQuery("#" + id + "delete").RemoveClass("invisible")
 		jQuery("#" + id + "star").RemoveClass("invisible")
-		jQuery("#" + id + "unstar").RemoveClass("invisible")
 		jQuery("#" + id + "addFolder").RemoveClass("invisible")
 		jQuery("#" + id + "addBookmark").RemoveClass("invisible")
 
@@ -577,7 +600,8 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 	// cut
 	jQuery("#"+id+"cut").On("click", func(e jquery.Event) {
-		//e.StopPropagation()
+		e.StopPropagation()
+
 		fmt.Println("clicked cut " + id)
 		jQuery("input[type=hidden][name=cutednodeid]").SetVal(id)
 		hideActionButtons()
@@ -585,7 +609,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 	// delete
 	jQuery("#"+id+"delete").On("click", func(e jquery.Event) {
-		//e.StopPropagation()
+		e.StopPropagation()
 		fmt.Println("clicked delete " + id)
 
 		if jQuery("#" + id + "delete > span").HasClass("mdi-check") {
@@ -604,7 +628,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 	// paste, addFolder, addBookmark
 	if !isBookmark {
 		jQuery("#"+id+"paste").On("click", func(e jquery.Event) {
-			//e.StopPropagation()
+			e.StopPropagation()
 			fmt.Println("clicked link paste " + id)
 
 			// getting the cutted folder id
@@ -627,7 +651,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		})
 
 		jQuery("#"+id+"addFolder").On("click", func(e jquery.Event) {
-			//e.StopPropagation()
+			e.StopPropagation()
 			fmt.Println("clicked link add folder " + id)
 
 			hideActionButtons()
@@ -639,7 +663,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 			// add event binding
 			jQuery("#"+id+"createFolderSubmit").On("click", func(e jquery.Event) {
-				//e.StopPropagation()
+				e.StopPropagation()
 
 				folderName := jQuery("#" + id + "createFolderInput").Val()
 
@@ -650,7 +674,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		})
 
 		jQuery("#"+id+"addBookmark").On("click", func(e jquery.Event) {
-			//e.StopPropagation()
+			e.StopPropagation()
 			fmt.Println("clicked link add bookmark " + id)
 
 			hideActionButtons()
@@ -664,7 +688,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 			// add event binding
 			jQuery("#"+id+"createBookmarkSubmit").On("click", func(e jquery.Event) {
-				//e.StopPropagation()
+				e.StopPropagation()
 
 				b := types.Bookmark{}
 				b.Title = jQuery("#" + id + "createBookmarkInputName").Val()
@@ -696,16 +720,16 @@ func bindButtonEvents(id string, isBookmark bool) {
 	// star
 	if isBookmark {
 		jQuery("#"+id+"star").On("click", func(e jquery.Event) {
-			//e.StopPropagation()
+
+			e.StopPropagation()
 			fmt.Println("clicked link star " + id)
 
-			go starBookmark(id)
-		})
-		jQuery("#"+id+"unstar").On("click", func(e jquery.Event) {
-			//e.StopPropagation()
-			fmt.Println("clicked link unstar " + id)
+			if jQuery("span#" + id + "starspan").HasClass("mdi-star") {
+				go unstarBookmark(id)
+			} else {
+				go starBookmark(id)
+			}
 
-			go unstarBookmark(id)
 		})
 	}
 }

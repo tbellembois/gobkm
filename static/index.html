@@ -130,6 +130,7 @@
 <body>
 
     <input type=hidden name="cutednodeid" />
+    <input type=hidden name="droppedurl" />
 
     <div id="star" class="container-fluid">
         <span class="mdi mdi-star"></span>
@@ -159,30 +160,14 @@ function dzDrop(ev) {
         alert("not supported by your browser");
         return;
     }
-    console.log(data);
-    //console.log(ev.dataTransfer.types);
-    // ["text/plain", "text/uri-list"]
-    // ["text/plain", "text/x-moz-url"
+    
+    console.log(data)
 
-    // // calling ajax
-    // $.ajax({
-    //     url: "/addBookmark/",
-    //     data: {
-    //         destinationFolderId: nodeId,
-    //         bookmarkUrl: data
-    //     }
-    // }).done(function(result) {
-    //     displayMessage("added !", "success");
-    //     // expanded the destination node
-    //     tree.expand(dn);
-    //     // adding the new node
-    //     tree.addNode({ id: -result.id, text: result.text, url: result.url, hasChildren: false, lazy: false, icon: result.icon }, dn);
-    //     // scrolling to the new node
-    //     scrollto(-result.id);
-    //     blink(-result.id);
-    // }).always(function() {
-    // });
+    $("input[name=droppedurl]").val(data)
 
+    console.log(ev.target)
+
+    $(ev.target).trigger("customdrop")
 }
 function select2ify(id) { 
     $('select#' + id + "createBookmarkInputTags").select2({
