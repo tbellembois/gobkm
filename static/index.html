@@ -48,16 +48,26 @@
             font-family: economicaregular;
             font-size: 16px;
         }
-        #star {
+        #star, #tags {
             padding: 15px;
         }
         .bookmark {
           height: 40px;
           padding: 12px;
         }
+        .bookmark > div.col-10 {
+            height: 28px;
+            overflow: hidden;
+        }
         .card-body {
           padding-top: 0px;
           padding-bottom: 0px;
+        }
+        .count {
+            font-size: 0.6em;
+            position: absolute;
+            left: 2px;
+            top: 2px;
         }
         button {
             margin-left: 2px;
@@ -93,6 +103,11 @@
             top: 12px;
             right: 134px;
         }
+        button.pencil-outline.folderbtn {
+            position: absolute;
+            top: 12px;
+            right: 222px;
+        }
         button.menu.bookmarkbtn {
             position: absolute;
             top: -12px;
@@ -123,6 +138,11 @@
             top: -12px;
             right: 134px;
         }
+        button.pencil-outline.bookmarkbtn {
+            position: absolute;
+            top: -12px;
+            right: 178px;
+        }
     </style>
 
 </head>
@@ -137,7 +157,10 @@
     </div>
 
     <div id="collapse1" class="container-fluid" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
+    </div>
 
+    <div id="tags" class="container-fluid">
+        <span class="mdi mdi-tag"></span>
     </div>
 
 </body>
@@ -171,6 +194,25 @@ function dzDrop(ev) {
 }
 function select2ify(id) { 
     $('select#' + id + "createBookmarkInputTags").select2({
+        placeholder: 'select or enter tag(s)',
+        tags: true,
+        ajax: {
+            url: '/getTags/',
+            dataType: 'json',
+            processResults: function (data) {
+                // replacing name by text expected by select2
+                var newdata = $.map(data, function (obj) {
+                    obj.text = obj.text || obj.name;
+                    obj.id = obj.id || obj.id;
+                    return obj;
+                });
+                return {
+                    results: newdata
+                };
+            },
+        },
+    });
+    $('select#' + id + "updateBookmarkInputTags").select2({
         placeholder: 'select or enter tag(s)',
         tags: true,
         ajax: {

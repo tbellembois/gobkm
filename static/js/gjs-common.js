@@ -34078,12 +34078,6 @@ $packages["honnef.co/go/js/dom"] = (function() {
 		e.BasicNode.Object.className = $externalize(s, $String);
 	};
 	BasicElement.prototype.SetClass = function(s) { return this.$val.SetClass(s); };
-	BasicElement.ptr.prototype.Closest = function(s) {
-		var e, s;
-		e = this;
-		return wrapElement(e.BasicNode.Object.closest($externalize(s, $String)));
-	};
-	BasicElement.prototype.Closest = function(s) { return this.$val.Closest(s); };
 	BasicElement.ptr.prototype.ID = function() {
 		var e;
 		e = this;
@@ -34144,12 +34138,6 @@ $packages["honnef.co/go/js/dom"] = (function() {
 		return !!(e.BasicNode.Object.hasAttributeNS($externalize(ns, $String), $externalize(name, $String)));
 	};
 	BasicElement.prototype.HasAttributeNS = function(ns, name) { return this.$val.HasAttributeNS(ns, name); };
-	BasicElement.ptr.prototype.Matches = function(s) {
-		var e, s;
-		e = this;
-		return !!(e.BasicNode.Object.matches($externalize(s, $String)));
-	};
-	BasicElement.prototype.Matches = function(s) { return this.$val.Matches(s); };
 	BasicElement.ptr.prototype.QuerySelector = function(s) {
 		var e, s;
 		e = this;
@@ -35451,7 +35439,7 @@ $packages["honnef.co/go/js/dom"] = (function() {
 	ptrType$31.methods = [{prop: "Error", name: "Error", pkg: "", typ: $funcType([], [$String], false)}];
 	ptrType$24.methods = [{prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType], false)}, {prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "DispatchEvent", name: "DispatchEvent", pkg: "", typ: $funcType([Event], [$Bool], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}];
 	ptrType$1.methods = [{prop: "AccessKey", name: "AccessKey", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Dataset", name: "Dataset", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "SetAccessKey", name: "SetAccessKey", pkg: "", typ: $funcType([$String], [], false)}, {prop: "AccessKeyLabel", name: "AccessKeyLabel", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetAccessKeyLabel", name: "SetAccessKeyLabel", pkg: "", typ: $funcType([$String], [], false)}, {prop: "ContentEditable", name: "ContentEditable", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetContentEditable", name: "SetContentEditable", pkg: "", typ: $funcType([$String], [], false)}, {prop: "IsContentEditable", name: "IsContentEditable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Dir", name: "Dir", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetDir", name: "SetDir", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Draggable", name: "Draggable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "SetDraggable", name: "SetDraggable", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "Lang", name: "Lang", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetLang", name: "SetLang", pkg: "", typ: $funcType([$String], [], false)}, {prop: "OffsetHeight", name: "OffsetHeight", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetLeft", name: "OffsetLeft", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetParent", name: "OffsetParent", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "OffsetTop", name: "OffsetTop", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetWidth", name: "OffsetWidth", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Style", name: "Style", pkg: "", typ: $funcType([], [ptrType$27], false)}, {prop: "TabIndex", name: "TabIndex", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetTabIndex", name: "SetTabIndex", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Title", name: "Title", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetTitle", name: "SetTitle", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "Click", name: "Click", pkg: "", typ: $funcType([], [], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}];
-	ptrType$33.methods = [{prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$22], false)}, {prop: "SetClass", name: "SetClass", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Closest", name: "Closest", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$3], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "Matches", name: "Matches", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "OuterHTML", name: "OuterHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetOuterHTML", name: "SetOuterHTML", pkg: "", typ: $funcType([$String], [], false)}];
+	ptrType$33.methods = [{prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$22], false)}, {prop: "SetClass", name: "SetClass", pkg: "", typ: $funcType([$String], [], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$3], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "OuterHTML", name: "OuterHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "SetOuterHTML", name: "SetOuterHTML", pkg: "", typ: $funcType([$String], [], false)}];
 	ptrType$34.methods = [{prop: "Rel", name: "Rel", pkg: "", typ: $funcType([], [ptrType$22], false)}];
 	ptrType$35.methods = [{prop: "Rel", name: "Rel", pkg: "", typ: $funcType([], [ptrType$22], false)}];
 	ptrType$16.methods = [{prop: "Rel", name: "Rel", pkg: "", typ: $funcType([], [ptrType$22], false)}];
@@ -35498,7 +35486,7 @@ $packages["honnef.co/go/js/dom"] = (function() {
 	htmlDocument.init("honnef.co/go/js/dom", [{prop: "document", name: "document", embedded: true, exported: false, typ: ptrType$25, tag: ""}]);
 	URLUtils.init("", [{prop: "Object", name: "Object", embedded: true, exported: true, typ: ptrType, tag: ""}, {prop: "Href", name: "Href", embedded: false, exported: true, typ: $String, tag: "js:\"href\""}, {prop: "Protocol", name: "Protocol", embedded: false, exported: true, typ: $String, tag: "js:\"protocol\""}, {prop: "Host", name: "Host", embedded: false, exported: true, typ: $String, tag: "js:\"host\""}, {prop: "Hostname", name: "Hostname", embedded: false, exported: true, typ: $String, tag: "js:\"hostname\""}, {prop: "Port", name: "Port", embedded: false, exported: true, typ: $String, tag: "js:\"port\""}, {prop: "Pathname", name: "Pathname", embedded: false, exported: true, typ: $String, tag: "js:\"pathname\""}, {prop: "Search", name: "Search", embedded: false, exported: true, typ: $String, tag: "js:\"search\""}, {prop: "Hash", name: "Hash", embedded: false, exported: true, typ: $String, tag: "js:\"hash\""}, {prop: "Username", name: "Username", embedded: false, exported: true, typ: $String, tag: "js:\"username\""}, {prop: "Password", name: "Password", embedded: false, exported: true, typ: $String, tag: "js:\"password\""}, {prop: "Origin", name: "Origin", embedded: false, exported: true, typ: $String, tag: "js:\"origin\""}]);
 	Location.init("", [{prop: "Object", name: "Object", embedded: true, exported: true, typ: ptrType, tag: ""}, {prop: "URLUtils", name: "URLUtils", embedded: true, exported: true, typ: ptrType$2, tag: ""}]);
-	HTMLElement.init([{prop: "AccessKey", name: "AccessKey", pkg: "", typ: $funcType([], [$String], false)}, {prop: "AccessKeyLabel", name: "AccessKeyLabel", pkg: "", typ: $funcType([], [$String], false)}, {prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$22], false)}, {prop: "Click", name: "Click", pkg: "", typ: $funcType([], [], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "Closest", name: "Closest", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "ContentEditable", name: "ContentEditable", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Dataset", name: "Dataset", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "Dir", name: "Dir", pkg: "", typ: $funcType([], [$String], false)}, {prop: "DispatchEvent", name: "DispatchEvent", pkg: "", typ: $funcType([Event], [$Bool], false)}, {prop: "Draggable", name: "Draggable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$3], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsContentEditable", name: "IsContentEditable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "Lang", name: "Lang", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Matches", name: "Matches", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OffsetHeight", name: "OffsetHeight", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetLeft", name: "OffsetLeft", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetParent", name: "OffsetParent", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "OffsetTop", name: "OffsetTop", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetWidth", name: "OffsetWidth", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OuterHTML", name: "OuterHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetAccessKey", name: "SetAccessKey", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetAccessKeyLabel", name: "SetAccessKeyLabel", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "SetContentEditable", name: "SetContentEditable", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetDir", name: "SetDir", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetDraggable", name: "SetDraggable", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetLang", name: "SetLang", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetOuterHTML", name: "SetOuterHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTitle", name: "SetTitle", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Style", name: "Style", pkg: "", typ: $funcType([], [ptrType$27], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Title", name: "Title", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType], false)}]);
+	HTMLElement.init([{prop: "AccessKey", name: "AccessKey", pkg: "", typ: $funcType([], [$String], false)}, {prop: "AccessKeyLabel", name: "AccessKeyLabel", pkg: "", typ: $funcType([], [$String], false)}, {prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$22], false)}, {prop: "Click", name: "Click", pkg: "", typ: $funcType([], [], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "ContentEditable", name: "ContentEditable", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Dataset", name: "Dataset", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "Dir", name: "Dir", pkg: "", typ: $funcType([], [$String], false)}, {prop: "DispatchEvent", name: "DispatchEvent", pkg: "", typ: $funcType([Event], [$Bool], false)}, {prop: "Draggable", name: "Draggable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$3], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsContentEditable", name: "IsContentEditable", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "Lang", name: "Lang", pkg: "", typ: $funcType([], [$String], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OffsetHeight", name: "OffsetHeight", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetLeft", name: "OffsetLeft", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetParent", name: "OffsetParent", pkg: "", typ: $funcType([], [HTMLElement], false)}, {prop: "OffsetTop", name: "OffsetTop", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OffsetWidth", name: "OffsetWidth", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "OuterHTML", name: "OuterHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetAccessKey", name: "SetAccessKey", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetAccessKeyLabel", name: "SetAccessKeyLabel", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "SetContentEditable", name: "SetContentEditable", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetDir", name: "SetDir", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetDraggable", name: "SetDraggable", pkg: "", typ: $funcType([$Bool], [], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetLang", name: "SetLang", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetOuterHTML", name: "SetOuterHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTitle", name: "SetTitle", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Style", name: "Style", pkg: "", typ: $funcType([], [ptrType$27], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Title", name: "Title", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType], false)}]);
 	Window.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "Alert", name: "Alert", pkg: "", typ: $funcType([$String], [], false)}, {prop: "Back", name: "Back", pkg: "", typ: $funcType([], [], false)}, {prop: "Blur", name: "Blur", pkg: "", typ: $funcType([], [], false)}, {prop: "CancelAnimationFrame", name: "CancelAnimationFrame", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ClearInterval", name: "ClearInterval", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ClearTimeout", name: "ClearTimeout", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Close", name: "Close", pkg: "", typ: $funcType([], [], false)}, {prop: "Confirm", name: "Confirm", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "Console", name: "Console", pkg: "", typ: $funcType([], [ptrType$28], false)}, {prop: "DispatchEvent", name: "DispatchEvent", pkg: "", typ: $funcType([Event], [$Bool], false)}, {prop: "Document", name: "Document", pkg: "", typ: $funcType([], [Document], false)}, {prop: "Focus", name: "Focus", pkg: "", typ: $funcType([], [], false)}, {prop: "Forward", name: "Forward", pkg: "", typ: $funcType([], [], false)}, {prop: "FrameElement", name: "FrameElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "GetComputedStyle", name: "GetComputedStyle", pkg: "", typ: $funcType([Element, $String], [ptrType$27], false)}, {prop: "GetSelection", name: "GetSelection", pkg: "", typ: $funcType([], [Selection], false)}, {prop: "History", name: "History", pkg: "", typ: $funcType([], [History], false)}, {prop: "Home", name: "Home", pkg: "", typ: $funcType([], [], false)}, {prop: "InnerHeight", name: "InnerHeight", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "InnerWidth", name: "InnerWidth", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Length", name: "Length", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Location", name: "Location", pkg: "", typ: $funcType([], [ptrType$23], false)}, {prop: "MoveBy", name: "MoveBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MoveTo", name: "MoveTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Name", name: "Name", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Navigator", name: "Navigator", pkg: "", typ: $funcType([], [Navigator], false)}, {prop: "Open", name: "Open", pkg: "", typ: $funcType([$String, $String, $String], [Window], false)}, {prop: "OpenDialog", name: "OpenDialog", pkg: "", typ: $funcType([$String, $String, $String, sliceType], [Window], false)}, {prop: "Opener", name: "Opener", pkg: "", typ: $funcType([], [Window], false)}, {prop: "OuterHeight", name: "OuterHeight", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "OuterWidth", name: "OuterWidth", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Parent", name: "Parent", pkg: "", typ: $funcType([], [Window], false)}, {prop: "PostMessage", name: "PostMessage", pkg: "", typ: $funcType([$String, $String, sliceType], [], false)}, {prop: "Print", name: "Print", pkg: "", typ: $funcType([], [], false)}, {prop: "Prompt", name: "Prompt", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "RequestAnimationFrame", name: "RequestAnimationFrame", pkg: "", typ: $funcType([funcType$3], [$Int], false)}, {prop: "ResizeBy", name: "ResizeBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ResizeTo", name: "ResizeTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Screen", name: "Screen", pkg: "", typ: $funcType([], [ptrType$29], false)}, {prop: "ScreenX", name: "ScreenX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScreenY", name: "ScreenY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Scroll", name: "Scroll", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollBy", name: "ScrollBy", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollByLines", name: "ScrollByLines", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "ScrollMaxX", name: "ScrollMaxX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollMaxY", name: "ScrollMaxY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollTo", name: "ScrollTo", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "ScrollX", name: "ScrollX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "ScrollY", name: "ScrollY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetCursor", name: "SetCursor", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInterval", name: "SetInterval", pkg: "", typ: $funcType([funcType, $Int], [$Int], false)}, {prop: "SetName", name: "SetName", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTimeout", name: "SetTimeout", pkg: "", typ: $funcType([funcType, $Int], [$Int], false)}, {prop: "Stop", name: "Stop", pkg: "", typ: $funcType([], [], false)}, {prop: "Top", name: "Top", pkg: "", typ: $funcType([], [Window], false)}]);
 	window.init("", [{prop: "Object", name: "Object", embedded: true, exported: true, typ: ptrType, tag: ""}]);
 	Selection.init([]);
@@ -35516,7 +35504,7 @@ $packages["honnef.co/go/js/dom"] = (function() {
 	StyleSheet.init([]);
 	Node.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "DispatchEvent", name: "DispatchEvent", pkg: "", typ: $funcType([Event], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType], false)}]);
 	BasicNode.init("", [{prop: "Object", name: "Object", embedded: true, exported: true, typ: ptrType, tag: ""}]);
-	Element.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$22], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "Closest", name: "Closest", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "DispatchEvent", name: "DispatchEvent", pkg: "", typ: $funcType([Event], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$3], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Matches", name: "Matches", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OuterHTML", name: "OuterHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetOuterHTML", name: "SetOuterHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType], false)}]);
+	Element.init([{prop: "AddEventListener", name: "AddEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$2], [funcType$1], false)}, {prop: "AppendChild", name: "AppendChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "Attributes", name: "Attributes", pkg: "", typ: $funcType([], [mapType], false)}, {prop: "BaseURI", name: "BaseURI", pkg: "", typ: $funcType([], [$String], false)}, {prop: "ChildNodes", name: "ChildNodes", pkg: "", typ: $funcType([], [sliceType$2], false)}, {prop: "Class", name: "Class", pkg: "", typ: $funcType([], [ptrType$22], false)}, {prop: "CloneNode", name: "CloneNode", pkg: "", typ: $funcType([$Bool], [Node], false)}, {prop: "CompareDocumentPosition", name: "CompareDocumentPosition", pkg: "", typ: $funcType([Node], [$Int], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "DispatchEvent", name: "DispatchEvent", pkg: "", typ: $funcType([Event], [$Bool], false)}, {prop: "FirstChild", name: "FirstChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "GetAttribute", name: "GetAttribute", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "GetAttributeNS", name: "GetAttributeNS", pkg: "", typ: $funcType([$String, $String], [$String], false)}, {prop: "GetBoundingClientRect", name: "GetBoundingClientRect", pkg: "", typ: $funcType([], [ClientRect], false)}, {prop: "GetElementsByClassName", name: "GetElementsByClassName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagName", name: "GetElementsByTagName", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "GetElementsByTagNameNS", name: "GetElementsByTagNameNS", pkg: "", typ: $funcType([$String, $String], [sliceType$3], false)}, {prop: "HasAttribute", name: "HasAttribute", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "HasAttributeNS", name: "HasAttributeNS", pkg: "", typ: $funcType([$String, $String], [$Bool], false)}, {prop: "HasChildNodes", name: "HasChildNodes", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ID", name: "ID", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InnerHTML", name: "InnerHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "InsertBefore", name: "InsertBefore", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "IsDefaultNamespace", name: "IsDefaultNamespace", pkg: "", typ: $funcType([$String], [$Bool], false)}, {prop: "IsEqualNode", name: "IsEqualNode", pkg: "", typ: $funcType([Node], [$Bool], false)}, {prop: "LastChild", name: "LastChild", pkg: "", typ: $funcType([], [Node], false)}, {prop: "LookupNamespaceURI", name: "LookupNamespaceURI", pkg: "", typ: $funcType([$String], [$String], false)}, {prop: "LookupPrefix", name: "LookupPrefix", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NextElementSibling", name: "NextElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "NextSibling", name: "NextSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "NodeName", name: "NodeName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "NodeType", name: "NodeType", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "NodeValue", name: "NodeValue", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "OuterHTML", name: "OuterHTML", pkg: "", typ: $funcType([], [$String], false)}, {prop: "OwnerDocument", name: "OwnerDocument", pkg: "", typ: $funcType([], [Document], false)}, {prop: "ParentElement", name: "ParentElement", pkg: "", typ: $funcType([], [Element], false)}, {prop: "ParentNode", name: "ParentNode", pkg: "", typ: $funcType([], [Node], false)}, {prop: "PreviousElementSibling", name: "PreviousElementSibling", pkg: "", typ: $funcType([], [Element], false)}, {prop: "PreviousSibling", name: "PreviousSibling", pkg: "", typ: $funcType([], [Node], false)}, {prop: "QuerySelector", name: "QuerySelector", pkg: "", typ: $funcType([$String], [Element], false)}, {prop: "QuerySelectorAll", name: "QuerySelectorAll", pkg: "", typ: $funcType([$String], [sliceType$3], false)}, {prop: "RemoveAttribute", name: "RemoveAttribute", pkg: "", typ: $funcType([$String], [], false)}, {prop: "RemoveAttributeNS", name: "RemoveAttributeNS", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "RemoveChild", name: "RemoveChild", pkg: "", typ: $funcType([Node], [], false)}, {prop: "RemoveEventListener", name: "RemoveEventListener", pkg: "", typ: $funcType([$String, $Bool, funcType$1], [], false)}, {prop: "ReplaceChild", name: "ReplaceChild", pkg: "", typ: $funcType([Node, Node], [], false)}, {prop: "SetAttribute", name: "SetAttribute", pkg: "", typ: $funcType([$String, $String], [], false)}, {prop: "SetAttributeNS", name: "SetAttributeNS", pkg: "", typ: $funcType([$String, $String, $String], [], false)}, {prop: "SetID", name: "SetID", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetInnerHTML", name: "SetInnerHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetNodeValue", name: "SetNodeValue", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetOuterHTML", name: "SetOuterHTML", pkg: "", typ: $funcType([$String], [], false)}, {prop: "SetTextContent", name: "SetTextContent", pkg: "", typ: $funcType([$String], [], false)}, {prop: "TagName", name: "TagName", pkg: "", typ: $funcType([], [$String], false)}, {prop: "TextContent", name: "TextContent", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Underlying", name: "Underlying", pkg: "", typ: $funcType([], [ptrType], false)}]);
 	ClientRect.init("", [{prop: "Object", name: "Object", embedded: true, exported: true, typ: ptrType, tag: ""}, {prop: "Height", name: "Height", embedded: false, exported: true, typ: $Float64, tag: "js:\"height\""}, {prop: "Width", name: "Width", embedded: false, exported: true, typ: $Float64, tag: "js:\"width\""}, {prop: "Left", name: "Left", embedded: false, exported: true, typ: $Float64, tag: "js:\"left\""}, {prop: "Right", name: "Right", embedded: false, exported: true, typ: $Float64, tag: "js:\"right\""}, {prop: "Top", name: "Top", embedded: false, exported: true, typ: $Float64, tag: "js:\"top\""}, {prop: "Bottom", name: "Bottom", embedded: false, exported: true, typ: $Float64, tag: "js:\"bottom\""}]);
 	BasicHTMLElement.init("", [{prop: "BasicElement", name: "BasicElement", embedded: true, exported: true, typ: ptrType$33, tag: ""}]);
 	BasicElement.init("", [{prop: "BasicNode", name: "BasicNode", embedded: true, exported: true, typ: ptrType$24, tag: ""}]);
@@ -35882,7 +35870,7 @@ $packages["honnef.co/go/js/xhr"] = (function() {
 	return $pkg;
 })();
 $packages["main"] = (function() {
-	var $pkg = {}, $init, bytes, json, errors, fmt, js, jquery, types, dom, xhr, strconv, strings, ptrType, sliceType, sliceType$1, ptrType$1, sliceType$2, ptrType$2, ptrType$3, sliceType$3, ptrType$4, ptrType$5, ptrType$6, sliceType$4, ptrType$7, ptrType$8, ptrType$9, ptrType$10, funcType, mapType, window, document, rootDiv, jQuery, init, getBranchNodes, starBookmark, unstarBookmark, createBookmark, moveBookmark, moveFolder, createFolder, deleteFolder, deleteBookmark, createStarredBookmarkNode, createBookmarkNode, createFolderNode, createButton, createAddFolderForm, createAddBookmarkForm, hideActionButtons, hideForms, resetConfirmButtons, bindButtonEvents, displayNode, getNodes, main;
+	var $pkg = {}, $init, bytes, json, errors, fmt, js, jquery, types, dom, xhr, strconv, strings, ptrType, sliceType, sliceType$1, ptrType$1, sliceType$2, ptrType$2, ptrType$3, sliceType$3, ptrType$4, ptrType$5, ptrType$6, ptrType$7, sliceType$4, ptrType$8, ptrType$9, ptrType$10, funcType, ptrType$11, mapType, sliceType$5, ptrType$12, ptrType$13, sliceType$6, window, document, rootDiv, jQuery, init, getBranchNodes, starBookmark, unstarBookmark, updateBookmark, createBookmark, moveBookmark, moveFolder, createFolder, updateFolder, deleteFolder, deleteBookmark, createStarredBookmarkNode, createTagNode, createSmallTagNode, createBookmarkNode, createFolderNode, createButton, createAddFolderForm, createUpdateFolderForm, createAddBookmarkForm, createUpdateBookmarkForm, hideActionButtons, hideForms, resetConfirmButtons, bindButtonEvents, displayNode, getTags, getNodes, main;
 	bytes = $packages["bytes"];
 	json = $packages["encoding/json"];
 	errors = $packages["errors"];
@@ -35903,15 +35891,20 @@ $packages["main"] = (function() {
 	ptrType$3 = $ptrType(types.Tag);
 	sliceType$3 = $sliceType(ptrType$3);
 	ptrType$4 = $ptrType(dom.HTMLButtonElement);
-	ptrType$5 = $ptrType(dom.HTMLAnchorElement);
-	ptrType$6 = $ptrType(dom.HTMLImageElement);
+	ptrType$5 = $ptrType(dom.HTMLSpanElement);
+	ptrType$6 = $ptrType(dom.HTMLAnchorElement);
+	ptrType$7 = $ptrType(dom.HTMLImageElement);
 	sliceType$4 = $sliceType($String);
-	ptrType$7 = $ptrType(dom.HTMLHeadingElement);
-	ptrType$8 = $ptrType(dom.HTMLSpanElement);
+	ptrType$8 = $ptrType(dom.HTMLHeadingElement);
 	ptrType$9 = $ptrType(dom.HTMLInputElement);
 	ptrType$10 = $ptrType(dom.HTMLSelectElement);
 	funcType = $funcType([jquery.Event], [], false);
+	ptrType$11 = $ptrType(dom.HTMLOptionElement);
 	mapType = $mapType($String, $emptyInterface);
+	sliceType$5 = $sliceType(types.Tag);
+	ptrType$12 = $ptrType(sliceType$5);
+	ptrType$13 = $ptrType(types.Node);
+	sliceType$6 = $sliceType(ptrType$13);
 	init = function() {
 		var _r, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -36016,6 +36009,51 @@ $packages["main"] = (function() {
 		_r$10;
 		$s = -1; return $ifaceNil;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: unstarBookmark }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._tuple = _tuple; $f.b = b; $f.data = data; $f.datar = datar; $f.decoder = decoder; $f.err = err; $f.id = id; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	updateBookmark = function(b) {
+		var _i, _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, _tuple$1, b, err, payload, t, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; b = $f.b; err = $f.err; payload = $f.payload; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		err = $ifaceNil;
+		payload = sliceType.nil;
+		_r = json.Marshal(new b.constructor.elem(b)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_tuple = _r;
+		payload = _tuple[0];
+		_r$1 = xhr.Send("POST", "/renameBookmark/", payload); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_tuple$1 = _r$1;
+		err = _tuple$1[1];
+		if (!($interfaceIsEqual(err, $ifaceNil))) {
+			$s = -1; return errors.New("error updating bookmark " + b.Title);
+		}
+		_r$2 = fmt.Sprintf("#%dupdateBookmark", new sliceType$2([new $Int(b.Id)])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$3 = jQuery(new sliceType$2([new $String(_r$2)])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$4 = $clone(_r$3, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$4;
+		_r$5 = fmt.Sprintf("a#%dbookmarkLink", new sliceType$2([new $Int(b.Id)])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		_r$6 = jQuery(new sliceType$2([new $String(_r$5)])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		_r$7 = $clone(_r$6, jquery.JQuery).SetHtml(new $String(b.Title)); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		_r$7;
+		_r$8 = fmt.Sprintf("a#%dbookmarkLink", new sliceType$2([new $Int(b.Id)])); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		_r$9 = jQuery(new sliceType$2([new $String(_r$8)])); /* */ $s = 10; case 10: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+		_r$10 = $clone(_r$9, jquery.JQuery).SetAttr(new sliceType$2([new $String("href"), new $String(b.URL)])); /* */ $s = 11; case 11: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+		_r$10;
+		_r$11 = fmt.Sprintf(".%dbadge", new sliceType$2([new $Int(b.Id)])); /* */ $s = 12; case 12: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+		_r$12 = jQuery(new sliceType$2([new $String(_r$11)])); /* */ $s = 13; case 13: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
+		_r$13 = $clone(_r$12, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 14; case 14: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+		_r$13;
+		_ref = b.Tags;
+		_i = 0;
+		/* while (true) { */ case 15:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 16; continue; }
+			t = ((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]);
+			_r$14 = createSmallTagNode($clone(t, types.Tag), b.Id); /* */ $s = 17; case 17: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+			_r$15 = jQuery(new sliceType$2([_r$14])); /* */ $s = 18; case 18: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+			_r$16 = fmt.Sprintf("a#%dbookmarkLink", new sliceType$2([new $Int(b.Id)])); /* */ $s = 19; case 19: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+			_r$17 = $clone(_r$15, jquery.JQuery).InsertAfter(new $String(_r$16)); /* */ $s = 20; case 20: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
+			_r$17;
+			_i++;
+		/* } */ $s = 15; continue; case 16:
+		$s = -1; return $ifaceNil;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: updateBookmark }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.b = b; $f.err = err; $f.payload = payload; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	createBookmark = function(b) {
 		var _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, _tuple$1, b, cnodes, err, n, nid, parentD, payload, $s, $r;
@@ -36181,6 +36219,31 @@ $packages["main"] = (function() {
 		$s = -1; return $ifaceNil;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: createFolder }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.cnodes = cnodes; $f.err = err; $f.f = f; $f.n = n; $f.nid = nid; $f.parentD = parentD; $f.payload = payload; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	updateFolder = function(f) {
+		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _tuple, _tuple$1, err, f, payload, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; err = $f.err; f = $f.f; payload = $f.payload; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		err = $ifaceNil;
+		payload = sliceType.nil;
+		_r = json.Marshal(new f.constructor.elem(f)); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_tuple = _r;
+		payload = _tuple[0];
+		_r$1 = xhr.Send("POST", "/renameFolder/", payload); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_tuple$1 = _r$1;
+		err = _tuple$1[1];
+		if (!($interfaceIsEqual(err, $ifaceNil))) {
+			$s = -1; return errors.New("error renaming folder " + f.Title);
+		}
+		_r$2 = fmt.Sprintf("#%dupdateFolder", new sliceType$2([new $Int(f.Id)])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$3 = jQuery(new sliceType$2([new $String(_r$2)])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$4 = $clone(_r$3, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$4;
+		_r$5 = fmt.Sprintf("button#%dfolderLink", new sliceType$2([new $Int(f.Id)])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		_r$6 = jQuery(new sliceType$2([new $String(_r$5)])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		_r$7 = $clone(_r$6, jquery.JQuery).SetHtml(new $String(f.Title)); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		_r$7;
+		$s = -1; return $ifaceNil;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: updateFolder }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.err = err; $f.f = f; $f.payload = payload; $f.$s = $s; $f.$r = $r; return $f;
+	};
 	deleteFolder = function(itemId) {
 		var _r, _r$1, _r$2, _tuple, err, itemId, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tuple = $f._tuple; err = $f.err; itemId = $f.itemId; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -36233,60 +36296,121 @@ $packages["main"] = (function() {
 		$s = -1; return buttonDiv;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: createStarredBookmarkNode }; } $f.URL = URL; $f._r = _r; $f.buttonDiv = buttonDiv; $f.icon = icon; $f.id = id; $f.title = title; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	createBookmarkNode = function(id, title, URL, icon, starred) {
-		var URL, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, buttonDiv, cutButton, deleteButton, favicon, icon, id, link, linkDiv, mainDiv, menuButton, starButton, starred, title, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; URL = $f.URL; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; buttonDiv = $f.buttonDiv; cutButton = $f.cutButton; deleteButton = $f.deleteButton; favicon = $f.favicon; icon = $f.icon; id = $f.id; link = $f.link; linkDiv = $f.linkDiv; mainDiv = $f.mainDiv; menuButton = $f.menuButton; starButton = $f.starButton; starred = $f.starred; title = $f.title; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+	createTagNode = function(id, title) {
+		var _r, buttonDiv, id, title, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; buttonDiv = $f.buttonDiv; id = $f.id; title = $f.title; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = document.CreateElement("button"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		buttonDiv = $assertType(_r, ptrType$4);
+		buttonDiv.BasicHTMLElement.BasicElement.SetID(id + "tag");
+		buttonDiv.BasicHTMLElement.BasicElement.SetClass("btn btn-outline-dark");
+		buttonDiv.BasicHTMLElement.BasicElement.SetInnerHTML(title);
+		$s = -1; return buttonDiv;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createTagNode }; } $f._r = _r; $f.buttonDiv = buttonDiv; $f.id = id; $f.title = title; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	createSmallTagNode = function(t, bkmid) {
+		var _arg, _r, _r$1, _r$2, bkmid, t, tagSpan, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _arg = $f._arg; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; bkmid = $f.bkmid; t = $f.t; tagSpan = $f.tagSpan; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = document.CreateElement("span"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		tagSpan = $assertType(_r, ptrType$5);
+		_r$1 = fmt.Sprintf("%dbadge badge badge-pill badge-dark", new sliceType$2([new $Int(bkmid)])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		$r = tagSpan.BasicHTMLElement.BasicElement.SetClass(_r$1); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$2 = fmt.Sprintf("%d", new sliceType$2([new $Int(t.Id)])); /* */ $s = 4; case 4: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_arg = _r$2;
+		$r = tagSpan.BasicHTMLElement.BasicElement.SetAttribute("value", _arg); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		tagSpan.BasicHTMLElement.BasicElement.SetInnerHTML(t.Name);
+		$s = -1; return tagSpan;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createSmallTagNode }; } $f._arg = _arg; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.bkmid = bkmid; $f.t = t; $f.tagSpan = tagSpan; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	createBookmarkNode = function(n) {
+		var _arg, _arg$1, _arg$2, _arg$3, _arg$4, _arg$5, _i, _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$20, _r$21, _r$22, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, actionDiv, buttonDiv, cutButton, deleteButton, editButton, favicon, link, linkDiv, mainDiv, menuButton, n, starButton, t, topDiv, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _arg = $f._arg; _arg$1 = $f._arg$1; _arg$2 = $f._arg$2; _arg$3 = $f._arg$3; _arg$4 = $f._arg$4; _arg$5 = $f._arg$5; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; actionDiv = $f.actionDiv; buttonDiv = $f.buttonDiv; cutButton = $f.cutButton; deleteButton = $f.deleteButton; editButton = $f.editButton; favicon = $f.favicon; link = $f.link; linkDiv = $f.linkDiv; mainDiv = $f.mainDiv; menuButton = $f.menuButton; n = $f.n; starButton = $f.starButton; t = $f.t; topDiv = $f.topDiv; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = document.CreateElement("div"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		mainDiv = $assertType(_r, ptrType);
-		mainDiv.BasicHTMLElement.BasicElement.SetClass("row bookmark");
-		mainDiv.BasicHTMLElement.BasicElement.SetID(id + "bookmarkMainDiv");
+		topDiv = $assertType(_r, ptrType);
+		topDiv.BasicHTMLElement.BasicElement.SetClass("container-fluid");
 		_r$1 = document.CreateElement("div"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		linkDiv = $assertType(_r$1, ptrType);
+		mainDiv = $assertType(_r$1, ptrType);
+		mainDiv.BasicHTMLElement.BasicElement.SetClass("row bookmark");
+		_r$2 = fmt.Sprintf("%dbookmarkMainDiv", new sliceType$2([new $Int(n.Key)])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		$r = mainDiv.BasicHTMLElement.BasicElement.SetID(_r$2); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$3 = document.CreateElement("div"); /* */ $s = 5; case 5: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		actionDiv = $assertType(_r$3, ptrType);
+		actionDiv.BasicHTMLElement.BasicElement.SetClass("row");
+		_r$4 = fmt.Sprintf("%dactionDiv", new sliceType$2([new $Int(n.Key)])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		$r = actionDiv.BasicHTMLElement.BasicElement.SetID(_r$4); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$5 = document.CreateElement("div"); /* */ $s = 8; case 8: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		linkDiv = $assertType(_r$5, ptrType);
 		linkDiv.BasicHTMLElement.BasicElement.SetClass("col col-10");
-		_r$2 = document.CreateElement("div"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		buttonDiv = $assertType(_r$2, ptrType);
+		_r$6 = document.CreateElement("div"); /* */ $s = 9; case 9: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		buttonDiv = $assertType(_r$6, ptrType);
 		buttonDiv.BasicHTMLElement.BasicElement.SetClass("col col-2");
-		_r$3 = document.CreateElement("a"); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-		link = $assertType(_r$3, ptrType$5);
-		link.BasicHTMLElement.BasicElement.SetAttribute("href", URL);
+		_r$7 = document.CreateElement("a"); /* */ $s = 10; case 10: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		link = $assertType(_r$7, ptrType$6);
+		link.BasicHTMLElement.BasicElement.SetAttribute("href", n.URL);
 		link.BasicHTMLElement.BasicElement.SetAttribute("target", "_blank");
-		link.BasicHTMLElement.BasicElement.SetID(id + "bookmarkLink");
-		link.BasicHTMLElement.BasicElement.SetInnerHTML(title);
-		_r$4 = document.CreateElement("img"); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		favicon = $assertType(_r$4, ptrType$6);
+		_r$8 = fmt.Sprintf("%dbookmarkLink", new sliceType$2([new $Int(n.Key)])); /* */ $s = 11; case 11: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		$r = link.BasicHTMLElement.BasicElement.SetID(_r$8); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		link.BasicHTMLElement.BasicElement.SetInnerHTML(n.Title);
+		_r$9 = document.CreateElement("img"); /* */ $s = 13; case 13: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+		favicon = $assertType(_r$9, ptrType$7);
 		favicon.BasicHTMLElement.BasicElement.SetClass("favicon");
-		favicon.BasicHTMLElement.BasicElement.SetAttribute("src", icon);
-		_r$5 = createButton("menu", id + "menu", "visible", new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-		menuButton = _r$5;
-		_r$6 = createButton("content-cut", id + "cut", "invisible", new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		cutButton = _r$6;
-		_r$7 = createButton("delete-outline", id + "delete", "invisible", new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-		deleteButton = _r$7;
+		favicon.BasicHTMLElement.BasicElement.SetAttribute("src", n.Icon);
+		_r$10 = fmt.Sprintf("%dmenu", new sliceType$2([new $Int(n.Key)])); /* */ $s = 14; case 14: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+		_arg = _r$10;
+		_r$11 = createButton("menu", _arg, false, new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 15; case 15: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+		menuButton = _r$11;
+		_r$12 = fmt.Sprintf("%dcut", new sliceType$2([new $Int(n.Key)])); /* */ $s = 16; case 16: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
+		_arg$1 = _r$12;
+		_r$13 = createButton("content-cut", _arg$1, true, new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 17; case 17: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+		cutButton = _r$13;
+		_r$14 = fmt.Sprintf("%ddelete", new sliceType$2([new $Int(n.Key)])); /* */ $s = 18; case 18: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+		_arg$2 = _r$14;
+		_r$15 = createButton("delete-outline", _arg$2, true, new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 19; case 19: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+		deleteButton = _r$15;
+		_r$16 = fmt.Sprintf("%dedit", new sliceType$2([new $Int(n.Key)])); /* */ $s = 20; case 20: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+		_arg$3 = _r$16;
+		_r$17 = createButton("pencil-outline", _arg$3, true, new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 21; case 21: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
+		editButton = _r$17;
 		starButton = ptrType$4.nil;
-		/* */ if (starred) { $s = 9; continue; }
-		/* */ $s = 10; continue;
-		/* if (starred) { */ case 9:
-			_r$8 = createButton("star", id + "star", "invisible", new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-			starButton = _r$8;
-			$s = 11; continue;
-		/* } else { */ case 10:
-			_r$9 = createButton("star-outline", id + "star", "invisible", new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 13; case 13: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-			starButton = _r$9;
-		/* } */ case 11:
-		$r = linkDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(favicon); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = linkDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(link); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton); /* */ $s = 17; case 17: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(starButton); /* */ $s = 19; case 19: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(linkDiv); /* */ $s = 20; case 20: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(buttonDiv); /* */ $s = 21; case 21: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$s = -1; return mainDiv;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: createBookmarkNode }; } $f.URL = URL; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.buttonDiv = buttonDiv; $f.cutButton = cutButton; $f.deleteButton = deleteButton; $f.favicon = favicon; $f.icon = icon; $f.id = id; $f.link = link; $f.linkDiv = linkDiv; $f.mainDiv = mainDiv; $f.menuButton = menuButton; $f.starButton = starButton; $f.starred = starred; $f.title = title; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ if (n.Starred) { $s = 22; continue; }
+		/* */ $s = 23; continue;
+		/* if (n.Starred) { */ case 22:
+			_r$18 = fmt.Sprintf("%dstar", new sliceType$2([new $Int(n.Key)])); /* */ $s = 25; case 25: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+			_arg$4 = _r$18;
+			_r$19 = createButton("star", _arg$4, true, new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 26; case 26: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
+			starButton = _r$19;
+			$s = 24; continue;
+		/* } else { */ case 23:
+			_r$20 = fmt.Sprintf("%dstar", new sliceType$2([new $Int(n.Key)])); /* */ $s = 27; case 27: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
+			_arg$5 = _r$20;
+			_r$21 = createButton("star-outline", _arg$5, true, new sliceType$4(["bookmarkbtn", "float-right"])); /* */ $s = 28; case 28: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
+			starButton = _r$21;
+		/* } */ case 24:
+		$r = linkDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(favicon); /* */ $s = 29; case 29: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = linkDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(link); /* */ $s = 30; case 30: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_ref = n.Tags;
+		_i = 0;
+		/* while (true) { */ case 31:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 32; continue; }
+			t = ((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]);
+			_r$22 = createSmallTagNode($clone(t, types.Tag), n.Key); /* */ $s = 33; case 33: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
+			$r = linkDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(_r$22); /* */ $s = 34; case 34: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 31; continue; case 32:
+		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton); /* */ $s = 35; case 35: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton); /* */ $s = 36; case 36: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton); /* */ $s = 37; case 37: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(starButton); /* */ $s = 38; case 38: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = buttonDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(editButton); /* */ $s = 39; case 39: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(linkDiv); /* */ $s = 40; case 40: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(buttonDiv); /* */ $s = 41; case 41: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = topDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(mainDiv); /* */ $s = 42; case 42: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = topDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(actionDiv); /* */ $s = 43; case 43: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$s = -1; return topDiv;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createBookmarkNode }; } $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._arg$4 = _arg$4; $f._arg$5 = _arg$5; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f.actionDiv = actionDiv; $f.buttonDiv = buttonDiv; $f.cutButton = cutButton; $f.deleteButton = deleteButton; $f.editButton = editButton; $f.favicon = favicon; $f.link = link; $f.linkDiv = linkDiv; $f.mainDiv = mainDiv; $f.menuButton = menuButton; $f.n = n; $f.starButton = starButton; $f.t = t; $f.topDiv = topDiv; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	createFolderNode = function(id, parentid, title, count) {
-		var _r, _r$1, _r$10, _r$11, _r$12, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, actionDiv, addBookmarkButton, addFolderButton, childrenBody, childrenDiv, count, cutButton, deleteButton, id, mainDiv, menuButton, parentid, pasteButton, title, titleB, titleDiv, titleH, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; actionDiv = $f.actionDiv; addBookmarkButton = $f.addBookmarkButton; addFolderButton = $f.addFolderButton; childrenBody = $f.childrenBody; childrenDiv = $f.childrenDiv; count = $f.count; cutButton = $f.cutButton; deleteButton = $f.deleteButton; id = $f.id; mainDiv = $f.mainDiv; menuButton = $f.menuButton; parentid = $f.parentid; pasteButton = $f.pasteButton; title = $f.title; titleB = $f.titleB; titleDiv = $f.titleDiv; titleH = $f.titleH; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, actionDiv, addBookmarkButton, addFolderButton, childrenBody, childrenDiv, count, countS, cutButton, deleteButton, editButton, id, mainDiv, menuButton, parentid, pasteButton, title, titleB, titleDiv, titleH, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; actionDiv = $f.actionDiv; addBookmarkButton = $f.addBookmarkButton; addFolderButton = $f.addFolderButton; childrenBody = $f.childrenBody; childrenDiv = $f.childrenDiv; count = $f.count; countS = $f.countS; cutButton = $f.cutButton; deleteButton = $f.deleteButton; editButton = $f.editButton; id = $f.id; mainDiv = $f.mainDiv; menuButton = $f.menuButton; parentid = $f.parentid; pasteButton = $f.pasteButton; title = $f.title; titleB = $f.titleB; titleDiv = $f.titleDiv; titleH = $f.titleH; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = document.CreateElement("div"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		mainDiv = $assertType(_r, ptrType);
 		mainDiv.BasicHTMLElement.BasicElement.SetClass("card");
@@ -36305,55 +36429,66 @@ $packages["main"] = (function() {
 		childrenDiv.BasicHTMLElement.BasicElement.SetAttribute("data-parent", "#collapse" + parentid);
 		childrenDiv.BasicHTMLElement.BasicElement.SetID("collapse" + id);
 		_r$4 = document.CreateElement("h5"); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		titleH = $assertType(_r$4, ptrType$7);
+		titleH = $assertType(_r$4, ptrType$8);
 		titleH.BasicHTMLElement.BasicElement.SetClass("mb-0");
 		_r$5 = document.CreateElement("button"); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		titleB = $assertType(_r$5, ptrType$4);
 		titleB.BasicHTMLElement.BasicElement.SetClass("btn btn-link");
 		titleB.BasicHTMLElement.BasicElement.SetAttribute("data-toggle", "collapse");
 		titleB.BasicHTMLElement.BasicElement.SetAttribute("data-target", "#collapse" + id);
-		titleB.BasicHTMLElement.BasicElement.SetInnerHTML(title + " (" + count + ")");
+		titleB.BasicHTMLElement.BasicElement.SetInnerHTML(title);
 		titleB.BasicHTMLElement.BasicElement.SetID(id + "folderLink");
-		$r = titleH.BasicHTMLElement.BasicElement.BasicNode.AppendChild(titleB); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_r$6 = document.CreateElement("div"); /* */ $s = 8; case 8: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		childrenBody = $assertType(_r$6, ptrType);
+		_r$6 = document.CreateElement("span"); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		countS = $assertType(_r$6, ptrType$5);
+		countS.BasicHTMLElement.BasicElement.SetClass("count badge badge-primary badge-pill");
+		countS.BasicHTMLElement.BasicElement.SetInnerHTML(count);
+		$r = titleH.BasicHTMLElement.BasicElement.BasicNode.AppendChild(titleB); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleH.BasicHTMLElement.BasicElement.BasicNode.AppendChild(countS); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$7 = document.CreateElement("div"); /* */ $s = 10; case 10: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		childrenBody = $assertType(_r$7, ptrType);
 		childrenBody.BasicHTMLElement.BasicElement.SetClass("card-body");
 		childrenBody.BasicHTMLElement.BasicElement.SetID(id + "folderBody");
-		_r$7 = createButton("menu", id + "menu", "visible", new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 9; case 9: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-		menuButton = _r$7;
-		_r$8 = createButton("content-cut", id + "cut", "invisible", new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 10; case 10: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-		cutButton = _r$8;
-		_r$9 = createButton("delete-outline", id + "delete", "invisible", new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 11; case 11: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-		deleteButton = _r$9;
-		_r$10 = createButton("content-paste", id + "paste", "invisible", new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
-		pasteButton = _r$10;
-		_r$11 = createButton("folder-plus-outline", id + "addFolder", "invisible", new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 13; case 13: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
-		addFolderButton = _r$11;
-		_r$12 = createButton("bookmark-plus-outline", id + "addBookmark", "invisible", new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 14; case 14: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
-		addBookmarkButton = _r$12;
-		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(titleH); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton); /* */ $s = 17; case 17: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(pasteButton); /* */ $s = 19; case 19: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addFolderButton); /* */ $s = 20; case 20: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addBookmarkButton); /* */ $s = 21; case 21: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = childrenDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(childrenBody); /* */ $s = 22; case 22: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(titleDiv); /* */ $s = 23; case 23: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(actionDiv); /* */ $s = 24; case 24: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(childrenDiv); /* */ $s = 25; case 25: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$8 = createButton("menu", id + "menu", false, new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 11; case 11: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		menuButton = _r$8;
+		_r$9 = createButton("content-cut", id + "cut", true, new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+		cutButton = _r$9;
+		_r$10 = createButton("delete-outline", id + "delete", true, new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 13; case 13: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+		deleteButton = _r$10;
+		_r$11 = createButton("content-paste", id + "paste", true, new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 14; case 14: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+		pasteButton = _r$11;
+		_r$12 = createButton("folder-plus-outline", id + "addFolder", true, new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 15; case 15: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
+		addFolderButton = _r$12;
+		_r$13 = createButton("bookmark-plus-outline", id + "addBookmark", true, new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 16; case 16: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+		addBookmarkButton = _r$13;
+		_r$14 = createButton("pencil-outline", id + "edit", true, new sliceType$4(["folderbtn", "float-right"])); /* */ $s = 17; case 17: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+		editButton = _r$14;
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(titleH); /* */ $s = 18; case 18: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(menuButton); /* */ $s = 19; case 19: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(cutButton); /* */ $s = 20; case 20: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(deleteButton); /* */ $s = 21; case 21: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(pasteButton); /* */ $s = 22; case 22: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addFolderButton); /* */ $s = 23; case 23: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(addBookmarkButton); /* */ $s = 24; case 24: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = titleDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(editButton); /* */ $s = 25; case 25: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = childrenDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(childrenBody); /* */ $s = 26; case 26: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(titleDiv); /* */ $s = 27; case 27: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(actionDiv); /* */ $s = 28; case 28: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = mainDiv.BasicHTMLElement.BasicElement.BasicNode.AppendChild(childrenDiv); /* */ $s = 29; case 29: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$s = -1; return [mainDiv, childrenBody];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: createFolderNode }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.actionDiv = actionDiv; $f.addBookmarkButton = addBookmarkButton; $f.addFolderButton = addFolderButton; $f.childrenBody = childrenBody; $f.childrenDiv = childrenDiv; $f.count = count; $f.cutButton = cutButton; $f.deleteButton = deleteButton; $f.id = id; $f.mainDiv = mainDiv; $f.menuButton = menuButton; $f.parentid = parentid; $f.pasteButton = pasteButton; $f.title = title; $f.titleB = titleB; $f.titleDiv = titleDiv; $f.titleH = titleH; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createFolderNode }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.actionDiv = actionDiv; $f.addBookmarkButton = addBookmarkButton; $f.addFolderButton = addFolderButton; $f.childrenBody = childrenBody; $f.childrenDiv = childrenDiv; $f.count = count; $f.countS = countS; $f.cutButton = cutButton; $f.deleteButton = deleteButton; $f.editButton = editButton; $f.id = id; $f.mainDiv = mainDiv; $f.menuButton = menuButton; $f.parentid = parentid; $f.pasteButton = pasteButton; $f.title = title; $f.titleB = titleB; $f.titleDiv = titleDiv; $f.titleH = titleH; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	createButton = function(icon, id, visibility, classes) {
-		var _i, _r, _r$1, _ref, b, blabel, c, classes, icon, id, visibility, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; b = $f.b; blabel = $f.blabel; c = $f.c; classes = $f.classes; icon = $f.icon; id = $f.id; visibility = $f.visibility; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+	createButton = function(icon, id, hidden, classes) {
+		var _i, _r, _r$1, _ref, b, blabel, c, classes, hidden, icon, id, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; b = $f.b; blabel = $f.blabel; c = $f.c; classes = $f.classes; hidden = $f.hidden; icon = $f.icon; id = $f.id; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = document.CreateElement("button"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		b = $assertType(_r, ptrType$4);
 		b.BasicHTMLElement.BasicElement.SetAttribute("type", "button");
 		b.BasicHTMLElement.BasicElement.SetAttribute("data-role", "none");
-		b.BasicHTMLElement.BasicElement.SetClass(icon + " btn btn-outline-dark bg-light " + visibility);
+		b.BasicHTMLElement.BasicElement.SetClass(icon + " btn btn-outline-dark bg-light");
 		b.BasicHTMLElement.BasicElement.SetID(id);
+		if (hidden) {
+			b.BasicHTMLElement.BasicElement.SetAttribute("style", "display: none");
+		}
 		_ref = classes;
 		_i = 0;
 		while (true) {
@@ -36363,12 +36498,12 @@ $packages["main"] = (function() {
 			_i++;
 		}
 		_r$1 = document.CreateElement("span"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-		blabel = $assertType(_r$1, ptrType$8);
+		blabel = $assertType(_r$1, ptrType$5);
 		blabel.BasicHTMLElement.BasicElement.SetID(id + "span");
 		blabel.BasicHTMLElement.BasicElement.SetClass("mdi mdi-" + icon);
 		$r = b.BasicHTMLElement.BasicElement.BasicNode.AppendChild(blabel); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$s = -1; return b;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: createButton }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.b = b; $f.blabel = blabel; $f.c = c; $f.classes = classes; $f.icon = icon; $f.id = id; $f.visibility = visibility; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createButton }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f.b = b; $f.blabel = blabel; $f.c = c; $f.classes = classes; $f.hidden = hidden; $f.icon = icon; $f.id = id; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	createAddFolderForm = function(id) {
 		var _r, _r$1, _r$2, _r$3, _r$4, dc1, dc2, dr, id, ifoldername, submit, $s, $r;
@@ -36390,13 +36525,41 @@ $packages["main"] = (function() {
 		ifoldername.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "folder name");
 		ifoldername.BasicHTMLElement.BasicElement.SetClass("form-control");
 		$r = dc1.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ifoldername); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_r$4 = createButton("check", id + "createFolderSubmit", "visible", new sliceType$4(["float-left"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$4 = createButton("check-bold", id + "createFolderSubmit", false, new sliceType$4(["float-left"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
 		submit = _r$4;
 		$r = dc2.BasicHTMLElement.BasicElement.BasicNode.AppendChild(submit); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc1); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc2); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$s = -1; return dr;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: createAddFolderForm }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.dc1 = dc1; $f.dc2 = dc2; $f.dr = dr; $f.id = id; $f.ifoldername = ifoldername; $f.submit = submit; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	createUpdateFolderForm = function(id) {
+		var _r, _r$1, _r$2, _r$3, _r$4, dc1, dc2, dr, id, ifoldername, submit, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; dc1 = $f.dc1; dc2 = $f.dc2; dr = $f.dr; id = $f.id; ifoldername = $f.ifoldername; submit = $f.submit; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = document.CreateElement("div"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		dr = $assertType(_r, ptrType);
+		dr.BasicHTMLElement.BasicElement.SetID(id + "updateFolder");
+		dr.BasicHTMLElement.BasicElement.SetClass("row updateFolder mt-2 mb-2 ml-5 mr-5");
+		_r$1 = document.CreateElement("div"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		dc1 = $assertType(_r$1, ptrType);
+		dc1.BasicHTMLElement.BasicElement.SetClass("col col-11");
+		_r$2 = document.CreateElement("div"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		dc2 = $assertType(_r$2, ptrType);
+		dc2.BasicHTMLElement.BasicElement.SetClass("col col-1");
+		_r$3 = document.CreateElement("input"); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		ifoldername = $assertType(_r$3, ptrType$9);
+		ifoldername.BasicHTMLElement.BasicElement.SetID(id + "updateFolderInput");
+		ifoldername.BasicHTMLElement.BasicElement.SetAttribute("type", "text");
+		ifoldername.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "folder name");
+		ifoldername.BasicHTMLElement.BasicElement.SetClass("form-control");
+		$r = dc1.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ifoldername); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$4 = createButton("check-bold", id + "updateFolderSubmit", false, new sliceType$4(["float-left"])); /* */ $s = 6; case 6: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		submit = _r$4;
+		$r = dc2.BasicHTMLElement.BasicElement.BasicNode.AppendChild(submit); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc1); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc2); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$s = -1; return dr;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createUpdateFolderForm }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f.dc1 = dc1; $f.dc2 = dc2; $f.dr = dr; $f.id = id; $f.ifoldername = ifoldername; $f.submit = submit; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	createAddBookmarkForm = function(id) {
 		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, dc1, dc2, dc3, dc4, dr, ibookmarkname, ibookmarktags, ibookmarkurl, id, submit, $s, $r;
@@ -36438,7 +36601,7 @@ $packages["main"] = (function() {
 		ibookmarktags.BasicHTMLElement.BasicElement.SetClass("form-control");
 		ibookmarktags.BasicHTMLElement.BasicElement.SetID(id + "createBookmarkInputTags");
 		$r = dc3.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ibookmarktags); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		_r$8 = createButton("check", id + "createBookmarkSubmit", "visible", new sliceType$4(["float-left"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		_r$8 = createButton("check-bold", id + "createBookmarkSubmit", false, new sliceType$4(["float-left"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
 		submit = _r$8;
 		$r = dc4.BasicHTMLElement.BasicElement.BasicNode.AppendChild(submit); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc1); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
@@ -36448,44 +36611,103 @@ $packages["main"] = (function() {
 		$s = -1; return dr;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: createAddBookmarkForm }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f.dc1 = dc1; $f.dc2 = dc2; $f.dc3 = dc3; $f.dc4 = dc4; $f.dr = dr; $f.ibookmarkname = ibookmarkname; $f.ibookmarktags = ibookmarktags; $f.ibookmarkurl = ibookmarkurl; $f.id = id; $f.submit = submit; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	createUpdateBookmarkForm = function(id) {
+		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, dc1, dc2, dc3, dc4, dr, ibookmarkname, ibookmarktags, ibookmarkurl, id, submit, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; dc1 = $f.dc1; dc2 = $f.dc2; dc3 = $f.dc3; dc4 = $f.dc4; dr = $f.dr; ibookmarkname = $f.ibookmarkname; ibookmarktags = $f.ibookmarktags; ibookmarkurl = $f.ibookmarkurl; id = $f.id; submit = $f.submit; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_r = document.CreateElement("div"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		dr = $assertType(_r, ptrType);
+		dr.BasicHTMLElement.BasicElement.SetID(id + "updateBookmark");
+		dr.BasicHTMLElement.BasicElement.SetClass("row updateBookmark mt-2 mb-2 ml-5 mr-5");
+		_r$1 = document.CreateElement("div"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		dc1 = $assertType(_r$1, ptrType);
+		dc1.BasicHTMLElement.BasicElement.SetClass("col col-12");
+		_r$2 = document.CreateElement("div"); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		dc2 = $assertType(_r$2, ptrType);
+		dc2.BasicHTMLElement.BasicElement.SetClass("col col-12");
+		_r$3 = document.CreateElement("div"); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		dc3 = $assertType(_r$3, ptrType);
+		dc3.BasicHTMLElement.BasicElement.SetClass("col col-12");
+		_r$4 = document.CreateElement("div"); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		dc4 = $assertType(_r$4, ptrType);
+		dc4.BasicHTMLElement.BasicElement.SetClass("col col-1");
+		_r$5 = document.CreateElement("input"); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		ibookmarkname = $assertType(_r$5, ptrType$9);
+		ibookmarkname.BasicHTMLElement.BasicElement.SetAttribute("type", "text");
+		ibookmarkname.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "bookmark name");
+		ibookmarkname.BasicHTMLElement.BasicElement.SetClass("form-control");
+		ibookmarkname.BasicHTMLElement.BasicElement.SetID(id + "updateBookmarkInputName");
+		$r = dc1.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ibookmarkname); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$6 = document.CreateElement("input"); /* */ $s = 8; case 8: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		ibookmarkurl = $assertType(_r$6, ptrType$9);
+		ibookmarkurl.BasicHTMLElement.BasicElement.SetAttribute("type", "text");
+		ibookmarkurl.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "bookmark URL");
+		ibookmarkurl.BasicHTMLElement.BasicElement.SetClass("form-control");
+		ibookmarkurl.BasicHTMLElement.BasicElement.SetID(id + "updateBookmarkInputUrl");
+		$r = dc2.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ibookmarkurl); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$7 = document.CreateElement("select"); /* */ $s = 10; case 10: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		ibookmarktags = $assertType(_r$7, ptrType$10);
+		ibookmarktags.BasicHTMLElement.BasicElement.SetAttribute("placeholder", "tags");
+		ibookmarktags.BasicHTMLElement.BasicElement.SetAttribute("multiple", "multiple");
+		ibookmarktags.BasicHTMLElement.BasicElement.SetClass("form-control");
+		ibookmarktags.BasicHTMLElement.BasicElement.SetID(id + "updateBookmarkInputTags");
+		$r = dc3.BasicHTMLElement.BasicElement.BasicNode.AppendChild(ibookmarktags); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$8 = createButton("check-bold", id + "updateBookmarkSubmit", false, new sliceType$4(["float-left"])); /* */ $s = 12; case 12: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+		submit = _r$8;
+		$r = dc4.BasicHTMLElement.BasicElement.BasicNode.AppendChild(submit); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc1); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc2); /* */ $s = 15; case 15: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc3); /* */ $s = 16; case 16: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = dr.BasicHTMLElement.BasicElement.BasicNode.AppendChild(dc4); /* */ $s = 17; case 17: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$s = -1; return dr;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: createUpdateBookmarkForm }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f.dc1 = dc1; $f.dc2 = dc2; $f.dc3 = dc3; $f.dc4 = dc4; $f.dr = dr; $f.ibookmarkname = ibookmarkname; $f.ibookmarktags = ibookmarktags; $f.ibookmarkurl = ibookmarkurl; $f.id = id; $f.submit = submit; $f.$s = $s; $f.$r = $r; return $f;
+	};
 	hideActionButtons = function() {
-		var _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = jQuery(new sliceType$2([new $String(".content-cut")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-		_r$1 = $clone(_r, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1 = $clone(_r, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
 		_r$2 = jQuery(new sliceType$2([new $String(".delete-outline")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-		_r$3 = $clone(_r$2, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+		_r$3 = $clone(_r$2, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		_r$3;
 		_r$4 = jQuery(new sliceType$2([new $String(".content-paste")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		_r$5 = $clone(_r$4, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		_r$5 = $clone(_r$4, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		_r$5;
 		_r$6 = jQuery(new sliceType$2([new $String(".star-outline")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-		_r$7 = $clone(_r$6, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		_r$7 = $clone(_r$6, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
 		_r$7;
 		_r$8 = jQuery(new sliceType$2([new $String(".star")])); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
-		_r$9 = $clone(_r$8, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 10; case 10: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+		_r$9 = $clone(_r$8, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 10; case 10: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
 		_r$9;
 		_r$10 = jQuery(new sliceType$2([new $String(".folder-plus-outline")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
-		_r$11 = $clone(_r$10, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 12; case 12: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
+		_r$11 = $clone(_r$10, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 12; case 12: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
 		_r$11;
 		_r$12 = jQuery(new sliceType$2([new $String(".bookmark-plus-outline")])); /* */ $s = 13; case 13: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
-		_r$13 = $clone(_r$12, jquery.JQuery).AddClass(new $String("invisible")); /* */ $s = 14; case 14: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
+		_r$13 = $clone(_r$12, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 14; case 14: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
 		_r$13;
+		_r$14 = jQuery(new sliceType$2([new $String(".pencil-outline")])); /* */ $s = 15; case 15: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+		_r$15 = $clone(_r$14, jquery.JQuery).Toggle(new sliceType$2([new $Bool(false)])); /* */ $s = 16; case 16: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+		_r$15;
 		$s = -1; return;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: hideActionButtons }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: hideActionButtons }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	hideForms = function() {
-		var _r, _r$1, _r$2, _r$3, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_r = jQuery(new sliceType$2([new $String(".addFolder")])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_r$1 = $clone(_r, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		_r$1;
 		_r$2 = jQuery(new sliceType$2([new $String(".addBookmark")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		_r$3 = $clone(_r$2, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		_r$3;
+		_r$4 = jQuery(new sliceType$2([new $String(".updateFolder")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$5 = $clone(_r$4, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		_r$5;
+		_r$6 = jQuery(new sliceType$2([new $String(".updateBookmark")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+		_r$7 = $clone(_r$6, jquery.JQuery).Remove(new sliceType$2([])); /* */ $s = 8; case 8: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+		_r$7;
 		$s = -1; return;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: hideForms }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: hideForms }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	resetConfirmButtons = function() {
 		var _r, _r$1, _r$2, _r$3, $s, $r;
@@ -36500,8 +36722,8 @@ $packages["main"] = (function() {
 		/* */ } return; } if ($f === undefined) { $f = { $blk: resetConfirmButtons }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	bindButtonEvents = function(id, isBookmark) {
-		var _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$20, _r$21, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _tuple, id, idInt, isBookmark, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _tuple = $f._tuple; id = $f.id; idInt = $f.idInt; isBookmark = $f.isBookmark; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _r, _r$1, _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$2, _r$20, _r$21, _r$22, _r$23, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _tuple, id, idInt, isBookmark, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$2 = $f._r$2; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _tuple = $f._tuple; id = $f.id; idInt = $f.idInt; isBookmark = $f.isBookmark; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		id = [id];
 		idInt = [idInt];
 		_tuple = strconv.Atoi(id[0]);
@@ -36526,8 +36748,7 @@ $packages["main"] = (function() {
 			_r$3 = fmt.Println(new sliceType$2([new $String("clic on " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 			_r$3;
 			$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = resetConfirmButtons(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = resetConfirmButtons(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$s = -1; return;
 			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$3 = _r$3; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(id, idInt))])); /* */ $s = 4; case 4: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
@@ -36539,8 +36760,7 @@ $packages["main"] = (function() {
 			_r$5 = fmt.Println(new sliceType$2([new $String("clic on " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 			_r$5;
 			$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			$r = resetConfirmButtons(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = resetConfirmButtons(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$s = -1; return;
 			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$5 = _r$5; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(id, idInt))])); /* */ $s = 6; case 6: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
@@ -36564,38 +36784,41 @@ $packages["main"] = (function() {
 		_r$7;
 		_r$8 = jQuery(new sliceType$2([new $String("#" + id[0] + "menu")])); /* */ $s = 9; case 9: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
 		_r$9 = $clone(_r$8, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
-			var _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$20, _r$21, _r$22, _r$9, e, $s, $r;
-			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$9 = $f._r$9; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			var _r$10, _r$11, _r$12, _r$13, _r$14, _r$15, _r$16, _r$17, _r$18, _r$19, _r$20, _r$21, _r$22, _r$23, _r$24, _r$9, e, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$12 = $f._r$12; _r$13 = $f._r$13; _r$14 = $f._r$14; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$9 = $f._r$9; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			e.StopPropagation();
 			$r = hideActionButtons(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$r = hideForms(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$r = resetConfirmButtons(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_r$9 = jQuery(new sliceType$2([new $String("#" + id[0] + "cut")])); /* */ $s = 4; case 4: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
-			_r$10 = $clone(_r$9, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 5; case 5: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
+			_r$10 = $clone(_r$9, jquery.JQuery).Toggle(new sliceType$2([])); /* */ $s = 5; case 5: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
 			_r$10;
 			_r$11 = jQuery(new sliceType$2([new $String("#" + id[0] + "delete")])); /* */ $s = 6; case 6: if($c) { $c = false; _r$11 = _r$11.$blk(); } if (_r$11 && _r$11.$blk !== undefined) { break s; }
-			_r$12 = $clone(_r$11, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 7; case 7: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
+			_r$12 = $clone(_r$11, jquery.JQuery).Toggle(new sliceType$2([])); /* */ $s = 7; case 7: if($c) { $c = false; _r$12 = _r$12.$blk(); } if (_r$12 && _r$12.$blk !== undefined) { break s; }
 			_r$12;
 			_r$13 = jQuery(new sliceType$2([new $String("#" + id[0] + "star")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
-			_r$14 = $clone(_r$13, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 9; case 9: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+			_r$14 = $clone(_r$13, jquery.JQuery).Toggle(new sliceType$2([])); /* */ $s = 9; case 9: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
 			_r$14;
 			_r$15 = jQuery(new sliceType$2([new $String("#" + id[0] + "addFolder")])); /* */ $s = 10; case 10: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
-			_r$16 = $clone(_r$15, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 11; case 11: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+			_r$16 = $clone(_r$15, jquery.JQuery).Toggle(new sliceType$2([])); /* */ $s = 11; case 11: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
 			_r$16;
 			_r$17 = jQuery(new sliceType$2([new $String("#" + id[0] + "addBookmark")])); /* */ $s = 12; case 12: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
-			_r$18 = $clone(_r$17, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 13; case 13: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+			_r$18 = $clone(_r$17, jquery.JQuery).Toggle(new sliceType$2([])); /* */ $s = 13; case 13: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
 			_r$18;
-			_r$19 = jQuery(new sliceType$2([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 16; case 16: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
-			_r$20 = $clone(_r$19, jquery.JQuery).Val(); /* */ $s = 17; case 17: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
-			/* */ if (!(_r$20 === "")) { $s = 14; continue; }
-			/* */ $s = 15; continue;
-			/* if (!(_r$20 === "")) { */ case 14:
-				_r$21 = jQuery(new sliceType$2([new $String("#" + id[0] + "paste")])); /* */ $s = 18; case 18: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-				_r$22 = $clone(_r$21, jquery.JQuery).RemoveClass("invisible"); /* */ $s = 19; case 19: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
-				_r$22;
-			/* } */ case 15:
+			_r$19 = jQuery(new sliceType$2([new $String("#" + id[0] + "edit")])); /* */ $s = 14; case 14: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
+			_r$20 = $clone(_r$19, jquery.JQuery).Toggle(new sliceType$2([])); /* */ $s = 15; case 15: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
+			_r$20;
+			_r$21 = jQuery(new sliceType$2([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 18; case 18: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
+			_r$22 = $clone(_r$21, jquery.JQuery).Val(); /* */ $s = 19; case 19: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
+			/* */ if (!(_r$22 === "")) { $s = 16; continue; }
+			/* */ $s = 17; continue;
+			/* if (!(_r$22 === "")) { */ case 16:
+				_r$23 = jQuery(new sliceType$2([new $String("#" + id[0] + "paste")])); /* */ $s = 20; case 20: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
+				_r$24 = $clone(_r$23, jquery.JQuery).Toggle(new sliceType$2([])); /* */ $s = 21; case 21: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
+				_r$24;
+			/* } */ case 17:
 			$s = -1; return;
-			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$9 = _r$9; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$9 = _r$9; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(id, idInt))])); /* */ $s = 10; case 10: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
 		_r$9;
 		_r$10 = jQuery(new sliceType$2([new $String("#" + id[0] + "cut")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$10 = _r$10.$blk(); } if (_r$10 && _r$10.$blk !== undefined) { break s; }
@@ -36646,105 +36869,227 @@ $packages["main"] = (function() {
 			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(id, idInt))])); /* */ $s = 14; case 14: if($c) { $c = false; _r$13 = _r$13.$blk(); } if (_r$13 && _r$13.$blk !== undefined) { break s; }
 		_r$13;
-		/* */ if (!isBookmark) { $s = 15; continue; }
-		/* */ $s = 16; continue;
-		/* if (!isBookmark) { */ case 15:
-			_r$14 = jQuery(new sliceType$2([new $String("#" + id[0] + "paste")])); /* */ $s = 17; case 17: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
-			_r$15 = $clone(_r$14, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
-				var _r$15, _r$16, _r$17, _r$18, _r$19, _tuple$1, cuttedid, cuttedidInt, e, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _tuple$1 = $f._tuple$1; cuttedid = $f.cuttedid; cuttedidInt = $f.cuttedidInt; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-				e.StopPropagation();
-				_r$15 = fmt.Println(new sliceType$2([new $String("clicked link paste " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+		_r$14 = jQuery(new sliceType$2([new $String("#" + id[0] + "edit")])); /* */ $s = 15; case 15: if($c) { $c = false; _r$14 = _r$14.$blk(); } if (_r$14 && _r$14.$blk !== undefined) { break s; }
+		_r$15 = $clone(_r$14, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
+			var _i, _r$15, _r$16, _r$17, _r$18, _r$19, _r$20, _r$21, _r$22, _r$23, _r$24, _r$25, _r$26, _r$27, _r$28, _r$29, _r$30, _r$31, _r$32, _r$33, _r$34, _r$35, _r$36, _r$37, _r$38, _r$39, _r$40, _r$41, _r$42, _r$43, _ref, b, e, f, o, t, tagsElements, text, value, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r$15 = $f._r$15; _r$16 = $f._r$16; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; _r$27 = $f._r$27; _r$28 = $f._r$28; _r$29 = $f._r$29; _r$30 = $f._r$30; _r$31 = $f._r$31; _r$32 = $f._r$32; _r$33 = $f._r$33; _r$34 = $f._r$34; _r$35 = $f._r$35; _r$36 = $f._r$36; _r$37 = $f._r$37; _r$38 = $f._r$38; _r$39 = $f._r$39; _r$40 = $f._r$40; _r$41 = $f._r$41; _r$42 = $f._r$42; _r$43 = $f._r$43; _ref = $f._ref; b = $f.b; e = $f.e; f = $f.f; o = $f.o; t = $f.t; tagsElements = $f.tagsElements; text = $f.text; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			e.StopPropagation();
+			$r = hideActionButtons(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = hideForms(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = resetConfirmButtons(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			/* */ if (strings.Index(id[0], "-") === -1) { $s = 4; continue; }
+			/* */ $s = 5; continue;
+			/* if (strings.Index(id[0], "-") === -1) { */ case 4:
+				_r$15 = fmt.Println(new sliceType$2([new $String("clicked edit folder" + id[0])])); /* */ $s = 7; case 7: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
 				_r$15;
-				_r$16 = jQuery(new sliceType$2([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 2; case 2: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
-				_r$17 = $clone(_r$16, jquery.JQuery).Val(); /* */ $s = 3; case 3: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
-				cuttedid = _r$17;
+				_r$16 = createUpdateFolderForm(id[0]); /* */ $s = 8; case 8: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+				f = _r$16;
+				_r$17 = jQuery(new sliceType$2([new $String("#" + id[0] + "actionDiv")])); /* */ $s = 9; case 9: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
+				_r$18 = $clone(_r$17, jquery.JQuery).Append(new sliceType$2([f])); /* */ $s = 10; case 10: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+				_r$18;
+				_r$19 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateFolderInput")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
+				_r$20 = jQuery(new sliceType$2([new $String("button#" + id[0] + "folderLink")])); /* */ $s = 12; case 12: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
+				_r$21 = $clone(_r$20, jquery.JQuery).Html(); /* */ $s = 13; case 13: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
+				_r$22 = $clone(_r$19, jquery.JQuery).SetVal(new $String(_r$21)); /* */ $s = 14; case 14: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
+				_r$22;
+				_r$23 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateFolderSubmit")])); /* */ $s = 15; case 15: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
+				_r$24 = $clone(_r$23, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e$1) {
+					var _r$24, _r$25, _r$26, _tuple$1, e$1, fldid, folderName, $s, $r;
+					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; _tuple$1 = $f._tuple$1; e$1 = $f.e$1; fldid = $f.fldid; folderName = $f.folderName; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+					e$1.StopPropagation();
+					_r$24 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateFolderInput")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
+					_r$25 = $clone(_r$24, jquery.JQuery).Val(); /* */ $s = 2; case 2: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
+					folderName = _r$25;
+					_r$26 = fmt.Println(new sliceType$2([new $String("update folder " + folderName + " of " + id[0])])); /* */ $s = 3; case 3: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
+					_r$26;
+					_tuple$1 = strconv.Atoi(id[0]);
+					fldid = _tuple$1[0];
+					$go(updateFolder, [new types.Folder.ptr(fldid, folderName, ptrType$2.nil, 0)]);
+					$s = -1; return;
+					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._tuple$1 = _tuple$1; $f.e$1 = e$1; $f.fldid = fldid; $f.folderName = folderName; $f.$s = $s; $f.$r = $r; return $f;
+				}; })(id, idInt))])); /* */ $s = 16; case 16: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
+				_r$24;
+				$s = 6; continue;
+			/* } else { */ case 5:
+				_r$25 = fmt.Println(new sliceType$2([new $String("clicked edit bookmark" + id[0])])); /* */ $s = 17; case 17: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
+				_r$25;
+				_r$26 = createUpdateBookmarkForm(id[0]); /* */ $s = 18; case 18: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
+				b = _r$26;
+				_r$27 = jQuery(new sliceType$2([new $String("#" + id[0] + "actionDiv")])); /* */ $s = 19; case 19: if($c) { $c = false; _r$27 = _r$27.$blk(); } if (_r$27 && _r$27.$blk !== undefined) { break s; }
+				_r$28 = $clone(_r$27, jquery.JQuery).Append(new sliceType$2([b])); /* */ $s = 20; case 20: if($c) { $c = false; _r$28 = _r$28.$blk(); } if (_r$28 && _r$28.$blk !== undefined) { break s; }
+				_r$28;
+				_r$29 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateBookmarkInputName")])); /* */ $s = 21; case 21: if($c) { $c = false; _r$29 = _r$29.$blk(); } if (_r$29 && _r$29.$blk !== undefined) { break s; }
+				_r$30 = jQuery(new sliceType$2([new $String("a#" + id[0] + "bookmarkLink")])); /* */ $s = 22; case 22: if($c) { $c = false; _r$30 = _r$30.$blk(); } if (_r$30 && _r$30.$blk !== undefined) { break s; }
+				_r$31 = $clone(_r$30, jquery.JQuery).Html(); /* */ $s = 23; case 23: if($c) { $c = false; _r$31 = _r$31.$blk(); } if (_r$31 && _r$31.$blk !== undefined) { break s; }
+				_r$32 = $clone(_r$29, jquery.JQuery).SetVal(new $String(_r$31)); /* */ $s = 24; case 24: if($c) { $c = false; _r$32 = _r$32.$blk(); } if (_r$32 && _r$32.$blk !== undefined) { break s; }
+				_r$32;
+				_r$33 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateBookmarkInputUrl")])); /* */ $s = 25; case 25: if($c) { $c = false; _r$33 = _r$33.$blk(); } if (_r$33 && _r$33.$blk !== undefined) { break s; }
+				_r$34 = jQuery(new sliceType$2([new $String("a#" + id[0] + "bookmarkLink")])); /* */ $s = 26; case 26: if($c) { $c = false; _r$34 = _r$34.$blk(); } if (_r$34 && _r$34.$blk !== undefined) { break s; }
+				_r$35 = $clone(_r$34, jquery.JQuery).Attr("href"); /* */ $s = 27; case 27: if($c) { $c = false; _r$35 = _r$35.$blk(); } if (_r$35 && _r$35.$blk !== undefined) { break s; }
+				_r$36 = $clone(_r$33, jquery.JQuery).SetVal(new $String(_r$35)); /* */ $s = 28; case 28: if($c) { $c = false; _r$36 = _r$36.$blk(); } if (_r$36 && _r$36.$blk !== undefined) { break s; }
+				_r$36;
+				_r$37 = document.GetElementsByClassName(id[0] + "badge"); /* */ $s = 29; case 29: if($c) { $c = false; _r$37 = _r$37.$blk(); } if (_r$37 && _r$37.$blk !== undefined) { break s; }
+				tagsElements = _r$37;
+				_ref = tagsElements;
+				_i = 0;
+				/* while (true) { */ case 30:
+					/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 31; continue; }
+					t = ((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]);
+					value = $assertType(t, ptrType$5).BasicHTMLElement.BasicElement.GetAttribute("value");
+					text = $assertType(t, ptrType$5).BasicHTMLElement.BasicElement.InnerHTML();
+					_r$38 = document.CreateElement("option"); /* */ $s = 32; case 32: if($c) { $c = false; _r$38 = _r$38.$blk(); } if (_r$38 && _r$38.$blk !== undefined) { break s; }
+					o = $assertType(_r$38, ptrType$11);
+					o.BasicHTMLElement.BasicElement.SetAttribute("value", value);
+					o.BasicHTMLElement.BasicElement.BasicNode.Object.selected = $externalize(true, $Bool);
+					o.BasicHTMLElement.BasicElement.SetInnerHTML(text);
+					_r$39 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateBookmarkInputTags")])); /* */ $s = 33; case 33: if($c) { $c = false; _r$39 = _r$39.$blk(); } if (_r$39 && _r$39.$blk !== undefined) { break s; }
+					_r$40 = $clone(_r$39, jquery.JQuery).Append(new sliceType$2([o])); /* */ $s = 34; case 34: if($c) { $c = false; _r$40 = _r$40.$blk(); } if (_r$40 && _r$40.$blk !== undefined) { break s; }
+					_r$41 = $clone(_r$40, jquery.JQuery).Call("trigger", new sliceType$2([new $String("change")])); /* */ $s = 35; case 35: if($c) { $c = false; _r$41 = _r$41.$blk(); } if (_r$41 && _r$41.$blk !== undefined) { break s; }
+					_r$41;
+					_i++;
+				/* } */ $s = 30; continue; case 31:
+				$global.select2ify($externalize(id[0], $String));
+				_r$42 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateBookmarkSubmit")])); /* */ $s = 36; case 36: if($c) { $c = false; _r$42 = _r$42.$blk(); } if (_r$42 && _r$42.$blk !== undefined) { break s; }
+				_r$43 = $clone(_r$42, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e$1) {
+					var _entry, _entry$1, _i$1, _r$43, _r$44, _r$45, _r$46, _r$47, _r$48, _ref$1, _tuple$1, b$1, bookmarkName, bookmarkTags, bookmarkUrl, e$1, id$1, t$1, text$1, tid, $s, $r;
+					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _entry = $f._entry; _entry$1 = $f._entry$1; _i$1 = $f._i$1; _r$43 = $f._r$43; _r$44 = $f._r$44; _r$45 = $f._r$45; _r$46 = $f._r$46; _r$47 = $f._r$47; _r$48 = $f._r$48; _ref$1 = $f._ref$1; _tuple$1 = $f._tuple$1; b$1 = $f.b$1; bookmarkName = $f.bookmarkName; bookmarkTags = $f.bookmarkTags; bookmarkUrl = $f.bookmarkUrl; e$1 = $f.e$1; id$1 = $f.id$1; t$1 = $f.t$1; text$1 = $f.text$1; tid = $f.tid; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+					e$1.StopPropagation();
+					_r$43 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateBookmarkInputName")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$43 = _r$43.$blk(); } if (_r$43 && _r$43.$blk !== undefined) { break s; }
+					_r$44 = $clone(_r$43, jquery.JQuery).Val(); /* */ $s = 2; case 2: if($c) { $c = false; _r$44 = _r$44.$blk(); } if (_r$44 && _r$44.$blk !== undefined) { break s; }
+					bookmarkName = _r$44;
+					_r$45 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateBookmarkInputUrl")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$45 = _r$45.$blk(); } if (_r$45 && _r$45.$blk !== undefined) { break s; }
+					_r$46 = $clone(_r$45, jquery.JQuery).Val(); /* */ $s = 4; case 4: if($c) { $c = false; _r$46 = _r$46.$blk(); } if (_r$46 && _r$46.$blk !== undefined) { break s; }
+					bookmarkUrl = _r$46;
+					_r$47 = jQuery(new sliceType$2([new $String("#" + id[0] + "updateBookmarkInputTags")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$47 = _r$47.$blk(); } if (_r$47 && _r$47.$blk !== undefined) { break s; }
+					_r$48 = $clone(_r$47, jquery.JQuery).Call("select2", new sliceType$2([new $String("data")])); /* */ $s = 6; case 6: if($c) { $c = false; _r$48 = _r$48.$blk(); } if (_r$48 && _r$48.$blk !== undefined) { break s; }
+					bookmarkTags = $clone(_r$48, jquery.JQuery);
+					b$1 = new types.Bookmark.ptr(idInt[0], bookmarkName, bookmarkUrl, "", false, ptrType$2.nil, sliceType$3.nil);
+					_ref$1 = $clone(bookmarkTags, jquery.JQuery).ToArray();
+					_i$1 = 0;
+					while (true) {
+						if (!(_i$1 < _ref$1.$length)) { break; }
+						t$1 = ((_i$1 < 0 || _i$1 >= _ref$1.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref$1.$array[_ref$1.$offset + _i$1]);
+						text$1 = $assertType((_entry = $assertType(t$1, mapType)[$String.keyFor("text")], _entry !== undefined ? _entry.v : $ifaceNil), $String);
+						id$1 = $assertType((_entry$1 = $assertType(t$1, mapType)[$String.keyFor("id")], _entry$1 !== undefined ? _entry$1.v : $ifaceNil), $String);
+						tid = 0;
+						if (text$1 === id$1) {
+							tid = -1;
+						} else {
+							_tuple$1 = strconv.Atoi(id$1);
+							tid = _tuple$1[0];
+						}
+						b$1.Tags = $append(b$1.Tags, new types.Tag.ptr(tid, text$1));
+						_i$1++;
+					}
+					$go(updateBookmark, [$clone(b$1, types.Bookmark)]);
+					$s = -1; return;
+					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._entry = _entry; $f._entry$1 = _entry$1; $f._i$1 = _i$1; $f._r$43 = _r$43; $f._r$44 = _r$44; $f._r$45 = _r$45; $f._r$46 = _r$46; $f._r$47 = _r$47; $f._r$48 = _r$48; $f._ref$1 = _ref$1; $f._tuple$1 = _tuple$1; $f.b$1 = b$1; $f.bookmarkName = bookmarkName; $f.bookmarkTags = bookmarkTags; $f.bookmarkUrl = bookmarkUrl; $f.e$1 = e$1; $f.id$1 = id$1; $f.t$1 = t$1; $f.text$1 = text$1; $f.tid = tid; $f.$s = $s; $f.$r = $r; return $f;
+				}; })(id, idInt))])); /* */ $s = 37; case 37: if($c) { $c = false; _r$43 = _r$43.$blk(); } if (_r$43 && _r$43.$blk !== undefined) { break s; }
+				_r$43;
+			/* } */ case 6:
+			$s = -1; return;
+			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._i = _i; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$32 = _r$32; $f._r$33 = _r$33; $f._r$34 = _r$34; $f._r$35 = _r$35; $f._r$36 = _r$36; $f._r$37 = _r$37; $f._r$38 = _r$38; $f._r$39 = _r$39; $f._r$40 = _r$40; $f._r$41 = _r$41; $f._r$42 = _r$42; $f._r$43 = _r$43; $f._ref = _ref; $f.b = b; $f.e = e; $f.f = f; $f.o = o; $f.t = t; $f.tagsElements = tagsElements; $f.text = text; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(id, idInt))])); /* */ $s = 16; case 16: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
+		_r$15;
+		/* */ if (!isBookmark) { $s = 17; continue; }
+		/* */ $s = 18; continue;
+		/* if (!isBookmark) { */ case 17:
+			_r$16 = jQuery(new sliceType$2([new $String("#" + id[0] + "paste")])); /* */ $s = 19; case 19: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
+			_r$17 = $clone(_r$16, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
+				var _r$17, _r$18, _r$19, _r$20, _r$21, _tuple$1, cuttedid, cuttedidInt, e, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$20 = $f._r$20; _r$21 = $f._r$21; _tuple$1 = $f._tuple$1; cuttedid = $f.cuttedid; cuttedidInt = $f.cuttedidInt; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				e.StopPropagation();
+				_r$17 = fmt.Println(new sliceType$2([new $String("clicked link paste " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
+				_r$17;
+				_r$18 = jQuery(new sliceType$2([new $String("input[type=hidden][name=cutednodeid]")])); /* */ $s = 2; case 2: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+				_r$19 = $clone(_r$18, jquery.JQuery).Val(); /* */ $s = 3; case 3: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
+				cuttedid = _r$19;
 				_tuple$1 = strconv.Atoi(cuttedid);
 				cuttedidInt = _tuple$1[0];
 				/* */ if (strings.Index(cuttedid, "-") === -1) { $s = 4; continue; }
 				/* */ $s = 5; continue;
 				/* if (strings.Index(cuttedid, "-") === -1) { */ case 4:
-					_r$18 = fmt.Println(new sliceType$2([new $String("move folder")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
-					_r$18;
+					_r$20 = fmt.Println(new sliceType$2([new $String("move folder")])); /* */ $s = 7; case 7: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
+					_r$20;
 					$go(moveFolder, [new types.Folder.ptr(cuttedidInt, "", new types.Folder.ptr(idInt[0], "", ptrType$2.nil, 0), 0)]);
 					$s = 6; continue;
 				/* } else { */ case 5:
-					_r$19 = fmt.Println(new sliceType$2([new $String("move bookmark")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
-					_r$19;
+					_r$21 = fmt.Println(new sliceType$2([new $String("move bookmark")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
+					_r$21;
 					$go(moveBookmark, [new types.Bookmark.ptr(cuttedidInt, "", "", "", false, new types.Folder.ptr(idInt[0], "", ptrType$2.nil, 0), sliceType$3.nil)]);
 				/* } */ case 6:
 				$r = hideActionButtons(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._tuple$1 = _tuple$1; $f.cuttedid = cuttedid; $f.cuttedidInt = cuttedidInt; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(id, idInt))])); /* */ $s = 18; case 18: if($c) { $c = false; _r$15 = _r$15.$blk(); } if (_r$15 && _r$15.$blk !== undefined) { break s; }
-			_r$15;
-			_r$16 = jQuery(new sliceType$2([new $String("#" + id[0] + "addFolder")])); /* */ $s = 19; case 19: if($c) { $c = false; _r$16 = _r$16.$blk(); } if (_r$16 && _r$16.$blk !== undefined) { break s; }
-			_r$17 = $clone(_r$16, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
-				var _r$17, _r$18, _r$19, _r$20, _r$21, _r$22, e, f, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$17 = $f._r$17; _r$18 = $f._r$18; _r$19 = $f._r$19; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; e = $f.e; f = $f.f; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-				e.StopPropagation();
-				_r$17 = fmt.Println(new sliceType$2([new $String("clicked link add folder " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
-				_r$17;
-				$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				$r = resetConfirmButtons(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				_r$18 = createAddFolderForm(id[0]); /* */ $s = 5; case 5: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
-				f = _r$18;
-				_r$19 = jQuery(new sliceType$2([new $String("#" + id[0] + "actionDiv")])); /* */ $s = 6; case 6: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
-				_r$20 = $clone(_r$19, jquery.JQuery).Append(new sliceType$2([f])); /* */ $s = 7; case 7: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
-				_r$20;
-				_r$21 = jQuery(new sliceType$2([new $String("#" + id[0] + "createFolderSubmit")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-				_r$22 = $clone(_r$21, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e$1) {
-					var _r$22, _r$23, _r$24, e$1, folderName, $s, $r;
-					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; e$1 = $f.e$1; folderName = $f.folderName; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-					e$1.StopPropagation();
-					_r$22 = jQuery(new sliceType$2([new $String("#" + id[0] + "createFolderInput")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
-					_r$23 = $clone(_r$22, jquery.JQuery).Val(); /* */ $s = 2; case 2: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
-					folderName = _r$23;
-					_r$24 = fmt.Println(new sliceType$2([new $String("create folder " + folderName + " of " + id[0])])); /* */ $s = 3; case 3: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
-					_r$24;
-					$go(createFolder, [new types.Folder.ptr(0, folderName, new types.Folder.ptr(idInt[0], "", ptrType$2.nil, 0), 0)]);
-					$s = -1; return;
-					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f.e$1 = e$1; $f.folderName = folderName; $f.$s = $s; $f.$r = $r; return $f;
-				}; })(id, idInt))])); /* */ $s = 9; case 9: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
-				_r$22;
-				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f.e = e; $f.f = f; $f.$s = $s; $f.$r = $r; return $f;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._tuple$1 = _tuple$1; $f.cuttedid = cuttedid; $f.cuttedidInt = cuttedidInt; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
 			}; })(id, idInt))])); /* */ $s = 20; case 20: if($c) { $c = false; _r$17 = _r$17.$blk(); } if (_r$17 && _r$17.$blk !== undefined) { break s; }
 			_r$17;
-			_r$18 = jQuery(new sliceType$2([new $String("#" + id[0] + "addBookmark")])); /* */ $s = 21; case 21: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
+			_r$18 = jQuery(new sliceType$2([new $String("#" + id[0] + "addFolder")])); /* */ $s = 21; case 21: if($c) { $c = false; _r$18 = _r$18.$blk(); } if (_r$18 && _r$18.$blk !== undefined) { break s; }
 			_r$19 = $clone(_r$18, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
-				var _r$19, _r$20, _r$21, _r$22, _r$23, _r$24, e, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$19 = $f._r$19; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				var _r$19, _r$20, _r$21, _r$22, _r$23, _r$24, e, f, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$19 = $f._r$19; _r$20 = $f._r$20; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; e = $f.e; f = $f.f; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 				e.StopPropagation();
-				_r$19 = fmt.Println(new sliceType$2([new $String("clicked link add bookmark " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
+				_r$19 = fmt.Println(new sliceType$2([new $String("clicked link add folder " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
 				_r$19;
 				$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				$r = resetConfirmButtons(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-				_r$20 = jQuery(new sliceType$2([new $String("#" + id[0] + "actionDiv")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
-				_r$21 = createAddBookmarkForm(id[0]); /* */ $s = 6; case 6: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-				_r$22 = $clone(_r$20, jquery.JQuery).Append(new sliceType$2([_r$21])); /* */ $s = 7; case 7: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
+				_r$20 = createAddFolderForm(id[0]); /* */ $s = 5; case 5: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
+				f = _r$20;
+				_r$21 = jQuery(new sliceType$2([new $String("#" + id[0] + "actionDiv")])); /* */ $s = 6; case 6: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
+				_r$22 = $clone(_r$21, jquery.JQuery).Append(new sliceType$2([f])); /* */ $s = 7; case 7: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
 				_r$22;
-				$global.select2ify($externalize(id[0], $String));
-				_r$23 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkSubmit")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
+				_r$23 = jQuery(new sliceType$2([new $String("#" + id[0] + "createFolderSubmit")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
 				_r$24 = $clone(_r$23, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e$1) {
-					var _r$24, _r$25, _r$26, _r$27, _r$28, _r$29, _r$30, b, e$1, tags, ts, $s, $r;
-					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; _r$27 = $f._r$27; _r$28 = $f._r$28; _r$29 = $f._r$29; _r$30 = $f._r$30; b = $f.b; e$1 = $f.e$1; tags = $f.tags; ts = $f.ts; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+					var _r$24, _r$25, _r$26, e$1, folderName, $s, $r;
+					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; e$1 = $f.e$1; folderName = $f.folderName; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+					e$1.StopPropagation();
+					_r$24 = jQuery(new sliceType$2([new $String("#" + id[0] + "createFolderInput")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
+					_r$25 = $clone(_r$24, jquery.JQuery).Val(); /* */ $s = 2; case 2: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
+					folderName = _r$25;
+					_r$26 = fmt.Println(new sliceType$2([new $String("create folder " + folderName + " of " + id[0])])); /* */ $s = 3; case 3: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
+					_r$26;
+					$go(createFolder, [new types.Folder.ptr(0, folderName, new types.Folder.ptr(idInt[0], "", ptrType$2.nil, 0), 0)]);
+					$s = -1; return;
+					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f.e$1 = e$1; $f.folderName = folderName; $f.$s = $s; $f.$r = $r; return $f;
+				}; })(id, idInt))])); /* */ $s = 9; case 9: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
+				_r$24;
+				$s = -1; return;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$19 = _r$19; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f.e = e; $f.f = f; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(id, idInt))])); /* */ $s = 22; case 22: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
+			_r$19;
+			_r$20 = jQuery(new sliceType$2([new $String("#" + id[0] + "addBookmark")])); /* */ $s = 23; case 23: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
+			_r$21 = $clone(_r$20, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
+				var _r$21, _r$22, _r$23, _r$24, _r$25, _r$26, e, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; _r$26 = $f._r$26; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				e.StopPropagation();
+				_r$21 = fmt.Println(new sliceType$2([new $String("clicked link add bookmark " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
+				_r$21;
+				$r = hideActionButtons(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$r = hideForms(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$r = resetConfirmButtons(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				_r$22 = jQuery(new sliceType$2([new $String("#" + id[0] + "actionDiv")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
+				_r$23 = createAddBookmarkForm(id[0]); /* */ $s = 6; case 6: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
+				_r$24 = $clone(_r$22, jquery.JQuery).Append(new sliceType$2([_r$23])); /* */ $s = 7; case 7: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
+				_r$24;
+				$global.select2ify($externalize(id[0], $String));
+				_r$25 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkSubmit")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
+				_r$26 = $clone(_r$25, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e$1) {
+					var _r$26, _r$27, _r$28, _r$29, _r$30, _r$31, _r$32, b, e$1, tags, ts, $s, $r;
+					/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$26 = $f._r$26; _r$27 = $f._r$27; _r$28 = $f._r$28; _r$29 = $f._r$29; _r$30 = $f._r$30; _r$31 = $f._r$31; _r$32 = $f._r$32; b = $f.b; e$1 = $f.e$1; tags = $f.tags; ts = $f.ts; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 					ts = [ts];
 					e$1.StopPropagation();
 					b = new types.Bookmark.ptr(0, "", "", "", false, ptrType$2.nil, sliceType$3.nil);
-					_r$24 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkInputName")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
-					_r$25 = $clone(_r$24, jquery.JQuery).Val(); /* */ $s = 2; case 2: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
-					b.Title = _r$25;
-					_r$26 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkInputUrl")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
-					_r$27 = $clone(_r$26, jquery.JQuery).Val(); /* */ $s = 4; case 4: if($c) { $c = false; _r$27 = _r$27.$blk(); } if (_r$27 && _r$27.$blk !== undefined) { break s; }
-					b.URL = _r$27;
+					_r$26 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkInputName")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
+					_r$27 = $clone(_r$26, jquery.JQuery).Val(); /* */ $s = 2; case 2: if($c) { $c = false; _r$27 = _r$27.$blk(); } if (_r$27 && _r$27.$blk !== undefined) { break s; }
+					b.Title = _r$27;
+					_r$28 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkInputUrl")])); /* */ $s = 3; case 3: if($c) { $c = false; _r$28 = _r$28.$blk(); } if (_r$28 && _r$28.$blk !== undefined) { break s; }
+					_r$29 = $clone(_r$28, jquery.JQuery).Val(); /* */ $s = 4; case 4: if($c) { $c = false; _r$29 = _r$29.$blk(); } if (_r$29 && _r$29.$blk !== undefined) { break s; }
+					b.URL = _r$29;
 					b.Folder = new types.Folder.ptr(idInt[0], "", ptrType$2.nil, 0);
 					ts[0] = $makeSlice(sliceType$3, 0);
-					_r$28 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkInputTags")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$28 = _r$28.$blk(); } if (_r$28 && _r$28.$blk !== undefined) { break s; }
-					_r$29 = $clone(_r$28, jquery.JQuery).Call("select2", new sliceType$2([new $String("data")])); /* */ $s = 6; case 6: if($c) { $c = false; _r$29 = _r$29.$blk(); } if (_r$29 && _r$29.$blk !== undefined) { break s; }
-					tags = $clone(_r$29, jquery.JQuery);
+					_r$30 = jQuery(new sliceType$2([new $String("#" + id[0] + "createBookmarkInputTags")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$30 = _r$30.$blk(); } if (_r$30 && _r$30.$blk !== undefined) { break s; }
+					_r$31 = $clone(_r$30, jquery.JQuery).Call("select2", new sliceType$2([new $String("data")])); /* */ $s = 6; case 6: if($c) { $c = false; _r$31 = _r$31.$blk(); } if (_r$31 && _r$31.$blk !== undefined) { break s; }
+					tags = $clone(_r$31, jquery.JQuery);
 					$clone(tags, jquery.JQuery).Each((function(id, idInt, ts) { return function(i, data) {
 						var _entry, _entry$1, _tuple$1, data, i, id$1, text;
 						_tuple$1 = strconv.Atoi($assertType((_entry = $assertType(data, mapType)[$String.keyFor("id")], _entry !== undefined ? _entry.v : $ifaceNil), $String));
@@ -36754,44 +37099,44 @@ $packages["main"] = (function() {
 					}; })(id, idInt, ts));
 					b.Tags = ts[0];
 					$go(createBookmark, [$clone(b, types.Bookmark)]);
-					_r$30 = fmt.Println(new sliceType$2([new $String("create bookmark in " + id[0])])); /* */ $s = 7; case 7: if($c) { $c = false; _r$30 = _r$30.$blk(); } if (_r$30 && _r$30.$blk !== undefined) { break s; }
-					_r$30;
+					_r$32 = fmt.Println(new sliceType$2([new $String("create bookmark in " + id[0])])); /* */ $s = 7; case 7: if($c) { $c = false; _r$32 = _r$32.$blk(); } if (_r$32 && _r$32.$blk !== undefined) { break s; }
+					_r$32;
 					$s = -1; return;
-					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$30 = _r$30; $f.b = b; $f.e$1 = e$1; $f.tags = tags; $f.ts = ts; $f.$s = $s; $f.$r = $r; return $f;
-				}; })(id, idInt))])); /* */ $s = 9; case 9: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
-				_r$24;
+					/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$26 = _r$26; $f._r$27 = _r$27; $f._r$28 = _r$28; $f._r$29 = _r$29; $f._r$30 = _r$30; $f._r$31 = _r$31; $f._r$32 = _r$32; $f.b = b; $f.e$1 = e$1; $f.tags = tags; $f.ts = ts; $f.$s = $s; $f.$r = $r; return $f;
+				}; })(id, idInt))])); /* */ $s = 9; case 9: if($c) { $c = false; _r$26 = _r$26.$blk(); } if (_r$26 && _r$26.$blk !== undefined) { break s; }
+				_r$26;
 				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$19 = _r$19; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(id, idInt))])); /* */ $s = 22; case 22: if($c) { $c = false; _r$19 = _r$19.$blk(); } if (_r$19 && _r$19.$blk !== undefined) { break s; }
-			_r$19;
-		/* } */ case 16:
-		/* */ if (isBookmark) { $s = 23; continue; }
-		/* */ $s = 24; continue;
-		/* if (isBookmark) { */ case 23:
-			_r$20 = jQuery(new sliceType$2([new $String("#" + id[0] + "star")])); /* */ $s = 25; case 25: if($c) { $c = false; _r$20 = _r$20.$blk(); } if (_r$20 && _r$20.$blk !== undefined) { break s; }
-			_r$21 = $clone(_r$20, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
-				var _r$21, _r$22, _r$23, e, $s, $r;
-				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$21 = $f._r$21; _r$22 = $f._r$22; _r$23 = $f._r$23; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f._r$26 = _r$26; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(id, idInt))])); /* */ $s = 24; case 24: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
+			_r$21;
+		/* } */ case 18:
+		/* */ if (isBookmark) { $s = 25; continue; }
+		/* */ $s = 26; continue;
+		/* if (isBookmark) { */ case 25:
+			_r$22 = jQuery(new sliceType$2([new $String("#" + id[0] + "star")])); /* */ $s = 27; case 27: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
+			_r$23 = $clone(_r$22, jquery.JQuery).On(new sliceType$2([new $String("click"), new funcType((function(id, idInt) { return function $b(e) {
+				var _r$23, _r$24, _r$25, e, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r$23 = $f._r$23; _r$24 = $f._r$24; _r$25 = $f._r$25; e = $f.e; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 				e.StopPropagation();
-				_r$21 = fmt.Println(new sliceType$2([new $String("clicked link star " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-				_r$21;
-				_r$22 = jQuery(new sliceType$2([new $String("span#" + id[0] + "starspan")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$22 = _r$22.$blk(); } if (_r$22 && _r$22.$blk !== undefined) { break s; }
-				_r$23 = $clone(_r$22, jquery.JQuery).HasClass("mdi-star"); /* */ $s = 6; case 6: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
-				/* */ if (_r$23) { $s = 2; continue; }
+				_r$23 = fmt.Println(new sliceType$2([new $String("clicked link star " + id[0])])); /* */ $s = 1; case 1: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
+				_r$23;
+				_r$24 = jQuery(new sliceType$2([new $String("span#" + id[0] + "starspan")])); /* */ $s = 5; case 5: if($c) { $c = false; _r$24 = _r$24.$blk(); } if (_r$24 && _r$24.$blk !== undefined) { break s; }
+				_r$25 = $clone(_r$24, jquery.JQuery).HasClass("mdi-star"); /* */ $s = 6; case 6: if($c) { $c = false; _r$25 = _r$25.$blk(); } if (_r$25 && _r$25.$blk !== undefined) { break s; }
+				/* */ if (_r$25) { $s = 2; continue; }
 				/* */ $s = 3; continue;
-				/* if (_r$23) { */ case 2:
+				/* if (_r$25) { */ case 2:
 					$go(unstarBookmark, [id[0]]);
 					$s = 4; continue;
 				/* } else { */ case 3:
 					$go(starBookmark, [id[0]]);
 				/* } */ case 4:
 				$s = -1; return;
-				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
-			}; })(id, idInt))])); /* */ $s = 26; case 26: if($c) { $c = false; _r$21 = _r$21.$blk(); } if (_r$21 && _r$21.$blk !== undefined) { break s; }
-			_r$21;
-		/* } */ case 24:
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r$23 = _r$23; $f._r$24 = _r$24; $f._r$25 = _r$25; $f.e = e; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(id, idInt))])); /* */ $s = 28; case 28: if($c) { $c = false; _r$23 = _r$23.$blk(); } if (_r$23 && _r$23.$blk !== undefined) { break s; }
+			_r$23;
+		/* } */ case 26:
 		$s = -1; return;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: bindButtonEvents }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._tuple = _tuple; $f.id = id; $f.idInt = idInt; $f.isBookmark = isBookmark; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: bindButtonEvents }; } $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$12 = _r$12; $f._r$13 = _r$13; $f._r$14 = _r$14; $f._r$15 = _r$15; $f._r$16 = _r$16; $f._r$17 = _r$17; $f._r$18 = _r$18; $f._r$19 = _r$19; $f._r$2 = _r$2; $f._r$20 = _r$20; $f._r$21 = _r$21; $f._r$22 = _r$22; $f._r$23 = _r$23; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._tuple = _tuple; $f.id = id; $f.idInt = idInt; $f.isBookmark = isBookmark; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	displayNode = function(n, e, parentId) {
 		var _1, _arg, _arg$1, _arg$2, _arg$3, _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _ref, _tuple, b, c, c$1, e, f, id, isBookmark, n, parentId, u, $s, $r;
@@ -36810,7 +37155,7 @@ $packages["main"] = (function() {
 			/* */ if (_1) { $s = 8; continue; }
 			/* */ $s = 9; continue;
 			/* if (_1) { */ case 8:
-				_r$3 = createBookmarkNode(id, n.Title, n.URL, n.Icon, n.Starred); /* */ $s = 11; case 11: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+				_r$3 = createBookmarkNode($clone(n, types.Node)); /* */ $s = 11; case 11: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 				f = _r$3;
 				$r = e.BasicHTMLElement.BasicElement.BasicNode.AppendChild(f); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 				$s = 10; continue;
@@ -36840,13 +37185,53 @@ $packages["main"] = (function() {
 		$s = -1; return;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: displayNode }; } $f._1 = _1; $f._arg = _arg; $f._arg$1 = _arg$1; $f._arg$2 = _arg$2; $f._arg$3 = _arg$3; $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._tuple = _tuple; $f.b = b; $f.c = c; $f.c$1 = c$1; $f.e = e; $f.f = f; $f.id = id; $f.isBookmark = isBookmark; $f.n = n; $f.parentId = parentId; $f.u = u; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	getNodes = function() {
-		var _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _ref, _tuple, data, err, n, nodes, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _ref = $f._ref; _tuple = $f._tuple; data = $f.data; err = $f.err; n = $f.n; nodes = $f.nodes; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		nodes = [nodes];
+	getTags = function() {
+		var _i, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _ref, _tuple, data, err, id, t, tags, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _ref = $f._ref; _tuple = $f._tuple; data = $f.data; err = $f.err; id = $f.id; t = $f.t; tags = $f.tags; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		tags = [tags];
 		data = sliceType.nil;
 		err = $ifaceNil;
-		nodes[0] = sliceType$1.nil;
+		tags[0] = sliceType$5.nil;
+		_r = xhr.Send("GET", "/getTags/", sliceType.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_tuple = _r;
+		data = _tuple[0];
+		err = _tuple[1];
+		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 2; continue; }
+		/* */ $s = 3; continue;
+		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 2:
+			_r$1 = fmt.Println(new sliceType$2([new $String("error getting the tags")])); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			_r$1;
+		/* } */ case 3:
+		_r$2 = json.NewDecoder(strings.NewReader(($bytesToString(data)))).Decode((tags.$ptr || (tags.$ptr = new ptrType$12(function() { return this.$target[0]; }, function($v) { this.$target[0] = $v; }, tags)))); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		err = _r$2;
+		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 6; continue; }
+		/* */ $s = 7; continue;
+		/* if (!($interfaceIsEqual(err, $ifaceNil))) { */ case 6:
+			_r$3 = fmt.Println(new sliceType$2([new $String("error decoding the JSON")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+			_r$3;
+		/* } */ case 7:
+		_ref = tags[0];
+		_i = 0;
+		/* while (true) { */ case 9:
+			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 10; continue; }
+			t = $clone(((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]), types.Tag);
+			_r$4 = fmt.Sprintf("%d", new sliceType$2([new $Int(t.Id)])); /* */ $s = 11; case 11: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+			id = _r$4;
+			_r$5 = document.GetElementByID("tags"); /* */ $s = 12; case 12: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+			_r$6 = createTagNode(id, t.Name); /* */ $s = 13; case 13: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+			$r = _r$5.AppendChild(_r$6); /* */ $s = 14; case 14: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			_i++;
+		/* } */ $s = 9; continue; case 10:
+		$s = -1; return;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: getTags }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._ref = _ref; $f._tuple = _tuple; $f.data = data; $f.err = err; $f.id = id; $f.t = t; $f.tags = tags; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	getNodes = function() {
+		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _tuple, data, err, rootNode, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _tuple = $f._tuple; data = $f.data; err = $f.err; rootNode = $f.rootNode; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		rootNode = [rootNode];
+		data = sliceType.nil;
+		err = $ifaceNil;
+		rootNode[0] = new types.Node.ptr(0, "", "", false, false, "", false, sliceType$6.nil, sliceType$3.nil);
 		_r = xhr.Send("GET", "/getTree/", sliceType.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		_tuple = _r;
 		data = _tuple[0];
@@ -36857,7 +37242,7 @@ $packages["main"] = (function() {
 			_r$1 = fmt.Println(new sliceType$2([new $String("error getting the bookmarks")])); /* */ $s = 4; case 4: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			_r$1;
 		/* } */ case 3:
-		_r$2 = json.NewDecoder(strings.NewReader(($bytesToString(data)))).Decode((nodes.$ptr || (nodes.$ptr = new ptrType$1(function() { return this.$target[0]; }, function($v) { this.$target[0] = $v; }, nodes)))); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+		_r$2 = json.NewDecoder(strings.NewReader(($bytesToString(data)))).Decode(rootNode[0]); /* */ $s = 5; case 5: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 		err = _r$2;
 		/* */ if (!($interfaceIsEqual(err, $ifaceNil))) { $s = 6; continue; }
 		/* */ $s = 7; continue;
@@ -36865,19 +37250,12 @@ $packages["main"] = (function() {
 			_r$3 = fmt.Println(new sliceType$2([new $String("error decoding the JSON")])); /* */ $s = 8; case 8: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 			_r$3;
 		/* } */ case 7:
-		_ref = nodes[0];
-		_i = 0;
-		/* while (true) { */ case 9:
-			/* if (!(_i < _ref.$length)) { break; } */ if(!(_i < _ref.$length)) { $s = 10; continue; }
-			n = $clone(((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]), types.Node);
-			$r = displayNode($clone(n, types.Node), rootDiv, "1"); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			_i++;
-		/* } */ $s = 9; continue; case 10:
-		_r$4 = jQuery(new sliceType$2([new $String("#tree")])); /* */ $s = 12; case 12: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-		_r$5 = $clone(_r$4, jquery.JQuery).Trigger(new sliceType$2([new $String("create")])); /* */ $s = 13; case 13: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+		$r = displayNode($clone(rootNode[0], types.Node), rootDiv, "1"); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		_r$4 = jQuery(new sliceType$2([new $String("#tree")])); /* */ $s = 10; case 10: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
+		_r$5 = $clone(_r$4, jquery.JQuery).Trigger(new sliceType$2([new $String("create")])); /* */ $s = 11; case 11: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
 		_r$5;
 		$s = -1; return;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: getNodes }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._ref = _ref; $f._tuple = _tuple; $f.data = data; $f.err = err; $f.n = n; $f.nodes = nodes; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: getNodes }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._tuple = _tuple; $f.data = data; $f.err = err; $f.rootNode = rootNode; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	main = function() {
 		var _r, $s, $r;
@@ -36889,6 +37267,7 @@ $packages["main"] = (function() {
 			_r = document.GetElementByID("collapse1"); /* */ $s = 2; case 2: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 			rootDiv = $assertType(_r, ptrType);
 			$go(getNodes, []);
+			$go(getTags, []);
 			$s = -1; return;
 			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r = _r; $f.event = event; $f.$s = $s; $f.$r = $r; return $f;
 		})); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
