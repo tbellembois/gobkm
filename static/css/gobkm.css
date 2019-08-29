@@ -1,0 +1,118 @@
+@font-face {
+    font-family: 'economicaregular';
+    src: url('../fonts/economica-regular-webfont.woff2') format('woff2'),
+        url('../fonts/economica-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+a, button.btn {
+    font-family: economicaregular;
+    font-size: 16px;
+}
+#star, #tags {
+    padding: 15px;
+}
+.bookmark {
+  height: 40px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.bookmark > div.col-10 {
+    height: 28px;
+}
+.container-fluid {
+    margin-right: 5px;
+    margin-left: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+.card-body {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 0.25rem;
+  padding-right: 0.1rem;
+}
+.count {
+    font-size: 0.6em;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+}
+button {
+    margin-left: 2px;
+    z-index: 2;
+}
+button.btn-link {
+    width: 100%;
+    text-align: left;
+}
+button.menu.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 2px;
+}
+button.content-cut.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 46px;
+}
+button.delete-outline.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 90px;
+}
+button.content-paste.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 222px;
+}
+button.folder-plus-outline.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 178px;
+}
+button.bookmark-plus-outline.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 134px;
+}
+button.pencil-outline.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 222px;
+}
+button.menu.bookmarkbtn {
+    position: absolute;
+    top: -12px;
+    right: 10px;
+}
+button.content-cut.bookmarkbtn {
+    position: absolute;
+    top: -12px;
+    right: 54px;
+}
+button.delete-outline.bookmarkbtn {
+    position: absolute;
+    top: -12px;
+    right: 98px;
+}
+button.star-outline.bookmarkbtn, button.star.bookmarkbtn {
+    position: absolute;
+    top: -12px;
+    right: 142px;
+}
+button.bookmark-plus-outline.bookmarkbtn {
+    position: absolute;
+    top: -12px;
+    right: 142px;
+}
+button.pencil-outline.bookmarkbtn {
+    position: absolute;
+    top: -12px;
+    right: 186px;
+}
+#bookmarklet {
+    position: fixed;
+    bottom: 0px;
+}
+

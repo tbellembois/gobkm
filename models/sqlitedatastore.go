@@ -653,6 +653,7 @@ func (db *SQLiteDataStore) GetFolderSubfolders(id int) []*types.Folder {
 				}).Error("GetChildrenFolders:error scanning the query result row")
 				return nil
 			}
+			fld.Parent = &types.Folder{Id: int(parentFldID.Int64)}
 			flds = append(flds, fld)
 		}
 		if db.err = rows.Err(); db.err != nil {

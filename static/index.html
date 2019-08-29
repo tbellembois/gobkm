@@ -26,124 +26,17 @@
         var GoBkmProxyHost = "{{.GoBkmProxyHost}}"
     </script>
 
-    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/3.7.95/css/materialdesignicons.min.css" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{.GoBkmProxyURL}}/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="{{.GoBkmProxyURL}}/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{.GoBkmProxyURL}}/css/select2.min.css" />
 
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script> 
+    <link rel="stylesheet" href="{{.GoBkmProxyURL}}/css/gobkm.css" />
+
+    <script src="{{.GoBkmProxyURL}}/js/jquery-3.4.1.min.js"></script>
+    <script src="{{.GoBkmProxyURL}}/js/bootstrap.min.js"></script>
+    <script src="{{.GoBkmProxyURL}}/js/select2.min.js"></script> 
    
     <script src="{{.GoBkmProxyURL}}/js/gjs-common.js"></script>
-
-    <style>
-        @font-face {
-            font-family: 'economicaregular';
-            src: url('../fonts/economica-regular-webfont.woff2') format('woff2'),
-                url('../fonts/economica-regular-webfont.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-        a, button.btn {
-            font-family: economicaregular;
-            font-size: 16px;
-        }
-        #star, #tags {
-            padding: 15px;
-        }
-        .bookmark {
-          height: 40px;
-          padding: 12px;
-        }
-        .bookmark > div.col-10 {
-            height: 28px;
-            overflow: hidden;
-        }
-        .card-body {
-          padding-top: 0px;
-          padding-bottom: 0px;
-        }
-        .count {
-            font-size: 0.6em;
-            position: absolute;
-            left: 2px;
-            top: 2px;
-        }
-        button {
-            margin-left: 2px;
-            z-index: 2;
-        }
-        button.menu.folderbtn {
-            position: absolute;
-            top: 12px;
-            right: 2px;
-        }
-        button.content-cut.folderbtn {
-            position: absolute;
-            top: 12px;
-            right: 46px;
-        }
-        button.delete-outline.folderbtn {
-            position: absolute;
-            top: 12px;
-            right: 90px;
-        }
-        button.content-paste.folderbtn {
-            position: absolute;
-            top: 12px;
-            right: 222px;
-        }
-        button.folder-plus-outline.folderbtn {
-            position: absolute;
-            top: 12px;
-            right: 178px;
-        }
-        button.bookmark-plus-outline.folderbtn {
-            position: absolute;
-            top: 12px;
-            right: 134px;
-        }
-        button.pencil-outline.folderbtn {
-            position: absolute;
-            top: 12px;
-            right: 222px;
-        }
-        button.menu.bookmarkbtn {
-            position: absolute;
-            top: -12px;
-            right: 2px;
-        }
-        button.content-cut.bookmarkbtn {
-            position: absolute;
-            top: -12px;
-            right: 46px;
-        }
-        button.delete-outline.bookmarkbtn {
-            position: absolute;
-            top: -12px;
-            right: 90px;
-        }
-        button.star-outline.bookmarkbtn, button.star.bookmarkbtn {
-            position: absolute;
-            top: -12px;
-            right: 134px;
-        }
-        button.folder-plus-outline.bookmarkbtn {
-            position: absolute;
-            top: -12px;
-            right: 178px;
-        }
-        button.bookmark-plus-outline.bookmarkbtn {
-            position: absolute;
-            top: -12px;
-            right: 134px;
-        }
-        button.pencil-outline.bookmarkbtn {
-            position: absolute;
-            top: -12px;
-            right: 178px;
-        }
-    </style>
 
 </head>
 
@@ -156,11 +49,30 @@
         <span class="mdi mdi-star"></span>
     </div>
 
+    <div id="search" class="container-fluid">
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+            <div class="input-group-text"><span class="mdi mdi-feature-search-outline"></span></div>
+            </div>
+            <input type="text" class="form-control" id="searchInput" placeholder="search by name or tag">
+      </div>
+    </div>
+
+    <div id="searchResults" class="container-fluid">
+    </div>
+
     <div id="collapse1" class="container-fluid" ondrop="dzDrop(event)" ondragover="dzAllowDrop(event)">
     </div>
+    <!--<div id="collapse1" class="container-fluid" >-->
 
     <div id="tags" class="container-fluid">
         <span class="mdi mdi-tag"></span>
+    </div>
+
+    <div class="card" id="bookmarklet">
+        <div class="card-body">
+                <a title="GoBkm application bookmarklet: drop me in your bookmark bar." href="javascript:window.open('{{.GoBkmProxyURL}}?target=_blank','sbPopWin','directories=no,width=200,height=600,left=0,top=0,scrollbars=yes,location=no,menubar=no, status=no, toolbar=no');void(0)">GoBkm application bookmarklet</a>
+        </div>
     </div>
 
 </body>
@@ -184,55 +96,10 @@ function dzDrop(ev) {
         return;
     }
     
-    console.log(data)
-
     $("input[name=droppedurl]").val(data)
-
-    console.log(ev.target)
 
     $(ev.target).trigger("customdrop")
 }
-function select2ify(id) { 
-    $('select#' + id + "createBookmarkInputTags").select2({
-        placeholder: 'select or enter tag(s)',
-        tags: true,
-        ajax: {
-            url: '/getTags/',
-            dataType: 'json',
-            processResults: function (data) {
-                // replacing name by text expected by select2
-                var newdata = $.map(data, function (obj) {
-                    obj.text = obj.text || obj.name;
-                    obj.id = obj.id || obj.id;
-                    return obj;
-                });
-                return {
-                    results: newdata
-                };
-            },
-        },
-    });
-    $('select#' + id + "updateBookmarkInputTags").select2({
-        placeholder: 'select or enter tag(s)',
-        tags: true,
-        ajax: {
-            url: '/getTags/',
-            dataType: 'json',
-            processResults: function (data) {
-                // replacing name by text expected by select2
-                var newdata = $.map(data, function (obj) {
-                    obj.text = obj.text || obj.name;
-                    obj.id = obj.id || obj.id;
-                    return obj;
-                });
-                return {
-                    results: newdata
-                };
-            },
-        },
-    });
-}
-
 </script>
 
 </html>

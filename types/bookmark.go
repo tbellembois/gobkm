@@ -7,10 +7,12 @@ import (
 
 // Folder containing the bookmarks
 type Folder struct {
-	Id                int     `json:"id"`
-	Title             string  `json:"title"`
-	Parent            *Folder `json:"parent"`
-	NbChildrenFolders int     `json:"nbchildrenfolders"`
+	Id                int         `json:"id"`
+	Title             string      `json:"title"`
+	Parent            *Folder     `json:"parent"`
+	Folders           []*Folder   `json:"folders"`
+	Bookmarks         []*Bookmark `json:"bookmarks"`
+	NbChildrenFolders int         `json:"nbchildrenfolders"`
 }
 
 // Bookmark
@@ -20,28 +22,28 @@ type Bookmark struct {
 	URL     string  `json:"url"`
 	Favicon string  `json:"favicon"` // base64 encoded image
 	Starred bool    `json:"starred"`
-	Folder  *Folder `json:"folder"`
+	Folder  *Folder `json:"folder"` // reference to the folder to help
 	Tags    []*Tag  `json:"tags"`
 }
 
-// Tag
+// Tag represents a bookmark tag
 type Tag struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 // Node
-type Node struct {
-	Key      int     `json:"id"`
-	Title    string  `json:"text"`
-	URL      string  `json:"url"`
-	Folder   bool    `json:"hasChildren"`
-	Lazy     bool    `json:"lazy"`
-	Icon     string  `json:"icon"`
-	Starred  bool    `json:"starred"`
-	Children []*Node `json:"children"`
-	Tags     []*Tag  `json:"tag"`
-}
+// type Node struct {
+// 	Key      int     `json:"id"`
+// 	Title    string  `json:"text"`
+// 	URL      string  `json:"url"`
+// 	Folder   bool    `json:"hasChildren"`
+// 	Lazy     bool    `json:"lazy"`
+// 	Icon     string  `json:"icon"`
+// 	Starred  bool    `json:"starred"`
+// 	Children []*Node `json:"children"`
+// 	Tags     []*Tag  `json:"tag"`
+// }
 
 // Bookmarks implements the sort interface
 type Bookmarks []*Bookmark
