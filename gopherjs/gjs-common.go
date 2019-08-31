@@ -404,7 +404,7 @@ func deleteBookmark(id string) {
 func createStarredBookmarkNode(b types.Bookmark) *dom.HTMLButtonElement {
 
 	buttonDiv := document.CreateElement("button").(*dom.HTMLButtonElement)
-	buttonDiv.SetID(fmt.Sprintf("%dstarred", b.Id))
+	buttonDiv.SetID(fmt.Sprintf("-%dstarred", b.Id))
 	buttonDiv.SetClass("btn btn-outline-dark")
 	buttonDiv.SetInnerHTML(b.Title)
 	buttonDiv.AddEventListener("click", false, func(event dom.Event) {
@@ -457,7 +457,10 @@ func createSearchBookmarkNode(n types.Bookmark) *dom.HTMLDivElement {
 	actionDiv.SetID(fmt.Sprintf("%dactionDiv", n.Id))
 
 	linkDiv := document.CreateElement("div").(*dom.HTMLDivElement)
-	linkDiv.SetClass("col col-12")
+	linkDiv.SetClass("col col-10")
+
+	buttonDiv := document.CreateElement("div").(*dom.HTMLDivElement)
+	buttonDiv.SetClass("col col-2")
 
 	link := document.CreateElement("a").(*dom.HTMLAnchorElement)
 	link.SetAttribute("href", n.URL)
@@ -469,6 +472,36 @@ func createSearchBookmarkNode(n types.Bookmark) *dom.HTMLDivElement {
 	favicon.SetClass("favicon")
 	favicon.SetAttribute("src", n.Favicon)
 
+	treeButton := createButton("file-tree", fmt.Sprintf("%dtree", n.Id), false, "bookmarkbtn", "float-right")
+	treeButton.AddEventListener("click", false, func(event dom.Event) {
+		// building and reversing parent id slice
+		a := make([]int, 0)
+		p := n.Folder
+		for p != nil {
+			// todo: fix this
+			if p.Id == 1 {
+				p.Id = 0
+			}
+			a = append(a, p.Id)
+			p = p.Parent
+		}
+		for i := len(a)/2 - 1; i >= 0; i-- {
+			opp := len(a) - 1 - i
+			a[i], a[opp] = a[opp], a[i]
+		}
+
+		for _, i := range a {
+			if !jQuery(fmt.Sprintf("div#collapse%d", i)).HasClass("show") {
+				jQuery(fmt.Sprintf("button#%dfolderLink", i)).Call("trigger", "click")
+			}
+		}
+
+		jQuery(fmt.Sprintf("#-%dbookmarkMainDiv", n.Id)).SetCss("border-left", "20px solid yellow")
+
+	})
+
+	buttonDiv.AppendChild(treeButton)
+
 	linkDiv.AppendChild(favicon)
 	linkDiv.AppendChild(link)
 	for _, t := range n.Tags {
@@ -476,6 +509,7 @@ func createSearchBookmarkNode(n types.Bookmark) *dom.HTMLDivElement {
 	}
 
 	mainDiv.AppendChild(linkDiv)
+	mainDiv.AppendChild(buttonDiv)
 	topDiv.AppendChild(mainDiv)
 	topDiv.AppendChild(actionDiv)
 
@@ -819,6 +853,9 @@ func hideActionButtons(id string) {
 
 	for _, e := range document.GetElementsByClassName("card") {
 		e.SetAttribute("style", "border: 1px solid rgba(0,0,0,.125)")
+	}
+	for _, e := range document.GetElementsByClassName("bookmark") {
+		e.SetAttribute("style", "border: none")
 	}
 }
 

@@ -325,6 +325,12 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 			fld.Parent = db.GetFolder(int(parentFldID.Int64))
 		}
 	}
+
+	// Recursively getting the parents
+	if parentFldID.Valid {
+		fld.Parent = db.GetFolder(int(parentFldID.Int64))
+	}
+
 	return fld
 }
 
@@ -432,6 +438,10 @@ func (db *SQLiteDataStore) SearchBookmarks(s string) []*types.Bookmark {
 			var parentFldID sql.NullInt64
 			var starred sql.NullInt64
 			db.err = rows.Scan(&bkm.Id, &bkm.Title, &bkm.URL, &bkm.Favicon, &starred, &parentFldID)
+
+			// Getting the folder
+			bkm.Folder = db.GetFolder(int(parentFldID.Int64))
+
 			// Starred bookmark ?
 			if int(starred.Int64) != 0 {
 				bkm.Starred = true

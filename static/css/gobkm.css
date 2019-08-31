@@ -32,10 +32,13 @@ a, button.btn {
   padding-left: 0.25rem;
   padding-right: 0.1rem;
 }
+.card-header {
+    border-left: 4px solid black;
+}
 .count {
     font-size: 0.6em;
     position: absolute;
-    left: 2px;
+    left: 8px;
     top: 2px;
 }
 button {
@@ -115,4 +118,6 @@ button.pencil-outline.bookmarkbtn {
     position: fixed;
     bottom: 0px;
 }
-
+#searchResults {
+    margin-bottom: 12px;
+}
