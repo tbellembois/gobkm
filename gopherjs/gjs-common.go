@@ -450,7 +450,7 @@ func createSearchBookmarkNode(n types.Bookmark) *dom.HTMLDivElement {
 
 	mainDiv := document.CreateElement("div").(*dom.HTMLDivElement)
 	mainDiv.SetClass("row bookmark")
-	mainDiv.SetID(fmt.Sprintf("%dbookmarkMainDiv", n.Id))
+	mainDiv.SetID(fmt.Sprintf("%dsearchBookmarkMainDiv", n.Id))
 
 	actionDiv := document.CreateElement("div").(*dom.HTMLDivElement)
 	actionDiv.SetClass("row")
@@ -498,6 +498,10 @@ func createSearchBookmarkNode(n types.Bookmark) *dom.HTMLDivElement {
 
 		jQuery(fmt.Sprintf("#-%dbookmarkMainDiv", n.Id)).SetCss("border-left", "20px solid yellow")
 
+		go func() {
+			time.Sleep(500 * time.Millisecond)
+			document.GetElementByID(fmt.Sprintf("-%dbookmarkMainDiv", n.Id)).Underlying().Call("scrollIntoView")
+		}()
 	})
 
 	buttonDiv.AppendChild(treeButton)
