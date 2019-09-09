@@ -29,6 +29,8 @@ func init() {
 	jQuery = jquery.NewJQuery
 }
 
+// processResults is called by select2 to return expected field names
+// see select2 plugin documentation
 func processResults(data map[string]interface{}) map[string]interface{} {
 	var r map[string]interface{}
 	r = make(map[string]interface{}, 0)
@@ -48,6 +50,8 @@ func processResults(data map[string]interface{}) map[string]interface{} {
 	return r
 }
 
+// select2ify turns a select into select2
+// see select2 plugin documentation
 func select2ify(id string) {
 	var p map[string]interface{}
 
