@@ -64,25 +64,25 @@ button.delete-outline.folderbtn {
     top: 12px;
     right: 90px;
 }
-button.content-paste.folderbtn {
+button.bookmark-plus-outline.folderbtn {
     position: absolute;
     top: 12px;
-    right: 222px;
+    right: 134px;
 }
 button.folder-plus-outline.folderbtn {
     position: absolute;
     top: 12px;
     right: 178px;
 }
-button.bookmark-plus-outline.folderbtn {
-    position: absolute;
-    top: 12px;
-    right: 134px;
-}
 button.pencil-outline.folderbtn {
     position: absolute;
     top: 12px;
     right: 222px;
+}
+button.content-paste.folderbtn {
+    position: absolute;
+    top: 12px;
+    right: 266px;
 }
 button.menu.bookmarkbtn {
     position: absolute;
