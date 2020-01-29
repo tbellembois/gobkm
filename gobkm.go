@@ -22,14 +22,6 @@ var (
 	logf        *os.File
 )
 
-// A decorator to set custom HTTP headers.
-func decoratedHandler(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		rw.Header().Set("Access-Control-Allow-Origin", "*")
-		h.ServeHTTP(rw, req)
-	})
-}
-
 func main() {
 	// Getting the program parameters.
 	listenPort := flag.String("port", "8081", "the port to listen")

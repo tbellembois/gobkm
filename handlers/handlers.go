@@ -15,7 +15,6 @@ import (
 
 	"golang.org/x/net/html"
 
-	"github.com/gorilla/websocket"
 	"github.com/tbellembois/gobkm/models"
 	"github.com/tbellembois/gobkm/types"
 
@@ -23,16 +22,6 @@ import (
 )
 
 const faviconRequestBaseURL = "http://www.google.com/s2/favicons?domain_url="
-
-var (
-	upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin:     func(r *http.Request) bool { return true },
-	}
-	wsconn *websocket.Conn
-	wserr  error
-)
 
 // Env is a structure used to pass objects throughout the application.
 type Env struct {
@@ -157,9 +146,7 @@ func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Adding them into a map.
 	var bookmarksMap []*types.Bookmark
-	for _, bkm := range bkms {
-		bookmarksMap = append(bookmarksMap, bkm)
-	}
+	bookmarksMap = append(bookmarksMap, bkms...)
 
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(bookmarksMap); err != nil {
@@ -765,20 +752,6 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Adding them into a map.
-	// for _, bkm := range bkms {
-	// 	// Returning a default favicon if needed
-	// 	if bkm.Favicon == "" {
-	// 		bkm.Favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAACiElEQVQ4EaVTzU8TURCf2tJuS7tQtlRb6UKBIkQwkRRSEzkQgyEc6lkOKgcOph78Y+CgjXjDs2i44FXY9AMTlQRUELZapVlouy3d7kKtb0Zr0MSLTvL2zb75eL838xtTvV6H/xELBptMJojeXLCXyobnyog4YhzXYvmCFi6qVSfaeRdXdrfaU1areV5KykmX06rcvzumjY/1ggkR3Jh+bNf1mr8v1D5bLuvR3qDgFbvbBJYIrE1mCIoCrKxsHuzK+Rzvsi29+6DEbTZz9unijEYI8ObBgXOzlcrx9OAlXyDYKUCzwwrDQx1wVDGg089Dt+gR3mxmhcUnaWeoxwMbm/vzDFzmDEKMMNhquRqduT1KwXiGt0vre6iSeAUHNDE0d26NBtAXY9BACQyjFusKuL2Ry+IPb/Y9ZglwuVscdHaknUChqLF/O4jn3V5dP4mhgRJgwSYm+gV0Oi3XrvYB30yvhGa7BS70eGFHPoTJyQHhMK+F0ZesRVVznvXw5Ixv7/C10moEo6OZXbWvlFAF9FVZDOqEABUMRIkMd8GnLwVWg9/RkJF9sA4oDfYQAuzzjqzwvnaRUFxn/X2ZlmGLXAE7AL52B4xHgqAUqrC1nSNuoJkQtLkdqReszz/9aRvq90NOKdOS1nch8TpL555WDp49f3uAMXhACRjD5j4ykuCtf5PP7Fm1b0DIsl/VHGezzP1KwOiZQobFF9YyjSRYQETRENSlVzI8iK9mWlzckpSSCQHVALmN9Az1euDho9Xo8vKGd2rqooA8yBcrwHgCqYR0kMkWci08t/R+W4ljDCanWTg9TJGwGNaNk3vYZ7VUdeKsYJGFNkfSzjXNrSX20s4/h6kB81/271ghG17l+rPTAAAAAElFTkSuQmCC"
-	// 	}
-	// 	// Escaping HTML characters
-	// 	bkm.Title = html.EscapeString(bkm.Title)
-
-	// 	// negating the node id to have unique ids in the view between folders and bookmarks
-	// 	newNode := types.Node{Key: -bkm.Id, Title: bkm.Title, Starred: bkm.Starred, Folder: false, Lazy: false, Icon: bkm.Favicon, URL: bkm.URL, Children: nil}
-	// 	nodesMap = append(nodesMap, &newNode)
-	// }
-
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(f); err != nil {
 		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
@@ -842,8 +815,7 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 	var f func(n *html.Node, parentFolder *types.Folder)
 	f = func(n *html.Node, parentFolder *types.Folder) {
 		// Keeping the parent folder before calling f recursively.
-		var parentFolderBackup types.Folder
-		parentFolderBackup = *parentFolder
+		parentFolderBackup := *parentFolder
 
 		// Parsing the n children.
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -966,9 +938,9 @@ func (env *Env) ExportTree(wr io.Writer, eb *exportBookmarksStruct, depth int) *
 
 	// Writing the folder title.
 	insertIndent(wr, depth)
-	wr.Write([]byte("<DT><H3>" + eb.Fld.Title + "</H3>\n"))
+	_, _ = wr.Write([]byte("<DT><H3>" + eb.Fld.Title + "</H3>\n"))
 	insertIndent(wr, depth)
-	wr.Write([]byte("<DL><p>\n"))
+	_, _ = wr.Write([]byte("<DL><p>\n"))
 
 	// For each children folder recursively building the bookmars tree.
 	for _, child := range env.DB.GetFolderSubfolders(eb.Fld.Id) {
@@ -980,10 +952,10 @@ func (env *Env) ExportTree(wr io.Writer, eb *exportBookmarksStruct, depth int) *
 	// Writing them.
 	for _, bkm := range eb.Bkms {
 		insertIndent(wr, depth)
-		wr.Write([]byte("<DT><A HREF=\"" + bkm.URL + "\" ICON=\"" + bkm.Favicon + "\">" + bkm.Title + "</A>\n"))
+		_, _ = wr.Write([]byte("<DT><A HREF=\"" + bkm.URL + "\" ICON=\"" + bkm.Favicon + "\">" + bkm.Title + "</A>\n"))
 	}
 	insertIndent(wr, depth)
-	wr.Write([]byte("</DL><p>\n"))
+	_, _ = wr.Write([]byte("</DL><p>\n"))
 
 	return eb
 }

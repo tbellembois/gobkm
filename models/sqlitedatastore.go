@@ -939,7 +939,9 @@ func (db *SQLiteDataStore) SaveBookmark(b *types.Bookmark) int64 {
 
 		// linking the new tag to the bookmark
 		log.WithFields(log.Fields{"b.Id": b.Id, "ntid": ntid}).Debug("SaveBookmark")
-		db.Exec("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid)
+		if _, db.err = db.Exec("INSERT INTO bookmarktag(bookmarkId, tagId) values(?,?)", b.Id, ntid); db.err != nil {
+			return 0
+		}
 	}
 
 	return id
@@ -963,7 +965,6 @@ func (db *SQLiteDataStore) DeleteBookmark(b *types.Bookmark) {
 		}).Error("DeleteBookmark:DELETE query error")
 		return
 	}
-	return
 }
 
 // UpdateFolder updates the given folder.
@@ -1071,5 +1072,4 @@ func (db *SQLiteDataStore) DeleteFolder(f *types.Folder) {
 		}).Error("DeleteFolder:DELETE query error")
 		return
 	}
-	return
 }

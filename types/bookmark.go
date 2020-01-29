@@ -59,8 +59,8 @@ func (b Bookmarks) Swap(i, j int) {
 func (b Bookmarks) Less(i, j int) bool {
 	url1 := b[i].Title
 	url2 := b[j].Title
-	title1 := url1[strings.Index(url1, "//")+2 : len(url1)]
-	title2 := url2[strings.Index(url2, "//")+2 : len(url2)]
+	title1 := url1[strings.Index(url1, "//")+2:]
+	title2 := url2[strings.Index(url2, "//")+2:]
 	return title1 < title2
 }
 

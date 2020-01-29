@@ -32,8 +32,7 @@ func init() {
 // processResults is called by select2 to return expected field names
 // see select2 plugin documentation
 func processResults(data map[string]interface{}) map[string]interface{} {
-	var r map[string]interface{}
-	r = make(map[string]interface{}, 0)
+	r := make(map[string]interface{})
 
 	var s []interface{}
 	for _, value := range data {
@@ -53,9 +52,7 @@ func processResults(data map[string]interface{}) map[string]interface{} {
 // select2ify turns a select into select2
 // see select2 plugin documentation
 func select2ify(id string) {
-	var p map[string]interface{}
-
-	p = make(map[string]interface{}, 0)
+	p := make(map[string]interface{})
 	p["placeholder"] = "tags"
 	p["tags"] = "tags"
 	p["ajax"] = map[string]interface{}{
@@ -973,7 +970,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		e.StopPropagation()
 
 		if jQuery("#" + id + "delete > span").HasClass("mdi-check") {
-			if strings.Index(id, "-") == -1 {
+			if strings.Contains(id, "-") {
 				go deleteFolder(id)
 			} else {
 				go deleteBookmark(id)
@@ -993,7 +990,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		hideForms()
 		resetConfirmButtons()
 
-		if strings.Index(id, "-") == -1 {
+		if strings.Contains(id, "-") {
 
 			f := createUpdateFolderForm(id)
 			jQuery("#" + id + "actionDiv").Append(f)
@@ -1075,7 +1072,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 			cuttedid := jQuery("input[type=hidden][name=cutednodeid]").Val()
 			cuttedidInt, _ := strconv.Atoi(cuttedid)
 
-			if strings.Index(cuttedid, "-") == -1 {
+			if strings.Contains(cuttedid, "-") {
 				// passing the folder with its new parent to the moveFolder function
 				// we do not need the folder name
 				go moveFolder(types.Folder{Id: cuttedidInt, Parent: &types.Folder{Id: idInt}})
