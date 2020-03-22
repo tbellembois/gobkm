@@ -202,6 +202,8 @@ func updateBookmark(b types.Bookmark) {
 	// hiding buttons
 	hideActionButtons("")
 
+	// lazily reloading tags
+	getTags()
 }
 
 // createBookmark remotely creates the bookmark b
@@ -235,6 +237,9 @@ func createBookmark(b types.Bookmark) {
 	for _, c := range cnodes.Bookmarks {
 		displayNode(*c, parentD)
 	}
+
+	// lazily reloading tags
+	getTags()
 }
 
 // moveBookmark remotely moves the bookmark b
@@ -374,7 +379,7 @@ func updateFolder(f types.Folder) {
 }
 
 // deleteFolder remotely deletes the folder
-// id: the bookmark id
+// id: the folder id
 func deleteFolder(id string) {
 	var (
 		err error
@@ -473,7 +478,7 @@ func createSearchBookmarkNode(n types.Bookmark) *dom.HTMLDivElement {
 	favicon.SetClass("favicon")
 	favicon.SetAttribute("src", n.Favicon)
 
-	treeButton := createButton("file-tree", fmt.Sprintf("%dtree", n.Id), false, "bookmarkbtn", "float-right")
+	treeButton := createButton("file-tree", fmt.Sprintf("%dtree", n.Id), "show in tree", false, "bookmarkbtn", "float-right")
 	treeButton.AddEventListener("click", false, func(event dom.Event) {
 		// building and reversing parent id slice
 		a := make([]int, 0)
@@ -554,15 +559,15 @@ func createBookmarkNode(n types.Bookmark) *dom.HTMLDivElement {
 	favicon.SetClass("favicon")
 	favicon.SetAttribute("src", n.Favicon)
 
-	menuButton := createButton("menu", fmt.Sprintf("%dmenu", n.Id), false, "bookmarkbtn", "float-right")
-	cutButton := createButton("content-cut", fmt.Sprintf("%dcut", n.Id), true, "bookmarkbtn", "float-right")
-	deleteButton := createButton("delete-outline", fmt.Sprintf("%ddelete", n.Id), true, "bookmarkbtn", "float-right")
-	editButton := createButton("pencil-outline", fmt.Sprintf("%dedit", n.Id), true, "bookmarkbtn", "float-right")
+	menuButton := createButton("menu", fmt.Sprintf("%dmenu", n.Id), "menu", false, "bookmarkbtn", "float-right")
+	cutButton := createButton("content-cut", fmt.Sprintf("%dcut", n.Id), "cut", true, "bookmarkbtn", "float-right")
+	deleteButton := createButton("delete-outline", fmt.Sprintf("%ddelete", n.Id), "delete", true, "bookmarkbtn", "float-right")
+	editButton := createButton("pencil-outline", fmt.Sprintf("%dedit", n.Id), "edit", true, "bookmarkbtn", "float-right")
 	var starButton *dom.HTMLButtonElement
 	if n.Starred {
-		starButton = createButton("star", fmt.Sprintf("%dstar", n.Id), true, "bookmarkbtn", "float-right")
+		starButton = createButton("star", fmt.Sprintf("%dstar", n.Id), "unstar", true, "bookmarkbtn", "float-right")
 	} else {
-		starButton = createButton("star-outline", fmt.Sprintf("%dstar", n.Id), true, "bookmarkbtn", "float-right")
+		starButton = createButton("star-outline", fmt.Sprintf("%dstar", n.Id), "star", true, "bookmarkbtn", "float-right")
 	}
 
 	linkDiv.AppendChild(favicon)
@@ -634,13 +639,13 @@ func createFolderNode(n types.Folder) (*dom.HTMLDivElement, *dom.HTMLDivElement)
 	childrenBody.SetClass("card-body")
 	childrenBody.SetID(fmt.Sprintf("%dfolderBody", n.Id))
 
-	menuButton := createButton("menu", fmt.Sprintf("%dmenu", n.Id), false, "folderbtn", "float-right")
-	cutButton := createButton("content-cut", fmt.Sprintf("%dcut", n.Id), true, "folderbtn", "float-right")
-	deleteButton := createButton("delete-outline", fmt.Sprintf("%ddelete", n.Id), true, "folderbtn", "float-right")
-	pasteButton := createButton("content-paste", fmt.Sprintf("%dpaste", n.Id), true, "folderbtn", "float-right")
-	addFolderButton := createButton("folder-plus-outline", fmt.Sprintf("%daddFolder", n.Id), true, "folderbtn", "float-right")
-	addBookmarkButton := createButton("bookmark-plus-outline", fmt.Sprintf("%daddBookmark", n.Id), true, "folderbtn", "float-right")
-	editButton := createButton("pencil-outline", fmt.Sprintf("%dedit", n.Id), true, "folderbtn", "float-right")
+	menuButton := createButton("menu", fmt.Sprintf("%dmenu", n.Id), "menu", false, "folderbtn", "float-right")
+	cutButton := createButton("content-cut", fmt.Sprintf("%dcut", n.Id), "cut", true, "folderbtn", "float-right")
+	deleteButton := createButton("delete-outline", fmt.Sprintf("%ddelete", n.Id), "delete", true, "folderbtn", "float-right")
+	pasteButton := createButton("content-paste", fmt.Sprintf("%dpaste", n.Id), "paste", true, "folderbtn", "float-right")
+	addFolderButton := createButton("folder-plus-outline", fmt.Sprintf("%daddFolder", n.Id), "add folder", true, "folderbtn", "float-right")
+	addBookmarkButton := createButton("bookmark-plus-outline", fmt.Sprintf("%daddBookmark", n.Id), "add bookmark", true, "folderbtn", "float-right")
+	editButton := createButton("pencil-outline", fmt.Sprintf("%dedit", n.Id), "edit", true, "folderbtn", "float-right")
 
 	titleDiv.AppendChild(titleH)
 	titleDiv.AppendChild(menuButton)
@@ -665,9 +670,10 @@ func createFolderNode(n types.Folder) (*dom.HTMLDivElement, *dom.HTMLDivElement)
 // - id is the button id
 // - hideen hides the button
 // - classes are the additionnal classes for the button
-func createButton(icon string, id string, hidden bool, classes ...string) *dom.HTMLButtonElement {
+func createButton(icon string, id string, title string, hidden bool, classes ...string) *dom.HTMLButtonElement {
 	b := document.CreateElement("button").(*dom.HTMLButtonElement)
 	b.SetAttribute("type", "button")
+	b.SetAttribute("title", title)
 	b.SetAttribute("data-role", "none")
 	b.SetClass(icon + " btn btn-outline-dark bg-light")
 	b.SetID(id)
@@ -708,7 +714,7 @@ func createAddFolderForm(id string) *dom.HTMLDivElement {
 	ifoldername.SetClass("form-control")
 	dc1.AppendChild(ifoldername)
 
-	submit := createButton("check-bold", id+"createFolderSubmit", false, "float-left")
+	submit := createButton("check-bold", id+"createFolderSubmit", "ok", false, "float-left")
 	dc2.AppendChild(submit)
 
 	dr.AppendChild(dc1)
@@ -736,7 +742,7 @@ func createUpdateFolderForm(id string) *dom.HTMLDivElement {
 	ifoldername.SetClass("form-control")
 	dc1.AppendChild(ifoldername)
 
-	submit := createButton("check-bold", id+"updateFolderSubmit", false, "float-left")
+	submit := createButton("check-bold", id+"updateFolderSubmit", "ok", false, "float-left")
 	dc2.AppendChild(submit)
 
 	dr.AppendChild(dc1)
@@ -782,7 +788,7 @@ func createAddBookmarkForm(id string) *dom.HTMLDivElement {
 	ibookmarktags.SetID(id + "createBookmarkInputTags")
 	dc3.AppendChild(ibookmarktags)
 
-	submit := createButton("check-bold", id+"createBookmarkSubmit", false, "float-left")
+	submit := createButton("check-bold", id+"createBookmarkSubmit", "ok", false, "float-left")
 	dc4.AppendChild(submit)
 
 	dr.AppendChild(dc1)
@@ -830,7 +836,7 @@ func createUpdateBookmarkForm(id string) *dom.HTMLDivElement {
 	ibookmarktags.SetID(id + "updateBookmarkInputTags")
 	dc3.AppendChild(ibookmarktags)
 
-	submit := createButton("check-bold", id+"updateBookmarkSubmit", false, "float-left")
+	submit := createButton("check-bold", id+"updateBookmarkSubmit", "ok", false, "float-left")
 	dc4.AppendChild(submit)
 
 	dr.AppendChild(dc1)
@@ -932,8 +938,6 @@ func bindButtonEvents(id string, isBookmark bool) {
 		resetConfirmButtons()
 
 		if jQuery(fmt.Sprintf("#%scut", id)).HasClass("invisible") {
-			fmt.Println("show")
-
 			jQuery(fmt.Sprintf("#%scut", id)).RemoveClass("invisible")
 			jQuery("#" + id + "delete").RemoveClass("invisible")
 			jQuery("#" + id + "star").RemoveClass("invisible")
@@ -941,8 +945,6 @@ func bindButtonEvents(id string, isBookmark bool) {
 			jQuery("#" + id + "addBookmark").RemoveClass("invisible")
 			jQuery("#" + id + "edit").RemoveClass("invisible")
 		} else {
-			fmt.Println("hide")
-
 			jQuery(fmt.Sprintf("#%scut", id)).AddClass("invisible")
 			jQuery("#" + id + "delete").AddClass("invisible")
 			jQuery("#" + id + "star").AddClass("invisible")
@@ -971,15 +973,14 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 		if jQuery("#" + id + "delete > span").HasClass("mdi-check") {
 			if strings.Contains(id, "-") {
-				go deleteFolder(id)
-			} else {
 				go deleteBookmark(id)
+			} else {
+				go deleteFolder(id)
 			}
 		} else {
 			jQuery("#" + id + "delete > span").RemoveClass("mdi-delete-outline")
 			jQuery("#" + id + "delete > span").AddClass("mdi-check")
 		}
-
 	})
 
 	// edit
@@ -990,7 +991,7 @@ func bindButtonEvents(id string, isBookmark bool) {
 		hideForms()
 		resetConfirmButtons()
 
-		if strings.Contains(id, "-") {
+		if !strings.Contains(id, "-") {
 
 			f := createUpdateFolderForm(id)
 			jQuery("#" + id + "actionDiv").Append(f)
@@ -1075,11 +1076,11 @@ func bindButtonEvents(id string, isBookmark bool) {
 			if strings.Contains(cuttedid, "-") {
 				// passing the folder with its new parent to the moveFolder function
 				// we do not need the folder name
-				go moveFolder(types.Folder{Id: cuttedidInt, Parent: &types.Folder{Id: idInt}})
+				go moveBookmark(types.Bookmark{Id: cuttedidInt, Folder: &types.Folder{Id: idInt}})
 			} else {
 				// passing the folder with its new parent to the moveFolder function
 				// we do not need the folder name
-				go moveBookmark(types.Bookmark{Id: cuttedidInt, Folder: &types.Folder{Id: idInt}})
+				go moveFolder(types.Folder{Id: cuttedidInt, Parent: &types.Folder{Id: idInt}})
 			}
 
 			hideActionButtons(id)
@@ -1217,6 +1218,7 @@ func getTags() {
 		fmt.Println("error decoding the JSON")
 	}
 
+	document.GetElementByID("tags").SetInnerHTML("")
 	for _, t := range tags {
 		// adding tag to the tags div
 		id := fmt.Sprintf("%d", t.Id)
