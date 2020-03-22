@@ -965,6 +965,14 @@ func bindButtonEvents(id string, isBookmark bool) {
 
 		jQuery("input[type=hidden][name=cutednodeid]").SetVal(id)
 		hideActionButtons(id)
+
+		if strings.Contains(id, "-") {
+			jQuery("#"+id+"bookmarkLink").SetCss("color", "grey")
+			jQuery("#"+id+"bookmarkLink").SetCss("font-style", "italic")
+		} else {
+			jQuery("#"+id+"folderLink").SetCss("color", "grey")
+			jQuery("#"+id+"folderLink").SetCss("font-style", "italic")
+		}
 	})
 
 	// delete
