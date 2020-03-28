@@ -717,7 +717,7 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 	var (
 		key int
 		err error
-		f   types.Folder
+		f   *types.Folder
 	)
 
 	// GET parameters retrieval.
@@ -733,6 +733,14 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 	// key int convertion.
 	if key, err = strconv.Atoi(parentIdParam); err != nil {
 		failHTTP(w, "GetBranchNodesHandler", "key Atoi conversion", http.StatusInternalServerError)
+		return
+	}
+
+	// Getting this folder
+	f = env.DB.GetFolder(key)
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
 		return
 	}
 
