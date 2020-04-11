@@ -12,7 +12,6 @@ type Datastore interface {
 	GetBookmark(int) *types.Bookmark
 	GetBookmarkTags(int) []*types.Tag
 	GetFolderBookmarks(int) types.Bookmarks
-	GetStarredBookmarks() []*types.Bookmark
 	SaveBookmark(*types.Bookmark) int64
 	UpdateBookmark(*types.Bookmark)
 	DeleteBookmark(*types.Bookmark)
@@ -24,6 +23,7 @@ type Datastore interface {
 	DeleteFolder(*types.Folder)
 
 	GetTags() []*types.Tag
+	GetStars() []*types.Bookmark
 	GetTag(int) *types.Tag
 	SaveTag(*types.Tag) int64
 }

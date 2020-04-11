@@ -334,8 +334,8 @@ func (db *SQLiteDataStore) GetFolder(id int) *types.Folder {
 	return fld
 }
 
-// GetStarredBookmarks returns the starred bookmarks.
-func (db *SQLiteDataStore) GetStarredBookmarks() []*types.Bookmark {
+// GetStars returns the starred bookmarks.
+func (db *SQLiteDataStore) GetStars() []*types.Bookmark {
 	// Leaving silently on past errors...
 	if db.err != nil {
 		return nil

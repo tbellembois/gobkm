@@ -93,6 +93,7 @@ func main() {
 	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
 	http.HandleFunc("/getBookmarkTags/", env.GetBookmarkTagsHandler)
 	http.HandleFunc("/getTags/", env.GetTagsHandler)
+	http.HandleFunc("/getStars/", env.GetStarsHandler)
 	http.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
 	http.HandleFunc("/getTree/", env.GetTreeHandler)
 	http.HandleFunc("/import/", env.ImportHandler)

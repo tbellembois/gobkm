@@ -672,6 +672,27 @@ func (env *Env) GetTagsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetStarsHandler retrieves the starred bookmarks.
+func (env *Env) GetStarsHandler(w http.ResponseWriter, r *http.Request) {
+
+	var (
+		err error
+	)
+
+	// Getting the stars.
+	stars := env.DB.GetStars()
+	// Datastore error check.
+	if err = env.DB.FlushErrors(); err != nil {
+		failHTTP(w, "GetStarsHandler", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(stars); err != nil {
+		failHTTP(w, "GetStarsHandler", err.Error(), http.StatusInternalServerError)
+	}
+}
+
 // GetBookmarkTagsHandler retrieves the tags for the given bookmark.
 func (env *Env) GetBookmarkTagsHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -776,7 +797,7 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	// Getting the starred bookmarks.
-	starredBookmarks := env.DB.GetStarredBookmarks()
+	starredBookmarks := env.DB.GetStars()
 
 	// Getting the static data.
 	folderAndBookmark.JsData = string(env.JsData)
