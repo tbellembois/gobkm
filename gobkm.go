@@ -92,7 +92,7 @@ func main() {
 	// CORS handler
 	c := cors.New(cors.Options{
 		Debug:            true,
-		AllowedOrigins:   []string{"localhost", *proxyURL},
+		AllowedOrigins:   []string{"http://localhost:8080", *proxyURL},
 		AllowCredentials: true,
 		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 		AllowedHeaders:   []string{"Authorization", "DNT", "User-Agent", "X-Requested-With", "If-Modified-Since", "Cache-Control", "Content-Type", "Range"},
