@@ -126,6 +126,7 @@ func (env *Env) UpdateBookmarkFavicon(bkm *types.Bookmark) {
 
 // SearchBookmarkHandler returns the bookmarks matching the search.
 func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err error
 	)
@@ -156,6 +157,7 @@ func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 // AddBookmarkHandler handles the bookmarks creation with drag and drop.
 func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err error
 		b   types.Bookmark
@@ -198,6 +200,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 // AddFolderHandler handles the folders creation.
 func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err error
 		f   types.Folder
@@ -242,6 +245,7 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 // DeleteFolderHandler handles the folders deletion.
 func (env *Env) DeleteFolderHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err      error
 		folderID int
@@ -283,6 +287,7 @@ func (env *Env) DeleteFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 // DeleteBookmarkHandler handles the bookmarks deletion.
 func (env *Env) DeleteBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err        error
 		bookmarkID int
@@ -326,6 +331,7 @@ func (env *Env) DeleteBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 // RenameFolderHandler handles the folder rename.
 func (env *Env) RenameFolderHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err error
 		f   types.Folder
@@ -369,6 +375,7 @@ func (env *Env) RenameFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 // RenameBookmarkHandler handles the bookmarks rename.
 func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err          error
 		b            types.Bookmark
@@ -427,6 +434,7 @@ func (env *Env) RenameBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 // StarBookmarkHandler handles the bookmark starring/unstarring.
 func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		bookmarkID int
 		err        error
@@ -487,6 +495,7 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 // MoveBookmarkHandler handles the bookmarks move.
 func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err error
 		b   types.Bookmark
@@ -541,6 +550,7 @@ func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 
 // MoveFolderHandler handles the folders move.
 func (env *Env) MoveFolderHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err error
 		f   types.Folder
@@ -609,6 +619,7 @@ func (env *Env) getChildren(f *types.Folder) types.Folder {
 
 // GetTreeHandler return the entire folder and bookmark tree
 func (env *Env) GetTreeHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		err error
 	)
@@ -735,6 +746,7 @@ func (env *Env) GetBookmarkTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetBranchNodesHandler retrieves the subfolders and bookmarks of the given folder.
 func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
+
 	var (
 		key int
 		err error
@@ -790,7 +802,7 @@ func (env *Env) GetBranchNodesHandler(w http.ResponseWriter, r *http.Request) {
 
 // MainHandler handles the main application page.
 func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
-	log.Debug("MainHandler called")
+
 	var (
 		folderAndBookmark = new(staticDataStruct)
 		err               error
@@ -819,6 +831,7 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 
 // ImportHandler handles the import requests.
 func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
+
 	// Getting the import file.
 	file, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -923,6 +936,7 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 
 // ExportHandler handles the export requests.
 func (env *Env) ExportHandler(w http.ResponseWriter, r *http.Request) {
+
 	// Getting the root folder.
 	rootFolder := env.DB.GetFolder(1)
 	// HTML header and footer definition.

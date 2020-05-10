@@ -13,6 +13,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tbellembois/gobkm/handlers"
 	"github.com/tbellembois/gobkm/models"
+
+	"github.com/justinas/alice"
+	"github.com/rs/cors"
 )
 
 var (
@@ -86,49 +89,62 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// CORS handler
+	c := cors.New(cors.Options{
+		Debug:            true,
+		AllowedOrigins:   []string{"localhost", *proxyURL},
+		AllowCredentials: true,
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+		AllowedHeaders:   []string{"Authorization", "DNT", "User-Agent", "X-Requested-With", "If-Modified-Since", "Cache-Control", "Content-Type", "Range"},
+	})
+
+	mux := http.NewServeMux()
+
 	// Handlers initialization.
-	http.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
-	http.HandleFunc("/addFolder/", env.AddFolderHandler)
-	http.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
-	http.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
-	http.HandleFunc("/getBookmarkTags/", env.GetBookmarkTagsHandler)
-	http.HandleFunc("/getTags/", env.GetTagsHandler)
-	http.HandleFunc("/getStars/", env.GetStarsHandler)
-	http.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
-	http.HandleFunc("/getTree/", env.GetTreeHandler)
-	http.HandleFunc("/import/", env.ImportHandler)
-	http.HandleFunc("/export/", env.ExportHandler)
-	http.HandleFunc("/moveFolder/", env.MoveFolderHandler)
-	http.HandleFunc("/moveBookmark/", env.MoveBookmarkHandler)
-	http.HandleFunc("/renameFolder/", env.RenameFolderHandler)
-	http.HandleFunc("/renameBookmark/", env.RenameBookmarkHandler)
-	http.HandleFunc("/searchBookmarks/", env.SearchBookmarkHandler)
-	http.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
-	http.HandleFunc("/", env.MainHandler)
+	mux.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
+	mux.HandleFunc("/addFolder/", env.AddFolderHandler)
+	mux.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
+	mux.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
+	mux.HandleFunc("/getBookmarkTags/", env.GetBookmarkTagsHandler)
+	mux.HandleFunc("/getTags/", env.GetTagsHandler)
+	mux.HandleFunc("/getStars/", env.GetStarsHandler)
+	mux.HandleFunc("/getBranchNodes/", env.GetBranchNodesHandler)
+	mux.HandleFunc("/getTree/", env.GetTreeHandler)
+	mux.HandleFunc("/import/", env.ImportHandler)
+	mux.HandleFunc("/export/", env.ExportHandler)
+	mux.HandleFunc("/moveFolder/", env.MoveFolderHandler)
+	mux.HandleFunc("/moveBookmark/", env.MoveBookmarkHandler)
+	mux.HandleFunc("/renameFolder/", env.RenameFolderHandler)
+	mux.HandleFunc("/renameBookmark/", env.RenameBookmarkHandler)
+	mux.HandleFunc("/searchBookmarks/", env.SearchBookmarkHandler)
+	mux.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
+	mux.HandleFunc("/", env.MainHandler)
 
 	// Rice boxes initialization.
 	// Awesome fonts may need to send the Access-Control-Allow-Origin header to "*"
 	cssBox := rice.MustFindBox("static/css")
 	cssFileServer := http.StripPrefix("/css/", http.FileServer(cssBox.HTTPBox()))
-	http.Handle("/css/", cssFileServer)
+	mux.Handle("/css/", cssFileServer)
 
 	jsBox := rice.MustFindBox("static/js")
 	jsFileServer := http.StripPrefix("/js/", http.FileServer(jsBox.HTTPBox()))
-	http.Handle("/js/", jsFileServer)
+	mux.Handle("/js/", jsFileServer)
 
 	imgBox := rice.MustFindBox("static/img")
 	imgFileServer := http.StripPrefix("/img/", http.FileServer(imgBox.HTTPBox()))
-	http.Handle("/img/", imgFileServer)
+	mux.Handle("/img/", imgFileServer)
 
 	fontsBox := rice.MustFindBox("static/fonts")
 	fontsFileServer := http.StripPrefix("/fonts/", http.FileServer(fontsBox.HTTPBox()))
-	http.Handle("/fonts/", fontsFileServer)
+	mux.Handle("/fonts/", fontsFileServer)
 
 	manifestBox := rice.MustFindBox("static/manifest")
 	manifestFileServer := http.StripPrefix("/manifest/", http.FileServer(manifestBox.HTTPBox()))
-	http.Handle("/manifest/", manifestFileServer)
+	mux.Handle("/manifest/", manifestFileServer)
 
-	if err = http.ListenAndServe(":"+*listenPort, nil); err != nil {
+	chain := alice.New(c.Handler).Then(mux)
+
+	if err = http.ListenAndServe(":"+*listenPort, chain); err != nil {
 		log.Fatal(err)
 	}
 }
