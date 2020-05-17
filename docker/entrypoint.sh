@@ -5,7 +5,7 @@ debug=""
 
 if [ ! -z "$GOBKM_PROXYURL" ]
 then
-      proxyurl="-proxyurl $GOBKM_PROXYURL"
+      proxyurl="-proxy $GOBKM_PROXYURL"
 fi
 if [ ! -z "$GOBKM_DEBUG" ]
 then
@@ -16,7 +16,11 @@ then
       logfile="-logfile $GOBKM_LOGFILE"
 fi
 
+echo "proxyurl: $GOBKM_PROXYURL"
+echo "logfile: $GOBKM_LOGFILE"
+echo "debug: $DEBUG"
+
 /var/www-data/gobkm -db /data/bkm.db \
-$listenport \
+$debug \
 $proxyurl \
 $logfile
