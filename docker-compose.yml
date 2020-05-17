@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+    gobkm:
+        container_name: gobkm
+        image: tbellembois/gobkm
+        restart: unless-stopped
+        ports:
+            - 80:8081
+        environment:
+            - GOBKM_PROXYURL=http://localhost
+        #     - GOBKM_DEBUG=true
+        #     - GOBKM_LOGFILE=/var/log/chimitheque.log
+        volumes:
+            - /data/gobkm:/data
+        networks:
+            - chimitheque
+networks:
+    chimitheque:
