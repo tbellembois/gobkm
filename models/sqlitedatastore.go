@@ -521,6 +521,8 @@ func (db *SQLiteDataStore) GetFolderBookmarks(id int) types.Bookmarks {
 
 			// Getting the bookmark tags
 			bkm.Tags = db.GetBookmarkTags(bkm.Id)
+
+			bkm.Folder = &types.Folder{Id: int(parentFldID.Int64)}
 			bkms = append(bkms, bkm)
 			log.WithFields(log.Fields{
 				"bkm": bkm,
