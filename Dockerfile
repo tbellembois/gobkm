@@ -8,23 +8,10 @@ COPY . .
 
 # installing dependencies
 RUN go get -v ./...
-RUN go install -v ./...
-RUN go get github.com/gopherjs/gopherjs && \
-  go get honnef.co/go/js/dom && \
-  go get github.com/GeertJohan/go.rice && \
-  go get github.com/GeertJohan/go.rice/rice 
-
-# installing Go 1.12 for GopherJS
-RUN go get golang.org/dl/go1.12.16
-RUN go1.12.16 download
-
-# building
-RUN export GOPHERJS_GOROOT="$(go1.12.16 env GOROOT)"; go generate
-RUN go build -o gobkm
 
 # installing GoBkm
 RUN mkdir /var/www-data \
-    && cp /go/src/github.com/tbellembois/gobkm/gobkm /var/www-data/ \
+    && cp /go/bin/gobkm /var/www-data/ \
     && chown -R www-data /var/www-data \
     && chmod +x /var/www-data/gobkm
 
