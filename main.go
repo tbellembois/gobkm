@@ -1,6 +1,5 @@
 package main
 
-//go:generate gopherjs build gopherjs/gjs-common.go -o static/js/gjs-common.js -m
 //go:generate rice embed-go
 
 import (
@@ -105,42 +104,21 @@ func main() {
 	mux.HandleFunc("/addFolder/", env.AddFolderHandler)
 	mux.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
 	mux.HandleFunc("/deleteFolder/", env.DeleteFolderHandler)
-	//mux.HandleFunc("/getBookmarkTags/", env.GetBookmarkTagsHandler)
 	mux.HandleFunc("/getTags/", env.GetTagsHandler)
 	mux.HandleFunc("/getStars/", env.GetStarsHandler)
 	mux.HandleFunc("/getFolderChildren/", env.GetFolderChildrenHandler)
 	mux.HandleFunc("/getTree/", env.GetTreeHandler)
 	mux.HandleFunc("/import/", env.ImportHandler)
 	mux.HandleFunc("/export/", env.ExportHandler)
-	//mux.HandleFunc("/moveFolder/", env.MoveFolderHandler)
-	//mux.HandleFunc("/moveBookmark/", env.MoveBookmarkHandler)
 	mux.HandleFunc("/updateFolder/", env.UpdateFolderHandler)
 	mux.HandleFunc("/updateBookmark/", env.UpdateBookmarkHandler)
 	mux.HandleFunc("/searchBookmarks/", env.SearchBookmarkHandler)
 	mux.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	mux.HandleFunc("/", env.MainHandler)
 
-	// Rice boxes initialization.
-	// Awesome fonts may need to send the Access-Control-Allow-Origin header to "*"
-	cssBox := rice.MustFindBox("static/css")
-	cssFileServer := http.StripPrefix("/css/", http.FileServer(cssBox.HTTPBox()))
-	mux.Handle("/css/", cssFileServer)
-
-	jsBox := rice.MustFindBox("static/js")
-	jsFileServer := http.StripPrefix("/js/", http.FileServer(jsBox.HTTPBox()))
-	mux.Handle("/js/", jsFileServer)
-
-	imgBox := rice.MustFindBox("static/img")
-	imgFileServer := http.StripPrefix("/img/", http.FileServer(imgBox.HTTPBox()))
-	mux.Handle("/img/", imgFileServer)
-
-	fontsBox := rice.MustFindBox("static/fonts")
-	fontsFileServer := http.StripPrefix("/fonts/", http.FileServer(fontsBox.HTTPBox()))
-	mux.Handle("/fonts/", fontsFileServer)
-
-	manifestBox := rice.MustFindBox("static/manifest")
-	manifestFileServer := http.StripPrefix("/manifest/", http.FileServer(manifestBox.HTTPBox()))
-	mux.Handle("/manifest/", manifestFileServer)
+	waBox := rice.MustFindBox("static/wasm")
+	waFileServer := http.StripPrefix("/wasm/", http.FileServer(waBox.HTTPBox()))
+	mux.Handle("/wasm/", waFileServer)
 
 	chain := alice.New(c.Handler).Then(mux)
 

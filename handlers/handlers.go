@@ -358,8 +358,11 @@ func (env *Env) UpdateFolderHandler(w http.ResponseWriter, r *http.Request) {
 	// Getting the folder.
 	fld := env.DB.GetFolder(f.Id)
 
-	// And its parent
+	// And its parent if it exist.
 	if f.Parent != nil && f.Parent.Id != 0 {
+		// this is a move
+		// we will update only the parent folder
+
 		dstFld := env.DB.GetFolder(f.Parent.Id)
 		log.WithFields(log.Fields{
 			"f":      f,
@@ -368,10 +371,13 @@ func (env *Env) UpdateFolderHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Updating the source folder parent.
 		f.Parent = dstFld
-	}
+	} else {
+		// this is an update
+		// we will update the folder fields
 
-	// Updating it.
-	fld.Title = f.Title
+		// Updating it.
+		fld.Title = f.Title
+	}
 
 	// Updating the folder into the DB.
 	env.DB.UpdateFolder(fld)
@@ -417,35 +423,41 @@ func (env *Env) UpdateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	// Getting the bookmark.
 	bkm := env.DB.GetBookmark(bookmarkID)
 
-	// Getting the tags.
-	for _, t := range b.Tags {
-		if t.Id == -1 {
-			// the tag is a new one with name t
-			// adding it into the db
-			t.Id = int(env.DB.SaveTag(&types.Tag{Name: string(t.Name)}))
-		}
-		bookmarkTags = append(bookmarkTags, env.DB.GetTag(t.Id))
-	}
-	log.WithFields(log.Fields{
-		"bookmarkTags": bookmarkTags,
-	}).Debug("UpdateBookmarkHandler")
-
 	// Getting the destination folder if it exists.
 	if b.Folder != nil && b.Folder.Id != 0 {
+		// this is a move
+		// we will update only the parent folder
+
 		dstFld := env.DB.GetFolder(b.Folder.Id)
 		log.WithFields(log.Fields{
 			"srcBkm": bkm,
 			"dstFld": dstFld,
 		}).Debug("UpdateBookmarkHandler: retrieved Folder instances")
 
-		// Updating the source folder parent.
+		// Updating the folder parent.
 		bkm.Folder = dstFld
-	}
+	} else {
+		// this is an update
+		// we will update the bookmark fields
 
-	// Updating it.
-	bkm.Title = b.Title
-	bkm.URL = b.URL
-	bkm.Tags = bookmarkTags
+		// Getting the tags.
+		for _, t := range b.Tags {
+			if t.Id == -1 {
+				// the tag is a new one with name t
+				// adding it into the db
+				t.Id = int(env.DB.SaveTag(&types.Tag{Name: string(t.Name)}))
+			}
+			bookmarkTags = append(bookmarkTags, env.DB.GetTag(t.Id))
+		}
+		log.WithFields(log.Fields{
+			"bookmarkTags": bookmarkTags,
+		}).Debug("UpdateBookmarkHandler")
+
+		// Updating it.
+		bkm.Title = b.Title
+		bkm.URL = b.URL
+		bkm.Tags = bookmarkTags
+	}
 
 	// Updating the folder into the DB.
 	env.DB.UpdateBookmark(bkm)
@@ -522,113 +534,6 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
-
-// // MoveBookmarkHandler handles the bookmarks move.
-// func (env *Env) MoveBookmarkHandler(w http.ResponseWriter, r *http.Request) {
-
-// 	var (
-// 		err error
-// 		b   types.Bookmark
-// 	)
-
-// 	if err := r.ParseForm(); err != nil {
-// 		failHTTP(w, "MoveBookmarkHandler", "form parsing error", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	decoder := json.NewDecoder(r.Body)
-// 	if err = decoder.Decode(&b); err != nil {
-// 		failHTTP(w, "MoveBookmarkHandler", "form decoding error", http.StatusBadRequest)
-// 	}
-// 	log.WithFields(log.Fields{
-// 		"b": b,
-// 	}).Debug("MoveBookmarkHandler:Query parameter")
-
-// 	// the id in the view in negative, reverting
-// 	bookmarkID := -b.Id
-
-// 	// Getting the bookmark
-// 	bkm := env.DB.GetBookmark(bookmarkID)
-// 	// and the destination folder if it exists.
-// 	if b.Folder.Id != 0 {
-// 		dstFld := env.DB.GetFolder(b.Folder.Id)
-// 		log.WithFields(log.Fields{
-// 			"srcBkm": bkm,
-// 			"dstFld": dstFld,
-// 		}).Debug("MoveBookmarkHandler: retrieved Folder instances")
-
-// 		// Updating the source folder parent.
-// 		bkm.Folder = dstFld
-// 	} else {
-// 		bkm.Folder = nil
-// 	}
-
-// 	// Updating the folder into the DB.
-// 	env.DB.UpdateBookmark(bkm)
-// 	// Datastore error check.
-// 	if err = env.DB.FlushErrors(); err != nil {
-// 		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-// 	w.WriteHeader(http.StatusOK)
-// 	// Returning an empty JSON to trigger de done() ajax function.
-// 	if err = json.NewEncoder(w).Encode(types.Bookmark{}); err != nil {
-// 		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
-// 	}
-// }
-
-// // MoveFolderHandler handles the folders move.
-// func (env *Env) MoveFolderHandler(w http.ResponseWriter, r *http.Request) {
-
-// 	var (
-// 		err error
-// 		f   types.Folder
-// 	)
-
-// 	if err := r.ParseForm(); err != nil {
-// 		failHTTP(w, "MoveFolderHandler", "form parsing error", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	decoder := json.NewDecoder(r.Body)
-// 	if err = decoder.Decode(&f); err != nil {
-// 		failHTTP(w, "MoveFolderHandler", "form decoding error", http.StatusBadRequest)
-// 	}
-// 	log.WithFields(log.Fields{
-// 		"f": f,
-// 	}).Debug("MoveFolderHandler:Query parameter")
-
-// 	// Getting the source folder.
-// 	srcFld := env.DB.GetFolder(f.Id)
-// 	// and the destination folder if it exists.
-// 	if f.Parent.Id != 0 {
-// 		dstFld := env.DB.GetFolder(f.Parent.Id)
-// 		log.WithFields(log.Fields{
-// 			"srcFld": srcFld,
-// 			"dstFld": dstFld,
-// 		}).Debug("MoveFolderHandler: retrieved Folder instances")
-
-// 		// Updating the source folder parent.
-// 		srcFld.Parent = dstFld
-// 	} else {
-// 		srcFld.Parent = nil
-// 	}
-
-// 	// Updating the source folder into the DB.
-// 	env.DB.UpdateFolder(srcFld)
-// 	// Datastore error check.
-// 	if err = env.DB.FlushErrors(); err != nil {
-// 		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-// 	w.WriteHeader(http.StatusOK)
-// 	// Returning an empty JSON to trigger de done() ajax function.
-// 	if err = json.NewEncoder(w).Encode(types.Folder{}); err != nil {
-// 		failHTTP(w, "MoveBookmarkHandler", err.Error(), http.StatusInternalServerError)
-// 	}
-// }
 
 // getChildren recursively get subfolders and bookmarks of the folder f
 func (env *Env) getChildren(f *types.Folder) types.Folder {
@@ -719,46 +624,6 @@ func (env *Env) GetStarsHandler(w http.ResponseWriter, r *http.Request) {
 		failHTTP(w, "GetStarsHandler", err.Error(), http.StatusInternalServerError)
 	}
 }
-
-// // GetBookmarkTagsHandler retrieves the tags for the given bookmark.
-// func (env *Env) GetBookmarkTagsHandler(w http.ResponseWriter, r *http.Request) {
-
-// 	var (
-// 		err        error
-// 		bookmarkID int
-// 	)
-// 	// GET parameters retrieval.
-// 	bookmarkIDParam := r.URL.Query()["bookmarkId"]
-// 	log.WithFields(log.Fields{
-// 		"bookmarkIDParam": bookmarkIDParam,
-// 	}).Debug("GetBookmarkTagsHandler:Query parameter")
-
-// 	// Parameters check.
-// 	if len(bookmarkIDParam) == 0 {
-// 		failHTTP(w, "GetBookmarkTagsHandler", "folderIdParam empty", http.StatusBadRequest)
-// 		return
-// 	}
-// 	// folderId int convertion.
-// 	if bookmarkID, err = strconv.Atoi(bookmarkIDParam[0]); err != nil {
-// 		failHTTP(w, "GetBookmarkTagsHandler", "folderId Atoi conversion", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	// the id in the view in negative, reverting
-// 	bookmarkID = -bookmarkID
-
-// 	// Getting the tags.
-// 	tags := env.DB.GetBookmarkTags(bookmarkID)
-// 	// Datastore error check.
-// 	if err = env.DB.FlushErrors(); err != nil {
-// 		failHTTP(w, "GetBookmarkTagsHandler", err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	if err = json.NewEncoder(w).Encode(tags); err != nil {
-// 		failHTTP(w, "GetBookmarkTagsHandler", err.Error(), http.StatusInternalServerError)
-// 	}
-// }
 
 // GetFolderChildrenHandler retrieves the subfolders and bookmarks of the given folder.
 func (env *Env) GetFolderChildrenHandler(w http.ResponseWriter, r *http.Request) {
