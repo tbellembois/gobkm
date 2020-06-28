@@ -28,6 +28,8 @@ func main() {
 	// Getting the program parameters.
 	listenPort := flag.String("port", "8081", "the port to listen")
 	proxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
+	historySize := flag.Int("history", 3, "the folder history size")
+	username := flag.String("username", "", "the default login username")
 	dbPath := flag.String("db", "bkm.db", "the full sqlite db path")
 	logfile := flag.String("logfile", "", "log to the given file")
 	debug := flag.Bool("debug", false, "debug (verbose log), default is error")
@@ -48,10 +50,12 @@ func main() {
 		log.SetLevel(log.ErrorLevel)
 	}
 	log.WithFields(log.Fields{
-		"listenPort": *listenPort,
-		"proxyURL":   *proxyURL,
-		"logfile":    *logfile,
-		"debug":      *debug,
+		"listenPort":  *listenPort,
+		"proxyURL":    *proxyURL,
+		"historySize": *historySize,
+		"username":    *username,
+		"logfile":     *logfile,
+		"debug":       *debug,
 	}).Debug("main:flags")
 
 	// Database initialization.
@@ -75,9 +79,11 @@ func main() {
 
 	// Environment creation.
 	env := handlers.Env{
-		DB:             datastore,
-		GoBkmProxyURL:  *proxyURL,
-		GoBkmProxyHost: u.Host,
+		DB:               datastore,
+		GoBkmProxyURL:    *proxyURL,
+		GoBkmProxyHost:   u.Host,
+		GoBkmHistorySize: *historySize,
+		GoBkmUsername:    *username,
 	}
 	// Building a rice box with the static directory.
 	if templateBox, err = rice.FindBox("static"); err != nil {
@@ -91,7 +97,7 @@ func main() {
 	// CORS handler
 	c := cors.New(cors.Options{
 		Debug:            true,
-		AllowedOrigins:   []string{"http://localhost:8080", *proxyURL},
+		AllowedOrigins:   []string{"http://localhost:8081", *proxyURL},
 		AllowCredentials: true,
 		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 		AllowedHeaders:   []string{"Authorization", "DNT", "User-Agent", "X-Requested-With", "If-Modified-Since", "Cache-Control", "Content-Type", "Range"},

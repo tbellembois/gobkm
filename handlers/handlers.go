@@ -28,6 +28,8 @@ type Env struct {
 	DB                  models.Datastore
 	GoBkmProxyURL       string // the application URL
 	GoBkmProxyHost      string // the application Host
+	GoBkmHistorySize    int    // the folder history size
+	GoBkmUsername       string // the dfault login username
 	TplMainData         string // main template data
 	TplAddBookmarkData  string // add bookmark template data
 	TplTestData         string // test template data
@@ -44,6 +46,8 @@ type staticDataStruct struct {
 	JsData              string
 	GoBkmProxyURL       string
 	GoBkmProxyHost      string
+	GoBkmHistorySize    int
+	GoBkmUsername       string
 	NewBookmarkURL      string
 	NewBookmarkTitle    string
 }
@@ -696,6 +700,8 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 	folderAndBookmark.JsData = string(env.JsData)
 	folderAndBookmark.GoBkmProxyURL = env.GoBkmProxyURL
 	folderAndBookmark.GoBkmProxyHost = env.GoBkmProxyHost
+	folderAndBookmark.GoBkmHistorySize = env.GoBkmHistorySize
+	folderAndBookmark.GoBkmUsername = env.GoBkmUsername
 	folderAndBookmark.Bkms = starredBookmarks
 
 	// Building the HTML template.

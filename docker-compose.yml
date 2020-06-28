@@ -8,8 +8,10 @@ services:
             - 80:8081
         environment:
             - GOBKM_PROXYURL=http://localhost
-        #     - GOBKM_DEBUG=true
-        #     - GOBKM_LOGFILE=/var/log/chimitheque.log
+        #    - GOBKM_HISTORY=3
+        #    - GOBKM_USERNAME=me
+        #    - GOBKM_DEBUG=true
+        #    - GOBKM_LOGFILE=/var/log/chimitheque.log
         volumes:
             - /data/gobkm:/data
         networks:
