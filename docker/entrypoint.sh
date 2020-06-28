@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-proxyurl=""
+proxy=""
 logfile=""
 debug=""
 history=3
@@ -7,7 +7,7 @@ username=""
 
 if [ ! -z "$GOBKM_PROXYURL" ]
 then
-      proxyurl="-proxy $GOBKM_PROXYURL"
+      proxy="-proxy $GOBKM_PROXYURL"
 fi
 if [ ! -z "$GOBKM_HISTORY" ]
 then
@@ -15,7 +15,7 @@ then
 fi
 if [ ! -z "$GOBKM_USERNAME" ]
 then
-      proxyurl="-username $GOBKM_USERNAME"
+      username="-username $GOBKM_USERNAME"
 fi
 if [ ! -z "$GOBKM_DEBUG" ]
 then
@@ -26,7 +26,7 @@ then
       logfile="-logfile $GOBKM_LOGFILE"
 fi
 
-echo "proxyurl: $GOBKM_PROXYURL"
+echo "proxy: $GOBKM_PROXYURL"
 echo "logfile: $GOBKM_LOGFILE"
 echo "debug: $GOBKM_DEBUG"
 echo "history: $GOBKM_HISTORY"
@@ -34,7 +34,7 @@ echo "username: $GOBKM_USERNAME"
 
 /var/www-data/gobkm -db /data/bkm.db \
 $debug \
-$proxyurl \
+$proxy \
 $logfile \
 $history \
 $username
