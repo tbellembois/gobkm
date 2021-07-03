@@ -1,5 +1,5 @@
 # Version: 0.0.1
-FROM golang:1.14.3-buster
+FROM golang:1.16
 LABEL author="Thomas Bellembois"
 
 # copying sources
