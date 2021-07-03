@@ -1,14 +1,12 @@
 package main
 
-//go:generate rice embed-go
-
 import (
+	"embed"
 	"flag"
 	"net/http"
 	"net/url"
 	"os"
 
-	rice "github.com/GeertJohan/go.rice"
 	log "github.com/sirupsen/logrus"
 	"github.com/tbellembois/gobkm/handlers"
 	"github.com/tbellembois/gobkm/models"
@@ -18,13 +16,19 @@ import (
 )
 
 var (
-	datastore   *models.SQLiteDataStore
-	templateBox *rice.Box
-	err         error
-	logf        *os.File
+	datastore *models.SQLiteDataStore
+	err       error
+	logf      *os.File
+
+	//go:embed static/wasm/*
+	embedWasmBox embed.FS
+
+	//go:embed static/index.html
+	embedIndex string
 )
 
 func main() {
+
 	// Getting the program parameters.
 	listenPort := flag.String("port", "8081", "the port to listen")
 	proxyURL := flag.String("proxy", "http://localhost:"+*listenPort, "the proxy full URL if used")
@@ -70,7 +74,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	// host from URL
+	// Host from URL.
 	u, err := url.Parse(*proxyURL)
 	if err != nil {
 		log.Fatal(err)
@@ -85,16 +89,10 @@ func main() {
 		GoBkmHistorySize: *historySize,
 		GoBkmUsername:    *username,
 	}
-	// Building a rice box with the static directory.
-	if templateBox, err = rice.FindBox("static"); err != nil {
-		log.Fatal(err)
-	}
-	// Getting the HTML template files content as a string.
-	if env.TplMainData, err = templateBox.String("index.html"); err != nil {
-		log.Fatal(err)
-	}
 
-	// CORS handler
+	env.TplMainData = embedIndex
+
+	// CORS handler.
 	c := cors.New(cors.Options{
 		Debug:            true,
 		AllowedOrigins:   []string{"http://localhost:8081", *proxyURL},
@@ -106,6 +104,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	// Handlers initialization.
+	mux.Handle("/wasm/", http.StripPrefix("/wasm/", http.FileServer(http.FS(embedWasmBox))))
+
 	mux.HandleFunc("/addBookmark/", env.AddBookmarkHandler)
 	mux.HandleFunc("/addFolder/", env.AddFolderHandler)
 	mux.HandleFunc("/deleteBookmark/", env.DeleteBookmarkHandler)
@@ -122,13 +122,10 @@ func main() {
 	mux.HandleFunc("/starBookmark/", env.StarBookmarkHandler)
 	mux.HandleFunc("/", env.MainHandler)
 
-	waBox := rice.MustFindBox("static/wasm")
-	waFileServer := http.StripPrefix("/wasm/", http.FileServer(waBox.HTTPBox()))
-	mux.Handle("/wasm/", waFileServer)
-
 	chain := alice.New(c.Handler).Then(mux)
 
 	if err = http.ListenAndServe(":"+*listenPort, chain); err != nil {
 		log.Fatal(err)
 	}
+
 }

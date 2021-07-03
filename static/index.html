@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<meta name="GoBKM" content="yes">
-		<script src="/wasm/wasm_exec.js"></script>
+		<script src="/wasm/static/wasm/wasm_exec.js"></script>
 		<script>
 			if (!WebAssembly.instantiateStreaming) { // polyfill
 				WebAssembly.instantiateStreaming = async (resp, importObject) => {
@@ -22,7 +22,7 @@
 				go.argv = go.argv.concat(argv.split(" "));
 			}
 
-			WebAssembly.instantiateStreaming(fetch("/wasm/main.wasm"), go.importObject).then((result) => {
+			WebAssembly.instantiateStreaming(fetch("/wasm/static/wasm/main.wasm"), go.importObject).then((result) => {
 				go.run(result.instance);
 			});
 		</script>
