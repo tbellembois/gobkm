@@ -32,19 +32,6 @@ type Tag struct {
 	Name string `json:"name"`
 }
 
-// Node
-// type Node struct {
-// 	Key      int     `json:"id"`
-// 	Title    string  `json:"text"`
-// 	URL      string  `json:"url"`
-// 	Folder   bool    `json:"hasChildren"`
-// 	Lazy     bool    `json:"lazy"`
-// 	Icon     string  `json:"icon"`
-// 	Starred  bool    `json:"starred"`
-// 	Children []*Node `json:"children"`
-// 	Tags     []*Tag  `json:"tag"`
-// }
-
 // Bookmarks implements the sort interface
 type Bookmarks []*Bookmark
 

@@ -61,30 +61,38 @@ type exportBookmarksStruct struct {
 
 // failHTTP send an HTTP error (httpStatus) with the given errorMessage.
 func failHTTP(w http.ResponseWriter, functionName string, errorMessage string, httpStatus int) {
+
 	log.WithFields(log.Fields{
 		"functionName": functionName,
 		"errorMessage": errorMessage,
 	}).Error("failHTTP")
 	w.WriteHeader(httpStatus)
+
 	// JS console log
 	fmt.Fprint(w, errorMessage)
+
 }
 
 // insertIndent the "depth" number of tabs to the given io.Writer.
 func insertIndent(wr io.Writer, depth int) {
+
 	for i := 0; i < depth; i++ {
 		if _, err := wr.Write([]byte("\t")); err != nil {
 			// Just logging the error.
 			log.WithFields(log.Fields{
 				"err": err,
 			}).Error("insertIdent")
+			return
 		}
 	}
+
 }
 
 // updateBookmarkFavicon retrieves and updates the favicon for the given bookmark.
 func (env *Env) updateBookmarkFavicon(bkm *types.Bookmark) {
+
 	if u, err := url.Parse(bkm.URL); err == nil {
+
 		// Building the favicon request URL.
 		bkmDomain := u.Scheme + "://" + u.Host
 		faviconRequestURL := faviconRequestBaseURL + bkmDomain
@@ -126,6 +134,7 @@ func (env *Env) updateBookmarkFavicon(bkm *types.Bookmark) {
 			}
 		}
 	}
+
 }
 
 // SearchBookmarkHandler returns the bookmarks matching the search.
@@ -134,6 +143,7 @@ func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var (
 		err error
 	)
+
 	// GET parameters retrieval.
 	search := r.URL.Query()["search"]
 	log.WithFields(log.Fields{
@@ -157,6 +167,7 @@ func (env *Env) SearchBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(bookmarksMap); err != nil {
 		failHTTP(w, "SearchBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // AddBookmarkHandler handles the bookmarks creation with drag and drop.
@@ -200,6 +211,7 @@ func (env *Env) AddBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(newBookmark); err != nil {
 		failHTTP(w, "AddBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // AddFolderHandler handles the folders creation.
@@ -245,6 +257,7 @@ func (env *Env) AddFolderHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(newFolder); err != nil {
 		failHTTP(w, "AddFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // DeleteFolderHandler handles the folders deletion.
@@ -287,6 +300,7 @@ func (env *Env) DeleteFolderHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(types.Folder{}); err != nil {
 		failHTTP(w, "DeleteFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // DeleteBookmarkHandler handles the bookmarks deletion.
@@ -331,6 +345,7 @@ func (env *Env) DeleteBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(types.Bookmark{}); err != nil {
 		failHTTP(w, "DeleteBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // UpdateFolderHandler handles the folder rename.
@@ -366,7 +381,6 @@ func (env *Env) UpdateFolderHandler(w http.ResponseWriter, r *http.Request) {
 	if f.Parent != nil && f.Parent.Id != 0 {
 		// this is a move
 		// we will update only the parent folder
-
 		dstFld := env.DB.GetFolder(f.Parent.Id)
 		log.WithFields(log.Fields{
 			"f":      f,
@@ -378,7 +392,6 @@ func (env *Env) UpdateFolderHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// this is an update
 		// we will update the folder fields
-
 		// Updating it.
 		fld.Title = f.Title
 	}
@@ -396,6 +409,7 @@ func (env *Env) UpdateFolderHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(fld); err != nil {
 		failHTTP(w, "UpdateFolderHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // UpdateBookmarkHandler handles the bookmarks rename.
@@ -476,6 +490,7 @@ func (env *Env) UpdateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(bkm); err != nil {
 		failHTTP(w, "UpdateBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // StarBookmarkHandler handles the bookmark starring/unstarring.
@@ -486,6 +501,7 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 		err        error
 		star       = true
 	)
+
 	// GET parameters retrieval.
 	bookmarkIDParam := r.URL.Query()["id"]
 	starParam := r.URL.Query()["star"]
@@ -537,10 +553,12 @@ func (env *Env) StarBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(resultBookmarkStruct); err != nil {
 		failHTTP(w, "StarBookmarkHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // getChildren recursively get subfolders and bookmarks of the folder f
 func (env *Env) getChildren(f *types.Folder) types.Folder {
+
 	log.WithFields(log.Fields{"f.Id": f.Id}).Debug("getChildren")
 
 	f.Folders = env.DB.GetFolderSubfolders(f.Id)
@@ -554,6 +572,7 @@ func (env *Env) getChildren(f *types.Folder) types.Folder {
 	f.Bookmarks = env.DB.GetFolderBookmarks(f.Id)
 
 	return *f
+
 }
 
 // GetTreeHandler return the entire folder and bookmark tree
@@ -585,6 +604,7 @@ func (env *Env) GetTreeHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(rootNode); err != nil {
 		failHTTP(w, "GetBranchNodesHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // GetTagsHandler retrieves the tags.
@@ -606,6 +626,7 @@ func (env *Env) GetTagsHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(tags); err != nil {
 		failHTTP(w, "GetTagsHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // GetStarsHandler retrieves the starred bookmarks.
@@ -627,6 +648,7 @@ func (env *Env) GetStarsHandler(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(stars); err != nil {
 		failHTTP(w, "GetStarsHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // GetFolderChildrenHandler retrieves the subfolders and bookmarks of the given folder.
@@ -714,6 +736,7 @@ func (env *Env) MainHandler(w http.ResponseWriter, r *http.Request) {
 	if err = htmlTpl.Execute(w, folderAndBookmark); err != nil {
 		failHTTP(w, "MainHandler", err.Error(), http.StatusInternalServerError)
 	}
+
 }
 
 // ImportHandler handles the import requests.
@@ -819,6 +842,7 @@ func (env *Env) ImportHandler(w http.ResponseWriter, r *http.Request) {
 			"err": err,
 		}).Error("ImportHandler")
 	}
+
 }
 
 // ExportHandler handles the export requests.
@@ -856,10 +880,12 @@ func (env *Env) ExportHandler(w http.ResponseWriter, r *http.Request) {
 			"err": err,
 		}).Error("ExportHandler")
 	}
+
 }
 
 // exportTree recursively exports in HTML the given bookmark struct.
 func (env *Env) exportTree(wr io.Writer, eb *exportBookmarksStruct, depth int) *exportBookmarksStruct {
+
 	// Depth is just for cosmetics indent purposes.
 	depth++
 	log.WithFields(log.Fields{
@@ -888,4 +914,5 @@ func (env *Env) exportTree(wr io.Writer, eb *exportBookmarksStruct, depth int) *
 	_, _ = wr.Write([]byte("</DL><p>\n"))
 
 	return eb
+
 }

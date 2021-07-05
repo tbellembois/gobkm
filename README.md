@@ -9,6 +9,10 @@ The purpose of this project was to study the Go programming language (OOP, datab
 
 ## Installation
 
+Use the Docker image <https://hub.docker.com/r/tbellembois/gobkm> with the `docker-compose.yml` file in the sources.
+
+or
+
 Download and uncompress the latest release from <https://github.com/tbellembois/gobkm/releases>.
 
 or

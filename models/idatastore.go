@@ -4,7 +4,7 @@ import (
 	"github.com/tbellembois/gobkm/types"
 )
 
-// Datastore is a folders and bookmarks storage interface
+// Datastore is a folders and bookmarks storage interface.
 type Datastore interface {
 	FlushErrors() error
 
