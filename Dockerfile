@@ -1,5 +1,5 @@
 # Version: 0.0.1
-FROM golang:1.16
+FROM golang:1.18
 LABEL author="Thomas Bellembois"
 
 # copying sources
@@ -8,6 +8,9 @@ COPY . .
 
 # installing dependencies
 RUN go get -v ./...
+
+# compiling
+RUN go install .
 
 # installing GoBkm
 RUN mkdir /var/www-data \
