@@ -7,7 +7,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.8.1
-	golang.org/x/net v0.0.0-20220403103023-749bd193bc2b
+	golang.org/x/net v0.7.0
 )
 
-require golang.org/x/sys v0.0.0-20220403020550-483a9cbc67c0 // indirect
+require golang.org/x/sys v0.5.0 // indirect
